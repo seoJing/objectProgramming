@@ -58,10 +58,12 @@ public class UserLayout extends BaseLayout {
         nav.setPreferredSize(UIConstants.NAV_SIZE);
         nav.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
 
+
+        // 추후 아이콘으로 대체 예정
         nav.add(createNavButton("메인", Routes.MAIN));
         nav.add(createNavButton("계좌", Routes.ACCOUNT));
         nav.add(createNavButton("구독", Routes.SUBSCRIPTION));
-        nav.add(createNavButton("마이페이지", Routes.MY_PAGE));
+        nav.add(createNavButton("스토어", Routes.MY_PAGE));
 
         return nav;
     }
