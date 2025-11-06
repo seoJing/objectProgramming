@@ -1,0 +1,45 @@
+# Compiled class files
+*.class
+bin/
+target/
+
+# Eclipse specific files
+.classpath
+.project
+.settings/
+
+# IntelliJ IDEA specific files
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VSCode specific files
+.vscode/
+!.vscode/settings.json
+
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Log files
+*.log
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# Build tools
+.gradle/
+build/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~

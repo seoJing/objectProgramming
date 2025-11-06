@@ -1,0 +1,33 @@
+package view.admin;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+
+import javax.swing.JPanel;
+
+import util.Routes;
+
+public class AdminSidePanel extends JPanel {
+    private CardLayout cardLayout;
+    private JPanel contentContainer;
+
+    public AdminSidePanel() {
+        setLayout(new BorderLayout());
+
+        cardLayout = new CardLayout();
+        contentContainer = new JPanel(cardLayout);
+
+        contentContainer.add(new AdminDashboardPanel(), Routes.ADMIN_DASHBOARD);
+        contentContainer.add(new AdminStatisticsPanel(), Routes.ADMIN_STATISTICS);
+        contentContainer.add(new AdminSubscriptionMachinePanel(), Routes.ADMIN_SUBSCRIPTION_MACHINE);
+        contentContainer.add(new AdminSubscriptionManagePanel(), Routes.ADMIN_SUBSCRIPTION_MANAGE);
+
+        add(contentContainer, BorderLayout.CENTER);
+
+        cardLayout.show(contentContainer, Routes.ADMIN_DASHBOARD);
+    }
+
+    public void switchTo(String screen) {
+        cardLayout.show(contentContainer, screen);
+    }
+}
