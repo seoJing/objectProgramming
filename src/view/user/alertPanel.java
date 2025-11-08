@@ -8,9 +8,9 @@ import javax.swing.JPanel;
 import util.UIConstants;
 import view.layout.UserLayout;
 
-public class MyPagePanel extends UserLayout {
+public class alertPanel extends UserLayout {
 
-    public MyPagePanel() {
+    public alertPanel() {
         super();
 
         JPanel content = createContent();
@@ -20,7 +20,7 @@ public class MyPagePanel extends UserLayout {
     private JPanel createContent() {
         JPanel panel = new JPanel(new GridBagLayout());
 
-        JLabel label = new JLabel("HELLO MY_PAGE");
+        JLabel label = new JLabel("HELLO ALERT");
         label.setFont(UIConstants.LARGE_FONT);
         panel.add(label);
 

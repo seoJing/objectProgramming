@@ -20,9 +20,14 @@ public class UserSidePanel extends JPanel {
         contentContainer.add(new SubscriptionPanel(), Routes.SUBSCRIPTION);
         contentContainer.add(new SubscriptionDetailPanel(), Routes.SUBSCRIPTION_DETAIL);
         contentContainer.add(new TransactionPanel(), Routes.TRANSACTION);
+        contentContainer.add(new TransactionDetailPanel(), Routes.TRANSACTION_DETAIL);
         contentContainer.add(new AccountPanel(), Routes.ACCOUNT);
-        contentContainer.add(new MyPagePanel(), Routes.MY_PAGE);
         contentContainer.add(new MainPanel(), Routes.MAIN);
+        contentContainer.add(new alertPanel(), Routes.ALERT);
+        contentContainer.add(new storePanel(), Routes.STORE);
+        contentContainer.add(new storeDetailPanel(), Routes.STORE_DETAIL);
+        contentContainer.add(new groupPanel(), Routes.GROUP);
+        contentContainer.add(new settingPanel(), Routes.SETTING);
 
         add(contentContainer, BorderLayout.CENTER);
 

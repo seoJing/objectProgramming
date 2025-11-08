@@ -19,7 +19,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         setTitle("구독 관리형 가계부");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(UIConstants.WINDOW_WIDTH, UIConstants.WINDOW_HEIGHT);
+        setSize(UIConstants.USER_SIDE_WINDOW_WIDTH, UIConstants.USER_SIDE_WINDOW_HEIGHT);
         setLocationRelativeTo(null);
 
         cardLayout = new CardLayout();
@@ -37,10 +37,18 @@ public class MainFrame extends JFrame {
 
         add(container);
 
-        cardLayout.show(container, Routes.USER);
+        cardLayout.show(container, Routes.LOGIN);
     }
 
     public void switchTo(String screen) {
         cardLayout.show(container, screen);
+
+        // Resize window based on screen type
+        if (screen.equals(Routes.ADMIN)) {
+            setSize(UIConstants.ADMIN_SIDE_WINDOW_WIDTH, UIConstants.ADMIN_SIDE_WINDOW_HEIGHT);
+        } else if (screen.equals(Routes.USER)) {
+            setSize(UIConstants.USER_SIDE_WINDOW_WIDTH, UIConstants.USER_SIDE_WINDOW_HEIGHT);
+        }
+        setLocationRelativeTo(null);  // Center the window after resize
     }
 }

@@ -19,13 +19,18 @@ public final class Routes {
     public static final String MAIN = "MAIN";
     public static final String ACCOUNT = "ACCOUNT";
     public static final String SUBSCRIPTION = "SUBSCRIPTION";
-    public static final String MY_PAGE = "MY_PAGE";
     public static final String TRANSACTION = "TRANSACTION";
+    public static final String TRANSACTION_DETAIL = "TRANSACTION_DETAIL";
     public static final String SUBSCRIPTION_DETAIL = "SUBSCRIPTION_DETAIL";
+    public static final String ALERT = "ALERT";
+    public static final String STORE = "STORE";
+    public static final String SETTING = "SETTING";
+    public static final String GROUP = "GROUP";
+    public static final String STORE_DETAIL = "STORE_DETAIL";
+
 
     // Admin screens
-    public static final String ADMIN_LOGIN = "ADMIN_LOGIN";
-    public static final String ADMIN_DASHBOARD = "ADMIN_DASHBOARD";
+    public static final String ADMIN_MAIN = "ADMIN_MAIN";
     public static final String ADMIN_SUBSCRIPTION_MACHINE = "ADMIN_SUBSCRIPTION_MACHINE";
     public static final String ADMIN_SUBSCRIPTION_MANAGE = "ADMIN_SUBSCRIPTION_MANAGE";
     public static final String ADMIN_STATISTICS = "ADMIN_STATISTICS";

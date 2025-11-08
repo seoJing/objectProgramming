@@ -44,7 +44,9 @@ public final class UIConstants {
     // Borders
     public static final Border HEADER_PADDING = BorderFactory.createEmptyBorder(10, 20, 10, 20);
 
-    // Application
-    public static final int WINDOW_WIDTH = 1200;
-    public static final int WINDOW_HEIGHT = 800;
+    // Application - Window sizes
+    public static final int USER_SIDE_WINDOW_WIDTH = 400;  // Mobile size
+    public static final int USER_SIDE_WINDOW_HEIGHT = 800;
+    public static final int ADMIN_SIDE_WINDOW_WIDTH = 1200;  // PC size
+    public static final int ADMIN_SIDE_WINDOW_HEIGHT = 800;
 }

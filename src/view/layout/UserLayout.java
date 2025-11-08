@@ -63,7 +63,7 @@ public class UserLayout extends BaseLayout {
         nav.add(createNavButton("메인", Routes.MAIN));
         nav.add(createNavButton("계좌", Routes.ACCOUNT));
         nav.add(createNavButton("구독", Routes.SUBSCRIPTION));
-        nav.add(createNavButton("스토어", Routes.MY_PAGE));
+        nav.add(createNavButton("스토어", Routes.STORE));
 
         return nav;
     }

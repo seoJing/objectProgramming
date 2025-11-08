@@ -42,7 +42,7 @@ public class AdminLayout extends BaseLayout {
             logoutBtn.setFocusPainted(false);
             logoutBtn.addActionListener(e -> {
                 SessionManager.getInstance().logout();
-                Router.getInstance().navigateTo(Routes.ADMIN_LOGIN);
+                Router.getInstance().navigateTo(Routes.LOGIN);
             });
             adminPanel.add(logoutBtn);
         }
@@ -58,7 +58,7 @@ public class AdminLayout extends BaseLayout {
         nav.setPreferredSize(UIConstants.NAV_SIZE);
         nav.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
 
-        nav.add(createNavButton("대시보드", Routes.ADMIN_DASHBOARD));
+        nav.add(createNavButton("메인", Routes.ADMIN_MAIN));
         nav.add(createNavButton("구독매칭", Routes.ADMIN_SUBSCRIPTION_MACHINE));
         nav.add(createNavButton("구독관리", Routes.ADMIN_SUBSCRIPTION_MANAGE));
         nav.add(createNavButton("통계분석", Routes.ADMIN_STATISTICS));

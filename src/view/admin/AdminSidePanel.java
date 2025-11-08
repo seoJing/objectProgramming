@@ -17,14 +17,14 @@ public class AdminSidePanel extends JPanel {
         cardLayout = new CardLayout();
         contentContainer = new JPanel(cardLayout);
 
-        contentContainer.add(new AdminDashboardPanel(), Routes.ADMIN_DASHBOARD);
+        contentContainer.add(new AdminMainPanel(), Routes.ADMIN_MAIN);
         contentContainer.add(new AdminStatisticsPanel(), Routes.ADMIN_STATISTICS);
         contentContainer.add(new AdminSubscriptionMachinePanel(), Routes.ADMIN_SUBSCRIPTION_MACHINE);
         contentContainer.add(new AdminSubscriptionManagePanel(), Routes.ADMIN_SUBSCRIPTION_MANAGE);
 
         add(contentContainer, BorderLayout.CENTER);
 
-        cardLayout.show(contentContainer, Routes.ADMIN_DASHBOARD);
+        cardLayout.show(contentContainer, Routes.ADMIN_MAIN);
     }
 
     public void switchTo(String screen) {
