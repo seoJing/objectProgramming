@@ -35,41 +35,49 @@
 objectProgramming/
 ├── src/
 │   ├── main/
-│   │   └── Main.java              # 애플리케이션 진입점
-│   ├── model/                     # 데이터 모델 계층
-│   │   ├── User.java              # 사용자 모델
-│   │   ├── UserList.java          # 사용자 컬렉션 관리
-│   │   ├── Account.java           # 계좌 모델
-│   │   ├── Transaction.java       # 거래 내역 모델
-│   │   ├── TransactionType.java   # 거래 타입 enum
-│   │   ├── Ledger.java            # 가계부 모델
-│   │   └── SubscriptionService.java # 구독 서비스 모델
-│   ├── view/                      # UI 계층
-│   │   ├── MainFrame.java         # 메인 프레임
-│   │   ├── layout/                # 레이아웃 템플릿
-│   │   │   ├── BaseLayout.java   # 기본 레이아웃 (Template Method)
-│   │   │   ├── UserLayout.java   # 사용자 레이아웃
-│   │   │   └── AdminLayout.java  # 관리자 레이아웃
-│   │   ├── user/                  # 사용자 화면
+│   │   └── Main.java
+│   ├── model/
+│   │   ├── User.java
+│   │   ├── UserList.java
+│   │   ├── Account.java
+│   │   ├── Transaction.java
+│   │   ├── TransactionType.java
+│   │   ├── Ledger.java
+│   │   └── SubscriptionService.java
+│   ├── view/
+│   │   ├── MainFrame.java
+│   │   ├── layout/
+│   │   │   ├── BaseLayout.java
+│   │   │   ├── UserLayout.java
+│   │   │   └── AdminLayout.java
+│   │   ├── user/
 │   │   │   ├── UserSidePanel.java
-│   │   │   ├── MainPanel.java
+│   │   │   ├── MainPanel.java                    # Navigate to Alert, Transaction
 │   │   │   ├── AccountPanel.java
 │   │   │   ├── SubscriptionPanel.java
-│   │   │   ├── TransactionPanel.java
-│   │   │   └── MyPagePanel.java
-│   │   ├── admin/                 # 관리자 화면
+│   │   │   ├── SubscriptionDetailPanel.java
+│   │   │   ├── TransactionPanel.java              # Navigate to TransactionDetail
+│   │   │   ├── TransactionDetailPanel.java
+│   │   │   ├── MyPagePanel.java
+│   │   │   ├── alertPanel.java                    # No navigation buttons
+│   │   │   ├── settingPanel.java
+│   │   │   ├── storePanel.java                    # Navigate to Group
+│   │   │   ├── storeDetailPanel.java
+│   │   │   └── groupPanel.java                    # Navigate to StoreDetail
+│   │   ├── admin/
 │   │   │   ├── AdminSidePanel.java
-│   │   │   ├── AdminDashboardPanel.java
+│   │   │   ├── AdminMainPanel.java
 │   │   │   ├── AdminStatisticsPanel.java
-│   │   │   └── ...
+│   │   │   ├── AdminSubscriptionMachinePanel.java
+│   │   │   └── AdminSubscriptionManagePanel.java
 │   │   └── login/
-│   │       └── LoginPanel.java
-│   └── util/                      # 유틸리티 계층
-│       ├── Router.java            # 화면 네비게이션 관리
-│       ├── Routes.java            # 화면 경로 상수
-│       ├── SessionManager.java    # 세션 상태 관리
-│       └── UIConstants.java       # UI 상수 (색상, 폰트 등)
-├── .editorconfig                  # 코드 포맷팅 설정
+│   │       └── LoginPanel.java                    # Navigate to Admin, User
+│   └── util/
+│       ├── Router.java
+│       ├── Routes.java
+│       ├── SessionManager.java
+│       └── UIConstants.java
+├── .editorconfig
 ├── .gitignore
 └── README.md
 ```
