@@ -11,6 +11,26 @@ import util.Router;
 import util.Routes;
 import util.UIConstants;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.Color;
+
+/**
+ * 로그인 화면
+ * - ID / 비밀번호 입력
+ * - 로그인 버튼: AuthService.login() 호출 (내부에서 해시 비교)
+ * - 회원가입 버튼: SignupDialog 띄우기
+ */
 public class LoginPanel extends JPanel {
 
     private final AuthService authService;

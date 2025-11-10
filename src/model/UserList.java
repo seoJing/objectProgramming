@@ -1,5 +1,7 @@
 package model;
 
+import util.PasswordUtil;   // 🔹 해시 유틸 추가 import
+
 import java.util.ArrayList;
 import java.util.List;
 

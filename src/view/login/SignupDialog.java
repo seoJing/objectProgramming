@@ -158,7 +158,6 @@ public class SignupDialog extends JDialog {
                     "가입 성공",
                     JOptionPane.INFORMATION_MESSAGE
             );
-
             dispose();
 
         } catch (NumberFormatException e) {
