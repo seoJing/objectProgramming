@@ -23,7 +23,7 @@ public class UserSidePanel extends JPanel {
         contentContainer.add(new TransactionDetailPanel(), Routes.TRANSACTION_DETAIL);
         contentContainer.add(new AccountPanel(), Routes.ACCOUNT);
         contentContainer.add(new MainPanel(), Routes.MAIN);
-        contentContainer.add(new alertPanel(), Routes.ALERT);
+        contentContainer.add(new AlertPanel(), Routes.ALERT);
         contentContainer.add(new storePanel(), Routes.STORE);
         contentContainer.add(new storeDetailPanel(), Routes.STORE_DETAIL);
         contentContainer.add(new groupPanel(), Routes.GROUP);

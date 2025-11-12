@@ -7,14 +7,16 @@ public class Transaction {
     private String date;
     private String category;
     private int balance;
+    private String bank;
 
-    public Transaction(String type, int amount, String location, String date, String category, int balance) {
+    public Transaction(String type, int amount, String location, String date, String category, int balance, String bank) {
         this.type = type;
         this.amount = amount;
         this.location = location;
         this.date = date;
         this.category = category;
         this.balance = balance;
+        this.bank = bank;
     }
 
     public String getType() {
@@ -27,6 +29,10 @@ public class Transaction {
 
     public String getLocation() {
         return location;
+    }
+
+    public String getBank() {
+        return bank;
     }
 
     public String getDate() {
