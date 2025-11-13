@@ -27,18 +27,18 @@ public class SubscriptionDetailPanel extends UserLayout {
         LocalDate today = LocalDate.now();
 
         // 최근 12개월의 거래 MOCK 내역 생성
-        for (int i = 0; i < 12; i++) {
-            LocalDate transactionDate = today.minusMonths(i);
-            transactions.add(new Transaction(
-                "구독료 결제",
-                subscription.getAmount(),
-                subscription.getServiceName(),
-                transactionDate.toString(),
-                "구독",
-                0,
-                "국민은행"
-            ));
-        }
+//        for (int i = 0; i < 12; i++) {
+//            LocalDate transactionDate = today.minusMonths(i);
+//            transactions.add(new Transaction(
+//                "구독료 결제",
+//                subscription.getAmount(),
+//                subscription.getServiceName(),
+//                transactionDate.toString(),
+//                "구독",
+//                0,
+//                "국민은행"
+//            ));
+//        }
 
         return transactions;
     }
