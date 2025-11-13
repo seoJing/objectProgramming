@@ -8,9 +8,9 @@ import javax.swing.JPanel;
 import util.UIConstants;
 import view.layout.UserLayout;
 
-public class settingPanel extends UserLayout {
+public class StoreDetailPanel extends UserLayout {
 
-    public settingPanel() {
+    public StoreDetailPanel() {
         super();
 
         JPanel content = createContent();
@@ -20,7 +20,7 @@ public class settingPanel extends UserLayout {
     private JPanel createContent() {
         JPanel panel = new JPanel(new GridBagLayout());
 
-        JLabel label = new JLabel("HELLO SETTING");
+        JLabel label = new JLabel("HELLO STORE_DETAIL");
         label.setFont(UIConstants.LARGE_FONT);
         panel.add(label);
 

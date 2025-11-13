@@ -23,6 +23,10 @@ import util.UIConstants;
 import view.layout.UserLayout;
 import view.user.shared.component.AlertItemPanel;
 import view.user.shared.component.ImageLoader;
+import view.user.shared.component.Calendar;
+
+import java.awt.*;
+import java.time.LocalDate;
 
 public class MainPanel extends UserLayout {
 
@@ -59,6 +63,11 @@ public class MainPanel extends UserLayout {
         setContent(content);
     }
 
+    Calendar cal = new Calendar(LocalDate.now(), picked -> {
+        SessionManager.getInstance().setSelectedDate(picked);          // 날짜 저장(옵션)
+        Router.getInstance().navigateUser(Routes.ALL_TRANSACTIONS);    // 전체 거래 화면으로 이동
+    });
+
     private JPanel createContent() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -67,16 +76,37 @@ public class MainPanel extends UserLayout {
         // 1. 끌 수 있는 알림창
         panel.add(createAlertNotification());
 
-        // 2. 구독 서비스 아이콘 가로 스크롤 리스트
+        // 2. 캘린더
+        JPanel calCard = new JPanel(new BorderLayout());
+        calCard.setOpaque(true);
+        calCard.setBackground(UIConstants.CARD_BG);
+        calCard.setBorder(UIConstants.CARD_BORDER);
+        calCard.setPreferredSize(new Dimension(520, 360));     // 고정 너비/높이
+        calCard.setMaximumSize(new Dimension(520, 360));
+        calCard.add(cal, BorderLayout.CENTER);
+        panel.add(calCard);
+        panel.add(Box.createVerticalStrut(12));
+
+        // 3. 구독 서비스 아이콘 가로 스크롤 리스트
         panel.add(createSubscriptionScrollList());
 
-        // 3. 캘린더 (단색 박스)
-        panel.add(createCalendarBox());
-        panel.add(Box.createVerticalStrut(10));
 
-        // 4. 지출 리스트 (단색 박스)
-        panel.add(createExpenseListBox());
 
+        panel.add(Box.createVerticalStrut(8));
+
+        // 캘린더: 셀 36px, 간격 6px, 패딩 8px
+        Calendar cal = new Calendar(
+                LocalDate.now(),
+                picked -> {
+                    SessionManager.getInstance().setSelectedDate(picked);
+                    Router.getInstance().navigateUser(Routes.ALL_TRANSACTIONS);
+                },
+                36, 6, new Insets(8, 8, 30, 8)
+        );
+
+
+
+        panel.add(Box.createVerticalGlue());
         return panel;
     }
 

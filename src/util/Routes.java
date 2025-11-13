@@ -20,6 +20,7 @@ public final class Routes {
     public static final String ACCOUNT = "ACCOUNT";
     public static final String SUBSCRIPTION = "SUBSCRIPTION";
     public static final String TRANSACTION = "TRANSACTION";
+    public static final String ALL_TRANSACTIONS = "ALL_TRANSACTIONS";
     public static final String TRANSACTION_DETAIL = "TRANSACTION_DETAIL";
     public static final String SUBSCRIPTION_DETAIL = "SUBSCRIPTION_DETAIL";
     public static final String ALERT = "ALERT";

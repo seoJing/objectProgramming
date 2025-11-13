@@ -10,9 +10,9 @@ import util.Routes;
 import util.UIConstants;
 import view.layout.UserLayout;
 
-public class storePanel extends UserLayout {
+public class StorePanel extends UserLayout {
 
-    public storePanel() {
+    public StorePanel() {
         super();
 
         JPanel content = createContent();
