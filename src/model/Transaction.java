@@ -1,7 +1,8 @@
 package model;
 
-import util.UIConstants;
 import java.time.LocalDateTime;
+
+import util.UIConstants;
 
 public class Transaction {
 
@@ -11,13 +12,12 @@ public class Transaction {
     private final String category;         // 카테고리(식비/쇼핑 등)
     private final String memo;             // 메모
     private final LocalDateTime dateTime;  // 거래 시각
-
-    private int balanceAfter;              // 거래 후 잔액
-    private String bank = "";              // 은행명
+    private int balanceAfter;        // 거래 후 잔액
+    private Account account;         // 거래 계좌
 
     public Transaction(TransactionType type, int amount,
                        String location, String category, String memo,
-                       LocalDateTime dateTime, int balanceAfter) {
+                       LocalDateTime dateTime, int balanceAfter, Account account) {
         this.type = type;
         this.amount = amount;
         this.location = location;
@@ -25,6 +25,7 @@ public class Transaction {
         this.memo = memo;
         this.dateTime = dateTime;
         this.balanceAfter = balanceAfter;
+        this.account = account;
     }
 
     /** 수입이면 양수, 지출이면 음수 반환 */
@@ -35,11 +36,6 @@ public class Transaction {
     /** 거래 후 잔액 기록 */
     public void setBalanceAfter(int balanceAfter) {
         this.balanceAfter = balanceAfter;
-    }
-
-    /** 은행명 설정 (필요 시) */
-    public void setBank(String bank) {
-        this.bank = bank;
     }
 
     /** UI 날짜 출력 */
@@ -56,8 +52,10 @@ public class Transaction {
     public String getMemo()                 { return memo; }
     public LocalDateTime getDateTime()      { return dateTime; }
     public int getBalanceAfter()            { return balanceAfter; }
-    public String getBank()                 { return bank; }
 
+    public String getBank() {
+        return (account != null) ? account.getBank() : "";
+    }
     /** 가계부에서 항목 출력용 */
     public String summary() {
         return category + " | " + amount + "원 | " + getDate();

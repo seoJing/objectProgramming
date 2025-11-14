@@ -132,7 +132,7 @@ public class AccountService {
         int newBal = account.getCurrentBalance() + signed;
 
         Transaction tx = new Transaction(
-                type, amount, location, category, memo, when, newBal
+                type, amount, location, category, memo, when, newBal, account
         );
 
         account.getTransactionList().add(tx);
