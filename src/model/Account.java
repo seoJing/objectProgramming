@@ -9,6 +9,7 @@ public class Account {
     private int initialBalance;
     private int currentBalance;
     private List<Transaction> transactionList;
+    private String userId;
 
     public Account(String accountNumber, String bank, int initialBalance) {
         this.accountNumber = accountNumber;
@@ -16,6 +17,7 @@ public class Account {
         this.initialBalance = initialBalance;
         this.currentBalance = initialBalance;
         this.transactionList = new ArrayList<>();
+        this.userId = userId;
     }
 
     public void addTransaction(Transaction tx) {
@@ -67,3 +69,4 @@ public class Account {
         return transactionList;
     }
 }
+
