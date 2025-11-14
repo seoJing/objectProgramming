@@ -1,14 +1,23 @@
 package model;
 
-public class SubscriptionService {
-    private String serviceName;
-    private int amount;
-    private String paymentDate;
-    private String userId;
-    private int subscriptionPeriod;
-    private int numberOfUsers;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-    public SubscriptionService(String serviceName, int amount, String paymentDate, String userId, int subscriptionPeriod, int numberOfUsers) {
+public class SubscriptionService {
+
+    private String serviceName;       // 넷플릭스, 디즈니+
+    private int amount;               // 월 요금 (원)
+    private String paymentDate;       // 결제일 (yyyy-MM-dd)
+    private String userId;            // 구독자 ID
+    private int subscriptionPeriod;   // 결제 주기 (1개월/3개월/6개월)
+    private int numberOfUsers;        // 공유 인원 수
+
+    private static final DateTimeFormatter FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public SubscriptionService(String serviceName, int amount,
+                               String paymentDate, String userId,
+                               int subscriptionPeriod, int numberOfUsers) {
         this.serviceName = serviceName;
         this.amount = amount;
         this.paymentDate = paymentDate;
@@ -17,43 +26,59 @@ public class SubscriptionService {
         this.numberOfUsers = numberOfUsers;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    // ==============================
+    // 기본 getter/setter
+    // ==============================
+
+    public String getServiceName() { return serviceName; }
+    public int getAmount() { return amount; }
+    public String getPaymentDate() { return paymentDate; }
+    public String getUserId() { return userId; }
+    public int getSubscriptionPeriod() { return subscriptionPeriod; }
+    public int getNumberOfUsers() { return numberOfUsers; }
+
+    public void setAmount(int amount) { this.amount = amount; }
+    public void setPaymentDate(String paymentDate) { this.paymentDate = paymentDate; }
+    public void setSubscriptionPeriod(int subscriptionPeriod) { this.subscriptionPeriod = subscriptionPeriod; }
+    public void setNumberOfUsers(int numberOfUsers) { this.numberOfUsers = numberOfUsers; }
+
+    // ==============================
+    // 기능 1: 다음 결제일 계산
+    // ==============================
+    public String getNextPaymentDate() {
+        LocalDate date = LocalDate.parse(paymentDate, FORMATTER);
+        LocalDate nextDate = date.plusMonths(subscriptionPeriod);
+        return nextDate.format(FORMATTER);
     }
 
-    public int getAmount() {
-        return amount;
+    // ==============================
+    // 기능 2: 1/N 금액 계산 (공유 인원 고려)
+    // ==============================
+    public int getPersonalCost() {
+        if (numberOfUsers <= 1) return amount;
+        return amount / numberOfUsers;
     }
 
-    public String getPaymentDate() {
-        return paymentDate;
+    // ==============================
+    // 기능 3: 요약 출력
+    // ==============================
+    public String summary() {
+        return serviceName + " | " + amount + "원 | 다음 결제일: " + getNextPaymentDate();
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public int getSubscriptionPeriod() {
-        return subscriptionPeriod;
-    }
-
-    public int getNumberOfUsers() {
-        return numberOfUsers;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public void setPaymentDate(String paymentDate) {
-        this.paymentDate = paymentDate;
-    }
-
-    public void setSubscriptionPeriod(int subscriptionPeriod) {
-        this.subscriptionPeriod = subscriptionPeriod;
-    }
-
-    public void setNumberOfUsers(int numberOfUsers) {
-        this.numberOfUsers = numberOfUsers;
+    // ==============================
+    // 기능 4: 전체 정보 출력
+    // ==============================
+    @Override
+    public String toString() {
+        return "SubscriptionService{" +
+                "serviceName='" + serviceName + '\'' +
+                ", amount=" + amount +
+                ", paymentDate='" + paymentDate + '\'' +
+                ", nextPaymentDate='" + getNextPaymentDate() + '\'' +
+                ", userId='" + userId + '\'' +
+                ", period=" + subscriptionPeriod + "개월" +
+                ", users=" + numberOfUsers +
+                '}';
     }
 }

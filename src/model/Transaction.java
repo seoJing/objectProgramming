@@ -1,14 +1,15 @@
 package model;
 
-import util.UIConstants;
-
 import java.time.LocalDateTime;
 
+import util.UIConstants;
+
 public class Transaction {
-    private final TransactionType type;    // 입금/출금
-    private final int amount;              // 원 단위, 항상 양수 저장
+
+    private final TransactionType type;    // 입금 / 출금
+    private final int amount;              // 항상 양수
     private final String location;         // 거래 장소
-    private final String category;         // 분류(교통, 카페 등)
+    private final String category;         // 카테고리(식비/쇼핑 등)
     private final String memo;             // 메모
     private final LocalDateTime dateTime;  // 거래 시각
     private int balanceAfter;        // 거래 후 잔액
@@ -27,19 +28,21 @@ public class Transaction {
         this.account = account;
     }
 
+    /** 수입이면 양수, 지출이면 음수 반환 */
     public int signedAmount() {
         return (type == TransactionType.INCOME) ? amount : -amount;
     }
-    /** Account가 계산한 거래 후 잔액을 기록 */
+
+    /** 거래 후 잔액 기록 */
     public void setBalanceAfter(int balanceAfter) {
         this.balanceAfter = balanceAfter;
     }
+
+    /** UI 날짜 출력 */
     public String getDate() {
-        if (dateTime != null) {
-            // UIConstants에 이미 정의된 포맷 사용 (예: "yyyy.MM.dd HH:mm")
+        if (dateTime != null)
             return dateTime.format(UIConstants.UI_DATEFULL);
-        }
-        return ""; // 아무 것도 없으면 빈 문자열
+        return "";
     }
 
     public TransactionType getType()        { return type; }
@@ -52,5 +55,17 @@ public class Transaction {
 
     public String getBank() {
         return (account != null) ? account.getBank() : "";
+    }
+    /** 가계부에서 항목 출력용 */
+    public String summary() {
+        return category + " | " + amount + "원 | " + getDate();
+    }
+
+    @Override
+    public String toString() {
+        return "[" + getDate() + "] "
+                + category + " - "
+                + amount + "원"
+                + (memo != null && !memo.isEmpty() ? (" (" + memo + ")") : "");
     }
 }
