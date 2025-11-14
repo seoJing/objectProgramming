@@ -3,42 +3,45 @@ package view.user;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import model.Account;
 import model.SubscriptionService;
 import model.Transaction;
+import model.TransactionType;
 import util.SessionManager;
 import util.UIConstants;
 import view.layout.UserLayout;
 import view.user.shared.component.InformationSection;
 import view.user.shared.component.PanelHeader;
-import view.user.shared.component.TransactionHistoryList;
 import view.user.shared.component.RoundedButton;
+import view.user.shared.component.TransactionHistoryList;
 
 public class SubscriptionDetailPanel extends UserLayout {
 
-    private List<Transaction> generateMockTransactions(SubscriptionService subscription) {
+    private List<Transaction> generateMockTransactions(SubscriptionService subscription, Account account) {
         List<Transaction> transactions = new ArrayList<>();
-        LocalDate today = LocalDate.now();
+        LocalDateTime today = LocalDateTime.now();
 
-        // 최근 12개월의 거래 MOCK 내역 생성
-//        for (int i = 0; i < 12; i++) {
-//            LocalDate transactionDate = today.minusMonths(i);
-//            transactions.add(new Transaction(
-//                "구독료 결제",
-//                subscription.getAmount(),
-//                subscription.getServiceName(),
-//                transactionDate.toString(),
-//                "구독",
-//                0,
-//                "국민은행"
-//            ));
-//        }
+        //최근 12개월의 거래 MOCK 내역 생성
+        for (int i = 0; i < 12; i++) {
+            LocalDateTime transactionDateTime = today.minusMonths(i);
+            transactions.add(new Transaction(
+                TransactionType.EXPENSE,
+                subscription.getAmount(),
+                subscription.getServiceName(),
+                "구독",
+                "구독료 결제",
+                transactionDateTime,
+                0,
+                account
+            ));
+        }
 
         return transactions;
     }
@@ -61,10 +64,11 @@ public class SubscriptionDetailPanel extends UserLayout {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
-        // SessionManager에서 선택된 구독 정보 가져오기
+        // SessionManager에서 선택된 구독 정보와 계좌 정보 가져오기
         SubscriptionService subscription = SessionManager.getInstance().getSelectedSubscription();
+        Account account = SessionManager.getInstance().getSelectedAccount();
         // Mock 거래 내역 데이터 생성 (각 Panel에서 처리)
-        List<Transaction> transactions = generateMockTransactions(subscription);
+        List<Transaction> transactions = generateMockTransactions(subscription, account);
 
         if (subscription != null) {
             // 상단 헤더

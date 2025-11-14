@@ -12,17 +12,19 @@ public class Transaction {
     private final String memo;             // 메모
     private final LocalDateTime dateTime;  // 거래 시각
     private int balanceAfter;        // 거래 후 잔액
-    private String bank = "";
+    private Account account;         // 거래 계좌
 
     public Transaction(TransactionType type, int amount,
                        String location, String category, String memo,
-                       LocalDateTime dateTime, int balanceAfter) {
+                       LocalDateTime dateTime, int balanceAfter, Account account) {
         this.type = type;
         this.amount = amount;
         this.location = location;
         this.category = category;
         this.memo = memo;
         this.dateTime = dateTime;
+        this.balanceAfter = balanceAfter;
+        this.account = account;
     }
 
     public int signedAmount() {
@@ -49,6 +51,6 @@ public class Transaction {
     public int getBalanceAfter()            { return balanceAfter; }
 
     public String getBank() {
-        return bank;
+        return (account != null) ? account.getBank() : "";
     }
 }
