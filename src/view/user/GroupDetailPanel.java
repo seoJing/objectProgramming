@@ -23,10 +23,7 @@ public class GroupDetailPanel extends UserLayout {
         setLayout(new BorderLayout());
         setBackground(BACKGROUND_LIGHT);
 
-        PanelHeader header = new PanelHeader("SUBMATE");
-        header.setPreferredSize(HEADER_SIZE);
-        add(header, BorderLayout.NORTH);
-
+     
         JPanel center = new JPanel();
         center.setOpaque(false);
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
@@ -66,17 +63,7 @@ public class GroupDetailPanel extends UserLayout {
         center.add(applyBtn);
         center.add(Box.createVerticalStrut(24));
 
-        JPanel bottomNav = new JPanel(new GridLayout(1, 4));
-        bottomNav.setPreferredSize(NAV_SIZE);
-        bottomNav.setBackground(POS_GREEN);
-        bottomNav.add(createNavButton("홈", false));
-        bottomNav.add(createNavButton("계좌", false));
-        bottomNav.add(createNavButton("내 구독", true));
-        bottomNav.add(createNavButton("구독 스토어", false));
-        add(bottomNav, BorderLayout.SOUTH);
-
-        /* 이벤트 */
-
+        
         applyBtn.addActionListener(e ->
                 JOptionPane.showMessageDialog(
                         this,
