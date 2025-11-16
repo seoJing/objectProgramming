@@ -1,21 +1,35 @@
 package view.user;
 
-import util.UIConstants;
-import util.SessionManager;
-import util.Router;
-import util.Routes;
-import view.layout.UserLayout;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.Objects;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import model.Account;
 import model.User;
 import service.AccountService;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.List;
-import java.util.Objects;
+import util.Router;
+import util.Routes;
+import util.SessionManager;
+import util.UIConstants;
+import view.layout.UserLayout;
 
 public class AccountPanel extends UserLayout {
 

@@ -55,6 +55,10 @@ public class User {
         return password;
     }
 
+    public String getPasswordHash() {
+        return password;
+    }
+
     public String getName() {
         return name;
     }
@@ -118,4 +122,8 @@ public class User {
     }
 
     // ================ Business Logic (확장 가능) =================
+
+    public void addAccount(Account account) {
+        this.accountList.add(account);
+    }
 }

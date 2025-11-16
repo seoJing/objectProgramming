@@ -3,11 +3,9 @@ package view.user;
 import static util.UIConstants.*;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
-import view.user.shared.component.PanelHeader;
-import view.user.shared.layout.UserLayout;
+import view.layout.UserLayout;
 
 /**
  * 세 번째 페이지 : 그룹핑 상세
@@ -16,19 +14,18 @@ public class GroupDetailPanel extends UserLayout {
 
     public GroupDetailPanel() {
         super();
-        buildUI();
+        setContent(createContent());
     }
 
-    private void buildUI() {
-        setLayout(new BorderLayout());
-        setBackground(BACKGROUND_LIGHT);
+    private JPanel createContent() {
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(BACKGROUND_LIGHT);
 
-     
+        // 중앙 영역
         JPanel center = new JPanel();
         center.setOpaque(false);
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
         center.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        add(center, BorderLayout.CENTER);
 
         JLabel label = new JLabel("구독 장바구니", SwingConstants.CENTER);
         label.setFont(SMALL_FONT.deriveFont(13f));
@@ -63,7 +60,6 @@ public class GroupDetailPanel extends UserLayout {
         center.add(applyBtn);
         center.add(Box.createVerticalStrut(24));
 
-        
         applyBtn.addActionListener(e ->
                 JOptionPane.showMessageDialog(
                         this,
@@ -72,31 +68,8 @@ public class GroupDetailPanel extends UserLayout {
                         JOptionPane.INFORMATION_MESSAGE
                 )
         );
-    }
 
-    /* ===== 스타일 함수 (복사본) ===== */
-
-    private static JButton createNavButton(String text, boolean selected) {
-        JButton btn = new JButton(text);
-        btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
-        btn.setFont(NORMAL_FONT);
-        if (selected) {
-            btn.setBackground(WHITE);
-            btn.setForeground(POS_GREEN);
-        } else {
-            btn.setBackground(POS_GREEN);
-            btn.setForeground(WHITE);
-        }
-        return btn;
-    }
-
-    private static void styleFlatButton(JButton btn) {
-        btn.setFocusPainted(false);
-        btn.setFont(NORMAL_FONT);
-        btn.setBackground(BACKGROUND_BUTTON);
-        btn.setForeground(TEXT_PRIMARY_COLOR);
-        Border padding = BorderFactory.createEmptyBorder(8, 8, 8, 8);
-        btn.setBorder(padding);
+        root.add(center, BorderLayout.CENTER);
+        return root;
     }
 }

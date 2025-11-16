@@ -1,14 +1,28 @@
 package view.user;
 
-import static util.UIConstants.*;
+import static util.UIConstants.BACKGROUND_BUTTON;
+import static util.UIConstants.BACKGROUND_LIGHT;
+import static util.UIConstants.BUTTON_HORIZONTAL_GAP;
+import static util.UIConstants.NORMAL_FONT;
+import static util.UIConstants.SMALL_FONT;
+import static util.UIConstants.TEXT_PRIMARY_COLOR;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 
-import view.user.shared.component.PanelHeader;
-import view.user.shared.layout.UserLayout;
-import view.user.NavigateUser;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
+import util.Router;
+import util.Routes;
+import view.layout.UserLayout;
 
 /**
  * 두 번째 페이지 : 그룹핑 리스트
@@ -17,22 +31,17 @@ public class GroupListPanel extends UserLayout {
 
     public GroupListPanel() {
         super();
-        buildUI();
+        setContent(createContent());
     }
 
-    private void buildUI() {
-        setLayout(new BorderLayout());
-        setBackground(BACKGROUND_LIGHT);
-
-        PanelHeader header = new PanelHeader("SUBMATE");
-        header.setPreferredSize(HEADER_SIZE);
-        add(header, BorderLayout.NORTH);
+    private JPanel createContent() {
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(BACKGROUND_LIGHT);
 
         JPanel center = new JPanel();
         center.setOpaque(false);
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
         center.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        add(center, BorderLayout.CENTER);
 
         JLabel label = new JLabel("구독 장바구니", SwingConstants.CENTER);
         label.setFont(SMALL_FONT.deriveFont(13f));
@@ -70,45 +79,21 @@ public class GroupListPanel extends UserLayout {
         center.add(groupPanel);
         center.add(Box.createVerticalGlue());
 
-        // 하단 네비
-        JPanel bottomNav = new JPanel(new GridLayout(1, 4));
-        bottomNav.setPreferredSize(NAV_SIZE);
-        bottomNav.setBackground(POS_GREEN);
-        bottomNav.add(createNavButton("홈", false));
-        bottomNav.add(createNavButton("계좌", false));
-        bottomNav.add(createNavButton("내 구독", true));
-        bottomNav.add(createNavButton("구독 스토어", false));
-        add(bottomNav, BorderLayout.SOUTH);
-
         /* 이벤트 */
 
         // 장바구니 버튼 → 첫 페이지로 이동
-        basketBtn.addActionListener(e -> NavigateUser.goTo(new SubscriptionAddPanel()));
+        basketBtn.addActionListener(e -> Router.getInstance().navigateUser(Routes.STORE));
 
         // 큰 카드 클릭 → 상세 페이지
         groupPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                NavigateUser.goTo(new GroupDetailPanel());
+                // TODO: 그룹핑 상세 페이지로 이동
             }
         });
-    }
 
-    /* ===== 스타일 함수 (복사본) ===== */
-
-    private static JButton createNavButton(String text, boolean selected) {
-        JButton btn = new JButton(text);
-        btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
-        btn.setFont(NORMAL_FONT);
-        if (selected) {
-            btn.setBackground(WHITE);
-            btn.setForeground(POS_GREEN);
-        } else {
-            btn.setBackground(POS_GREEN);
-            btn.setForeground(WHITE);
-        }
-        return btn;
+        root.add(center, BorderLayout.CENTER);
+        return root;
     }
 
     private static void styleFlatButton(JButton btn) {
@@ -116,7 +101,6 @@ public class GroupListPanel extends UserLayout {
         btn.setFont(NORMAL_FONT);
         btn.setBackground(BACKGROUND_BUTTON);
         btn.setForeground(TEXT_PRIMARY_COLOR);
-        Border padding = BorderFactory.createEmptyBorder(8, 8, 8, 8);
-        btn.setBorder(padding);
+        btn.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
     }
 }

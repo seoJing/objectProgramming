@@ -27,6 +27,8 @@ public final class Routes {
     public static final String STORE = "STORE";
     public static final String SETTING = "SETTING";
     public static final String GROUP = "GROUP";
+    public static final String GROUP_LIST = "GROUP_LIST";
+    public static final String GROUP_DETAIL = "GROUP_DETAIL";
     public static final String STORE_DETAIL = "STORE_DETAIL";
 
 
