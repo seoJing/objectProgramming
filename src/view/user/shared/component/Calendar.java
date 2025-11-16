@@ -17,7 +17,7 @@ public class Calendar extends JPanel {
     private int gridGap;
     private Insets padding;
     private final JLabel title = new JLabel("", SwingConstants.CENTER);
-    private final JPanel grid = new JPanel(new GridLayout(0, 7, 4, 4));
+    private final JPanel grid;
 
     public Calendar(LocalDate initial, Consumer<LocalDate> onPick) {
         this(initial, onPick, 44, 8, new Insets(12, 12, 12, 12)); // 기본값
@@ -34,11 +34,12 @@ public class Calendar extends JPanel {
         setBorder(new EmptyBorder(padding));
 
         this.ym = YearMonth.from(initial);
+        this.grid = createGridPanel();
 
         setLayout(new BorderLayout(8, 8));
         setOpaque(true);
         setBackground(UIConstants.NAV_BACKGROUND_COLOR);
-        setBorder(UIConstants.TOP_PANEL_BORDER);
+        setBorder(UIConstants.TOP_PANEL_CAL_BORDER);
 
         // 헤더(월 이동)
         JPanel head = new JPanel(new BorderLayout());
@@ -46,8 +47,14 @@ public class Calendar extends JPanel {
 
         JButton prev = new JButton("◀");
         JButton next = new JButton("▶");
-        prev.addActionListener(e -> { ym = ym.minusMonths(1); rebuild(); });
-        next.addActionListener(e -> { ym = ym.plusMonths(1);  rebuild(); });
+        prev.addActionListener(e -> {
+            ym = ym.minusMonths(1);
+            rebuild();
+        });
+        next.addActionListener(e -> {
+            ym = ym.plusMonths(1);
+            rebuild();
+        });
 
         title.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
         head.add(prev, BorderLayout.WEST);
@@ -89,10 +96,10 @@ public class Calendar extends JPanel {
         int len = ym.lengthOfMonth();
         for (int d=1; d<=len; d++) {
             LocalDate date = ym.atDay(d);
-            JButton b = new JButton(String.valueOf(d));
+            JButton b = makeDayButton(d, date);
             b.setFocusPainted(false);
             b.setFont(UIConstants.NORMAL_FONT);
-            b.addActionListener(e -> onPick.accept(date));  // ★ 날짜 선택 콜백
+            b.addActionListener(e -> onPick.accept(date));  // 날짜 선택 콜백
             grid.add(b);
         }
 
@@ -109,7 +116,8 @@ public class Calendar extends JPanel {
         JButton b = new JButton(String.valueOf(day));
         b.setFocusPainted(false);
         b.setFont(UIConstants.NORMAL_FONT);
-        Dimension d = new Dimension(cellSize, cellSize);     // ★ 여기
+        b.setMargin(UIConstants.ZERO_INSETS);
+        Dimension d = new Dimension(cellSize, cellSize);
         b.setPreferredSize(d);
         b.setMinimumSize(d);
         b.setMaximumSize(d);
@@ -118,7 +126,7 @@ public class Calendar extends JPanel {
     }
 
     private JPanel createGridPanel() {
-        JPanel grid = new JPanel(new GridLayout(0, 7, gridGap, gridGap)); // ★ 여기
+        JPanel grid = new JPanel(new GridLayout(0, 7, gridGap, gridGap));
         grid.setOpaque(false);
         return grid;
     }
