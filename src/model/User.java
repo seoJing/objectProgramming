@@ -5,22 +5,24 @@ import java.util.List;
 
 public class User {
 
-    private final String id;
-    private final String passwordHash;      // 해시된 비밀번호 
+    // ================ Fields =================
+    private String id;
+    private String password;
     private String name;
     private String gender;
     private int age;
     private String occupation;
     private String residence;
     private String phoneNumber;
-    private final boolean admin;
+    private boolean admin;
 
     private final List<Account> accountList;
     private final Ledger ledger;
 
+    // ================ Constructor =================
     public User(
             String id,
-            String passwordHash,
+            String password,
             String name,
             String gender,
             int age,
@@ -30,7 +32,7 @@ public class User {
             boolean admin
     ) {
         this.id = id;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.name = name;
         this.gender = gender;
         this.age = age;
@@ -38,18 +40,19 @@ public class User {
         this.residence = residence;
         this.phoneNumber = phoneNumber;
         this.admin = admin;
+
         this.accountList = new ArrayList<>();
         this.ledger = new Ledger();
     }
 
-    // ===================== Getter =====================
+    // ================ Getter =================
 
     public String getId() {
         return id;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
     public String getName() {
@@ -88,7 +91,7 @@ public class User {
         return ledger;
     }
 
-    // ===================== Setter =====================
+    // ================ Setter =================
 
     public void setName(String name) {
         this.name = name;
@@ -114,22 +117,5 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    // ===================== Business Logic =====================
-
-    public void addAccount(Account account) {
-        accountList.add(account);
-    }
-
-    public void removeAccount(Account account) {
-        accountList.remove(account);
-    }
-
-    public Account getAccountByNumber(String accountNumber) {
-        for (Account account : accountList) {
-            if (account.getAccountNumber().equals(accountNumber)) {
-                return account;
-            }
-        }
-        return null;
-    }
+    // ================ Business Logic (확장 가능) =================
 }

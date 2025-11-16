@@ -94,6 +94,16 @@ public class LoginPanel extends JPanel {
         String id = idField.getText().trim();
         String pw = new String(passwordField.getPassword());
 
+/*
+로그인 성공 시 SessionManager에 사용자 정보 저장
+
+로그인 여부/관리자 여부를 SessionManager가 판단
+
+로그아웃하면 SessionManager가 모든 상태를 초기화
+
+UI는 SessionManager만 보고 로그인 상태를 다룸
+→ 로그인 로직이 한 곳에 모임 (Single Source of Truth)
+*/
         try {
             User user = authService.login(id, pw);
 

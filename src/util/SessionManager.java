@@ -3,6 +3,8 @@ package util;
 import model.Account;
 import model.SubscriptionService;
 import model.User;
+import model.Transaction;
+import java.time.LocalDate;
 
 public class SessionManager {
 
@@ -11,6 +13,8 @@ public class SessionManager {
     private User currentUser;
     private SubscriptionService selectedSubscription;
     private Account selectedAccount;
+    private Transaction selectedTransaction;
+    private LocalDate selectedDate;
 
     private SessionManager() {}
 
@@ -66,4 +70,15 @@ public class SessionManager {
     public void setSelectedSubscription(SubscriptionService subscription) {
         this.selectedSubscription = subscription;
     }
+
+    public void setSelectedTransaction(Transaction transaction) {
+        this.selectedTransaction = transaction;
+    }
+
+    public Transaction getSelectedTransaction() {
+        return selectedTransaction;
+    }
+
+    public void setSelectedDate(LocalDate d) { this.selectedDate = d; }
+    public LocalDate getSelectedDate() { return selectedDate; }
 }

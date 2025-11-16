@@ -1,8 +1,12 @@
 package view.layout;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.RenderingHints;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -17,55 +21,123 @@ public class UserLayout extends BaseLayout {
 
     @Override
     protected JPanel createHeader() {
-        JPanel header = new JPanel(new BorderLayout());
+        JPanel header = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // 하단에 퍼진 그림자 효과
+                int shadowHeight = 8;
+                for (int i = 0; i < shadowHeight; i++) {
+                    float alpha = (float) (0.15 * (1 - (i / (float) shadowHeight)));
+                    g2d.setColor(new Color(0, 0, 0, (int)(alpha * 255)));
+                    g2d.drawLine(0, getHeight() - shadowHeight + i, getWidth(), getHeight() - shadowHeight + i);
+                }
+            }
+        };
         header.setPreferredSize(UIConstants.HEADER_SIZE);
-        header.setBackground(UIConstants.USER_HEADER_COLOR);
+        header.setBackground(UIConstants.HEADER_BACKGROUND_COLOR);
         header.setBorder(UIConstants.HEADER_PADDING);
 
-        JLabel titleLabel = new JLabel("구독 관리형 가계부");
+        // 중앙: 타이틀
+        JLabel titleLabel = new JLabel("subMate");
         titleLabel.setFont(UIConstants.TITLE_FONT);
-        titleLabel.setForeground(UIConstants.WHITE);
-        header.add(titleLabel, BorderLayout.WEST);
+        titleLabel.setForeground(UIConstants.USER_HEADER_COLOR);
+        header.add(titleLabel, BorderLayout.CENTER);
 
-        JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        userPanel.setOpaque(false);
+        // 우측: 알람, 설정, 사용자 정보, 로그아웃
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        rightPanel.setOpaque(false);
+
+        // 알람 버튼
+        JButton alertBtn = new JButton("알람");
+        alertBtn.setFont(UIConstants.NORMAL_FONT);
+        alertBtn.setFocusPainted(false);
+        alertBtn.setBorderPainted(false);
+        alertBtn.setBackground(UIConstants.HEADER_BACKGROUND_COLOR);
+        alertBtn.setOpaque(false);
+        alertBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        alertBtn.addActionListener(e -> {
+            Router.getInstance().navigateUser(Routes.ALERT);
+        });
+        rightPanel.add(alertBtn);
+
+        // 설정 버튼
+        JButton settingBtn = new JButton("설정");
+        settingBtn.setFont(UIConstants.NORMAL_FONT);
+        settingBtn.setFocusPainted(false);
+        settingBtn.setBorderPainted(false);
+        settingBtn.setBackground(UIConstants.HEADER_BACKGROUND_COLOR);
+        settingBtn.setOpaque(false);
+        settingBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        settingBtn.addActionListener(e -> {
+            Router.getInstance().navigateUser(Routes.SETTING);
+        });
+        rightPanel.add(settingBtn);
 
         if (SessionManager.getInstance().isLoggedIn()) {
             String userName = SessionManager.getInstance().getCurrentUser().getName();
             JLabel userLabel = new JLabel(userName + "님");
-            userLabel.setForeground(UIConstants.WHITE);
+            userLabel.setForeground(UIConstants.TEXT_SECONDARY_COLOR);
             userLabel.setFont(UIConstants.NORMAL_FONT);
-            userPanel.add(userLabel);
+            rightPanel.add(userLabel);
 
             JButton logoutBtn = new JButton("로그아웃");
             logoutBtn.setFont(UIConstants.SMALL_FONT);
             logoutBtn.setFocusPainted(false);
+            logoutBtn.setForeground(UIConstants.TEXT_SECONDARY_COLOR);
+            logoutBtn.setBackground(UIConstants.HEADER_BACKGROUND_COLOR);
+            logoutBtn.setOpaque(false);
+            logoutBtn.setBorderPainted(false);
+            logoutBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             logoutBtn.addActionListener(e -> {
                 SessionManager.getInstance().logout();
                 Router.getInstance().navigateTo(Routes.LOGIN);
             });
-            userPanel.add(logoutBtn);
+            rightPanel.add(logoutBtn);
         }
 
-        header.add(userPanel, BorderLayout.EAST);
+        header.add(rightPanel, BorderLayout.EAST);
 
         return header;
     }
 
     @Override
     protected JPanel createNavigation() {
+        // 그림자를 위한 외부 패널
+        JPanel shadowPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // 상단에 퍼진 그림자 효과
+                int shadowHeight = 8;
+                for (int i = 0; i < shadowHeight; i++) {
+                    float alpha = (float) (0.15 * (1 - (i / (float) shadowHeight)));
+                    g2d.setColor(new Color(0, 0, 0, (int)(alpha * 255)));
+                    g2d.drawLine(0, i, getWidth(), i);
+                }
+            }
+        };
+        shadowPanel.setBackground(new Color(0, 0, 0, 0)); // 투명 배경
+        shadowPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 0, 0, 0));
+
+        // 내부 네비게이션 패널
         JPanel nav = new JPanel(new GridLayout(1, 5));
         nav.setPreferredSize(UIConstants.NAV_SIZE);
         nav.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
 
-
-        // 추후 아이콘으로 대체 예정
         nav.add(createNavButton("메인", Routes.MAIN));
         nav.add(createNavButton("계좌", Routes.ACCOUNT));
         nav.add(createNavButton("구독", Routes.SUBSCRIPTION));
         nav.add(createNavButton("스토어", Routes.STORE));
 
-        return nav;
+        shadowPanel.add(nav, BorderLayout.CENTER);
+        return shadowPanel;
     }
 
     private JButton createNavButton(String text, String screen) {
