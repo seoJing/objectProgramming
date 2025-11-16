@@ -5,14 +5,14 @@ import model.SubscriptionService;
 import model.User;
 
 public class SessionManager {
+
     private static SessionManager instance;
 
     private User currentUser;
     private SubscriptionService selectedSubscription;
     private Account selectedAccount;
 
-    private SessionManager() {
-    }
+    private SessionManager() {}
 
     public static SessionManager getInstance() {
         if (instance == null) {
@@ -21,12 +21,18 @@ public class SessionManager {
         return instance;
     }
 
-    public void setCurrentUser(User user) {
+    // ================== 로그인 / 로그아웃 ==================
+
+    public void login(User user) {
         this.currentUser = user;
+        this.selectedSubscription = null;
+        this.selectedAccount = null;
     }
 
-    public User getCurrentUser() {
-        return currentUser;
+    public void logout() {
+        this.currentUser = null;
+        this.selectedSubscription = null;
+        this.selectedAccount = null;
     }
 
     public boolean isLoggedIn() {
@@ -37,25 +43,27 @@ public class SessionManager {
         return currentUser != null && currentUser.isAdmin();
     }
 
-    public void logout() {
-        currentUser = null;
-        selectedSubscription = null;
-        selectedAccount = null;
+    // ================== Getter ==================
+
+    public User getCurrentUser() {
+        return currentUser;
     }
 
-    public void setSelectedSubscription(SubscriptionService subscription) {
-        this.selectedSubscription = subscription;
+    public Account getSelectedAccount() {
+        return selectedAccount;
     }
 
     public SubscriptionService getSelectedSubscription() {
         return selectedSubscription;
     }
 
+    // ================== Setter ==================
+
     public void setSelectedAccount(Account account) {
         this.selectedAccount = account;
     }
 
-    public Account getSelectedAccount() {
-        return selectedAccount;
+    public void setSelectedSubscription(SubscriptionService subscription) {
+        this.selectedSubscription = subscription;
     }
 }

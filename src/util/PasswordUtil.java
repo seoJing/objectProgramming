@@ -4,16 +4,15 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest; //자바에서 SHA-256, SHA-512, MD5 같은 해시 알고리즘을 구현한 클래스
 import java.security.NoSuchAlgorithmException;
 
-/**
- * 비밀번호 해시 유틸리티
- * - salt로 userId를 사용
- * - SHA-256 기반
- */
-public class PasswordUtil {
+public final class PasswordUtil {
+
+    private PasswordUtil() {
+        // 유틸 클래스 → 인스턴스 생성 방지
+    }
 
     public static String hashPasswordWithIdSalt(String userId, String rawPassword) {
         String salted = userId + ":" + rawPassword;
-        return sha256(salted);    //salted 문자열 전체를 SHA-256으로 해싱
+        return sha256(salted);
     }
 
     private static String sha256(String input) {

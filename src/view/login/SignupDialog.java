@@ -4,24 +4,9 @@ import model.User;
 import util.AuthService;
 import util.UIConstants;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JPasswordField;
-import javax.swing.SwingConstants;
-import java.awt.BorderLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
+import javax.swing.*;
+import java.awt.*;
 
-/**
- * 회원가입 다이얼로그
- * - ID, 비밀번호, 이름, 성별, 나이, 직업, 거주지, 전화번호, 관리자 여부
- * - 가입 시 AuthService.register(...) 호출 → 내부에서 비밀번호 해시 처리
- */
 public class SignupDialog extends JDialog {
 
     private final AuthService authService;
@@ -41,7 +26,7 @@ public class SignupDialog extends JDialog {
         super(owner, "회원가입", true);
         this.authService = authService;
 
-        setSize(400, 450);
+        setSize(420, 480);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
@@ -49,15 +34,15 @@ public class SignupDialog extends JDialog {
     }
 
     private void initUI() {
-        // 제목
+        // ====================== Title ======================
         JLabel titleLabel = new JLabel("회원가입");
         titleLabel.setFont(UIConstants.LARGE_FONT);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(titleLabel, BorderLayout.NORTH);
 
-        // 폼
-        JPanel formPanel = new JPanel(new GridLayout(0, 2, 8, 8));
-        formPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // ====================== Form Panel ======================
+        JPanel formPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
         idField = new JTextField();
         pwField = new JPasswordField();
@@ -70,49 +55,28 @@ public class SignupDialog extends JDialog {
         phoneField = new JTextField();
         adminCheck = new JCheckBox("관리자 계정 여부");
 
-        formPanel.add(new JLabel("아이디"));
-        formPanel.add(idField);
-
-        formPanel.add(new JLabel("비밀번호"));
-        formPanel.add(pwField);
-
-        formPanel.add(new JLabel("비밀번호 확인"));
-        formPanel.add(pwConfirmField);
-
-        formPanel.add(new JLabel("이름"));
-        formPanel.add(nameField);
-
-        formPanel.add(new JLabel("성별"));
-        formPanel.add(genderField);
-
-        formPanel.add(new JLabel("나이"));
-        formPanel.add(ageField);
-
-        formPanel.add(new JLabel("직업"));
-        formPanel.add(occupationField);
-
-        formPanel.add(new JLabel("거주지"));
-        formPanel.add(residenceField);
-
-        formPanel.add(new JLabel("전화번호"));
-        formPanel.add(phoneField);
+        addRow(formPanel, "아이디", idField);
+        addRow(formPanel, "비밀번호", pwField);
+        addRow(formPanel, "비밀번호 확인", pwConfirmField);
+        addRow(formPanel, "이름", nameField);
+        addRow(formPanel, "성별", genderField);
+        addRow(formPanel, "나이", ageField);
+        addRow(formPanel, "직업", occupationField);
+        addRow(formPanel, "거주지", residenceField);
+        addRow(formPanel, "전화번호", phoneField);
 
         formPanel.add(new JLabel(" "));
         formPanel.add(adminCheck);
 
         add(formPanel, BorderLayout.CENTER);
 
-        // 버튼 영역
+        // ====================== Buttons ======================
         JPanel buttonPanel = new JPanel();
-        JButton submitButton = new JButton("가입");
-        JButton cancelButton = new JButton("취소");
 
-        submitButton.setFont(UIConstants.NORMAL_FONT);
-        submitButton.setFocusPainted(false);
+        JButton submitButton = createButton("가입");
+        JButton cancelButton = createButton("취소");
+
         submitButton.addActionListener(e -> onSubmit());
-
-        cancelButton.setFont(UIConstants.NORMAL_FONT);
-        cancelButton.setFocusPainted(false);
         cancelButton.addActionListener(e -> dispose());
 
         buttonPanel.add(submitButton);
@@ -121,34 +85,53 @@ public class SignupDialog extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    private void onSubmit() {
-        String id = idField.getText().trim();
-        String pw = new String(pwField.getPassword());
-        String pw2 = new String(pwConfirmField.getPassword());
-        String name = nameField.getText().trim();
-        String gender = genderField.getText().trim();
-        String ageText = ageField.getText().trim();
-        String occupation = occupationField.getText().trim();
-        String residence = residenceField.getText().trim();
-        String phone = phoneField.getText().trim();
-        boolean isAdmin = adminCheck.isSelected();
+    private void addRow(JPanel panel, String labelText, JComponent component) {
+        panel.add(new JLabel(labelText));
+        panel.add(component);
+    }
 
-        try {
-            if (!pw.equals(pw2)) {
-                throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+    private JButton createButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setFont(UIConstants.NORMAL_FONT);
+        btn.setFocusPainted(false);
+        btn.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
+
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn.setBackground(UIConstants.NAV_HOVER_COLOR);
             }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btn.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
+            }
+        });
+
+        return btn;
+    }
+
+    private void onSubmit() {
+        try {
+            String id = idField.getText().trim();
+            String pw = new String(pwField.getPassword());
+            String pw2 = new String(pwConfirmField.getPassword());
+            String name = nameField.getText().trim();
+            String gender = genderField.getText().trim();
+            String ageText = ageField.getText().trim();
+            String occupation = occupationField.getText().trim();
+            String residence = residenceField.getText().trim();
+            String phone = phoneField.getText().trim();
+            boolean isAdmin = adminCheck.isSelected();
+
+            if (!pw.equals(pw2)) {
+                throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            }
+
             int age = Integer.parseInt(ageText);
 
             User newUser = authService.register(
-                    id,
-                    pw,          // 🔐 내부에서 해시 처리
-                    name,
-                    gender,
-                    age,
-                    occupation,
-                    residence,
-                    phone,
-                    isAdmin
+                    id, pw, name, gender, age, occupation, residence, phone, isAdmin
             );
 
             JOptionPane.showMessageDialog(
@@ -157,12 +140,13 @@ public class SignupDialog extends JDialog {
                     "가입 성공",
                     JOptionPane.INFORMATION_MESSAGE
             );
+
             dispose();
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(
                     this,
-                    "나이는 숫자로 입력해주세요.",
+                    "나이는 숫자로 입력해야 합니다.",
                     "입력 오류",
                     JOptionPane.ERROR_MESSAGE
             );
