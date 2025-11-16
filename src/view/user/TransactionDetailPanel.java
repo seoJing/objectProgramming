@@ -3,112 +3,108 @@ package view.user;
 import model.Account;
 import model.Transaction;
 import model.TransactionType;
-import util.Router;
-import util.Routes;
+import service.AccountService; // 이미 프로젝트에 있을 거라 가정
 import util.SessionManager;
 import util.UIConstants;
 import view.layout.UserLayout;
+import view.user.shared.component.PanelHeader;
+import view.user.shared.component.TransactionHistoryList;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 public class TransactionDetailPanel extends UserLayout {
 
-    private static final DateTimeFormatter FULL =
-            DateTimeFormatter.ofPattern("yyyy.MM.dd (E) HH:mm", java.util.Locale.KOREAN);
-
-    private JLabel bankAndNumber;
-    private JLabel when;
-    private JLabel merchant;
-    private JLabel category;
-    private JLabel memo;
-    private JLabel amount;
-    private JLabel balanceAfter;
-
     public TransactionDetailPanel() {
         super();
-        setContent(createContent());
-        loadDataFromSession();
+    }
 
-        // 보일 때마다 세션에서 다시 읽기 (캐시되어도 OK)
-        this.addComponentListener(new java.awt.event.ComponentAdapter() {
-            @Override public void componentShown(java.awt.event.ComponentEvent e) {
-                loadDataFromSession();
-            }
-        });
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (visible) {
+            setContent(createContent());
+        }
     }
 
     private JPanel createContent() {
-        JPanel root = new JPanel(new BorderLayout(0, 0));
-        root.setBackground(UIConstants.PANEL_BG);
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(Color.WHITE);
 
-        // 상단 바
-        JPanel top = new JPanel(new BorderLayout());
-        top.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
-        top.setBorder(UIConstants.TOP_PANEL_BORDER);
+        Account account = SessionManager.getInstance().getSelectedAccount();
+        Transaction selected = SessionManager.getInstance().getSelectedTransaction();
 
-        JButton back = new JButton("x");
-        back.addActionListener(e -> Router.getInstance().navigateUser(Routes.TRANSACTION));
-        top.add(back, BorderLayout.EAST);
+        // 헤더
+        root.add(new PanelHeader("거래 상세"), BorderLayout.NORTH);
 
-        JLabel title = new JLabel("거래 상세");
-        title.setFont(UIConstants.TITLE_FONT);
-        title.setForeground(Color.DARK_GRAY);
-        top.add(title, BorderLayout.CENTER);
+        if (account == null || selected == null) {
+            JPanel empty = new JPanel();
+            empty.setBackground(Color.WHITE);
+            empty.setLayout(new BoxLayout(empty, BoxLayout.Y_AXIS));
 
-        root.add(top, BorderLayout.NORTH);
+            JLabel msg = new JLabel("선택된 거래가 없습니다.");
+            msg.setFont(UIConstants.NORMAL_FONT);
+            msg.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // 본문
-        JPanel body = new JPanel();
-        body.setOpaque(false);
-        body.setLayout(new GridBagLayout());
-        body.setBorder(new EmptyBorder(16, 20, 24, 20));
+            empty.add(Box.createVerticalGlue());
+            empty.add(msg);
+            empty.add(Box.createVerticalGlue());
 
-        bankAndNumber = new JLabel(); bankAndNumber.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
-        when          = new JLabel(); when.setFont(UIConstants.NORMAL_FONT);
-        merchant      = new JLabel(); merchant.setFont(UIConstants.NORMAL_FONT);
-        category      = new JLabel(); category.setFont(UIConstants.NORMAL_FONT);
-        memo          = new JLabel(); memo.setFont(UIConstants.NORMAL_FONT);
-        amount        = new JLabel(); amount.setFont(UIConstants.LARGE_FONT);
-        balanceAfter  = new JLabel(); balanceAfter.setFont(UIConstants.NORMAL_FONT);
+            root.add(empty, BorderLayout.CENTER);
+            return root;
+        }
 
-        GridBagConstraints g = new GridBagConstraints();
-        g.gridx=0; g.gridy=0; g.anchor=GridBagConstraints.WEST; g.insets=UIConstants.TOP_GAP_M;
-        body.add(merchant, g);
-        g.gridy++; g.insets=new Insets(16,0,6,0); body.add(amount, g);
-        g.gridy++; body.add(category, g);
-        g.gridy++; body.add(bankAndNumber, g);
-        g.gridy++; body.add(when, g);
-        g.gridy++; body.add(memo, g);
-        g.gridy++; g.insets= UIConstants.ZERO_INSETS;  body.add(balanceAfter, g);
+        // ===== 상단(제목 + 큰 금액) + 카드 하나 =====
+        JPanel center = new JPanel(new BorderLayout());
+        center.setBackground(Color.WHITE);
+        center.setBorder(BorderFactory.createEmptyBorder(32, 48, 24, 48));
 
-        root.add(body, BorderLayout.CENTER);
+        // 1) 제목 + 큰 금액
+        center.add(createTitleSection(selected), BorderLayout.NORTH);
+
+        // 2) 아래 카드 리스트 (선택된 거래 1개만)
+        List<Transaction> list = Collections.singletonList(selected);
+        TransactionHistoryList historyList = new TransactionHistoryList(list);
+        center.add(historyList, BorderLayout.CENTER);
+
+        root.add(center, BorderLayout.CENTER);
+
         return root;
     }
 
-    private void loadDataFromSession() {
-        Account acc = SessionManager.getInstance().getSelectedAccount();
-        Transaction tx = SessionManager.getInstance().getSelectedTransaction();
-        if (acc == null || tx == null) {
-            bankAndNumber.setText("선택된 거래가 없습니다.");
-            return;
-        }
+    /** 상단의 가맹점 이름 + 큰 금액 영역 */
+    private JComponent createTitleSection(Transaction tx) {
+        JPanel box = new JPanel();
+        box.setBackground(Color.WHITE);
+        box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
 
-        merchant.setText(safe(tx.getLocation()));
+        // 가맹점 이름
+        JLabel merchant = new JLabel(safe(tx.getLocation()));
+        merchant.setFont(UIConstants.LARGE_FONT);
+        merchant.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // 금액 (부호 + 색상)
         boolean deposit = (tx.getType() == TransactionType.INCOME);
         String sign = deposit ? "+" : "-";
-        amount.setText("금액: " + sign + UIConstants.money(tx.getAmount()) + "원");
-        amount.setForeground(deposit ? UIConstants.POS_GREEN : UIConstants.TEXT_DEFAULT);
-        category.setText("카테고리: " + safe(tx.getCategory()));
-        when.setText("일시: " + tx.getDateTime().format(FULL));
-        bankAndNumber.setText(acc.getBank() + " / " + acc.getAccountNumber());
-        memo.setText("메모: " + safe(tx.getMemo()));
+        int absAmount = Math.abs(tx.getAmount());
 
+        JLabel amount = new JLabel(sign + UIConstants.money(absAmount) + "원");
+        amount.setFont(UIConstants.TITLE_FONT);
+        amount.setForeground(deposit ? UIConstants.POS_GREEN : UIConstants.TEXT_PRIMARY_COLOR);
+        amount.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        box.add(merchant);
+        box.add(Box.createVerticalStrut(8));
+        box.add(amount);
+        box.add(Box.createVerticalStrut(24));
 
+        return box;
     }
 
-    private static String safe(String s){ return (s==null) ? "" : s; }
+    private static String safe(String s) {
+        return (s == null) ? "" : s;
+    }
 }
