@@ -185,6 +185,12 @@ public class AllTransactionsPanel extends UserLayout {
                 SessionManager.getInstance().setSelectedTransaction(tx);
                 Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL);
             }
+            @Override public void mouseEntered(java.awt.event.MouseEvent e) {
+                row.setBackground(row.getBackground().darker());
+            }
+            @Override public void mouseExited(java.awt.event.MouseEvent e) {
+                row.setBackground(UIConstants.TX_ROW_BG);
+            }
         });
 
         GridBagConstraints gc = new GridBagConstraints();

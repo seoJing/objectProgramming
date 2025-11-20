@@ -147,14 +147,6 @@ public class TransactionPanel extends UserLayout {
         return root;
     }
 
-    public void forceSelect(Account a) {
-        if (a == null) return;
-        this.initialSelection = a; // 이후에도 유지
-        if (accountCombo.getItemCount() == 0) return; // 아직 로딩 전이면 on-show에서 처리
-        accountCombo.setSelectedItem(a);
-        SessionManager.getInstance().setSelectedAccount(a);
-        rebuildList(a);
-    }
 
     /** 최초 로딩: 계좌 채우기 + 선택 유지 */
     private void loadAccountsAndData() {
