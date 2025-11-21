@@ -68,9 +68,5 @@ public class Account {
     public List<Transaction> getTransactionList() {
         return transactionList;
     }
-
-        public void addTransaction(Transaction transaction) {
-            this.transactionList.add(transaction);
-    }
 }
 
