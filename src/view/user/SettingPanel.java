@@ -8,9 +8,9 @@ import javax.swing.JPanel;
 import util.UIConstants;
 import view.layout.UserLayout;
 
-public class settingPanel extends UserLayout {
+public class SettingPanel extends UserLayout {
 
-    public settingPanel() {
+    public SettingPanel() {
         super();
 
         JPanel content = createContent();

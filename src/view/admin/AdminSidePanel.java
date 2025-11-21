@@ -21,6 +21,7 @@ public class AdminSidePanel extends JPanel {
         contentContainer.add(new AdminStatisticsPanel(), Routes.ADMIN_STATISTICS);
         contentContainer.add(new AdminSubscriptionMachinePanel(), Routes.ADMIN_SUBSCRIPTION_MACHINE);
         contentContainer.add(new AdminSubscriptionManagePanel(), Routes.ADMIN_SUBSCRIPTION_MANAGE);
+        contentContainer.add(new AdminTransactionPanel(), Routes.ADMIN_TRANSACTION_MANAGE);
 
         add(contentContainer, BorderLayout.CENTER);
 

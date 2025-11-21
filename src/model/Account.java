@@ -20,6 +20,31 @@ public class Account {
         this.userId = userId;
     }
 
+    public void addTransaction(Transaction tx) {
+        this.currentBalance += tx.signedAmount();
+        tx.setBalanceAfter(this.currentBalance);
+        this.transactionList.add(tx);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Account)) return false;
+        Account a = (Account) o;
+        return java.util.Objects.equals(accountNumber, a.accountNumber)
+                && java.util.Objects.equals(bank, a.bank);
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(accountNumber, bank);
+    }
+
+    @Override
+    public String toString() {
+        return bank + " / " + accountNumber;
+    }
+
     public String getAccountNumber() {
         return accountNumber;
     }
@@ -48,3 +73,4 @@ public class Account {
             this.transactionList.add(transaction);
     }
 }
+
