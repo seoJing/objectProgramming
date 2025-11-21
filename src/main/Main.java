@@ -24,5 +24,10 @@ public class Main {
         Account a1 = new Account("111-222-333", "신한은행", 200_000);
         u.addAccount(a1);                    // 유저에 계좌 연결
         SessionManager.getInstance().setCurrentUser(u);   // ★ 현재 사용자 등록
+
+        //임시로 유저 보는 코드
+        model.UserList.getInstance().add(u);
+
+
     }
 }
