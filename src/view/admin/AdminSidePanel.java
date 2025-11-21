@@ -1,33 +1,37 @@
 package view.admin;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-
-import javax.swing.JPanel;
-
-import util.Routes;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class AdminSidePanel extends JPanel {
-    private CardLayout cardLayout;
-    private JPanel contentContainer;
 
-    public AdminSidePanel() {
-        setLayout(new BorderLayout());
+    public AdminSidePanel(ActionListener listener) {
+        setLayout(new GridLayout(5, 1));
+        setPreferredSize(new Dimension(180, 600));
 
-        cardLayout = new CardLayout();
-        contentContainer = new JPanel(cardLayout);
+        JButton btnMain = new JButton("메인");
+        JButton btnUsers = new JButton("사용자 조회");
+        JButton btnSubscription = new JButton("구독 관리");
+        JButton btnStatistics = new JButton("통계 보기");
+        JButton btnLogout = new JButton("로그아웃");
 
-        contentContainer.add(new AdminMainPanel(), Routes.ADMIN_MAIN);
-        contentContainer.add(new AdminStatisticsPanel(), Routes.ADMIN_STATISTICS);
-        contentContainer.add(new AdminSubscriptionMachinePanel(), Routes.ADMIN_SUBSCRIPTION_MACHINE);
-        contentContainer.add(new AdminSubscriptionManagePanel(), Routes.ADMIN_SUBSCRIPTION_MANAGE);
+        btnMain.setActionCommand("MAIN");
+        btnUsers.setActionCommand("USER_VIEW");
+        btnSubscription.setActionCommand("SUB_MANAGE");
+        btnStatistics.setActionCommand("STATISTICS");
+        btnLogout.setActionCommand("LOGOUT");
 
-        add(contentContainer, BorderLayout.CENTER);
+        btnMain.addActionListener(listener);
+        btnUsers.addActionListener(listener);
+        btnSubscription.addActionListener(listener);
+        btnStatistics.addActionListener(listener);
+        btnLogout.addActionListener(listener);
 
-        cardLayout.show(contentContainer, Routes.ADMIN_MAIN);
-    }
-
-    public void switchTo(String screen) {
-        cardLayout.show(contentContainer, screen);
+        add(btnMain);
+        add(btnUsers);
+        add(btnSubscription);
+        add(btnStatistics);
+        add(btnLogout);
     }
 }

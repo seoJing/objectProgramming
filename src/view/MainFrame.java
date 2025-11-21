@@ -1,20 +1,25 @@
 package view;
 
-import java.awt.CardLayout;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
+import model.UserList;
 import util.Router;
 import util.Routes;
 import util.UIConstants;
-import view.admin.AdminSidePanel;
+import view.admin.*;
 import view.login.LoginPanel;
 import view.user.UserSidePanel;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements ActionListener {
+
     private CardLayout cardLayout;
     private JPanel container;
+
+    private JPanel adminContent;   // ⭐ 관리자 내부 패널 표시할 영역
 
     public MainFrame() {
         setTitle("구독 관리형 가계부");
@@ -25,12 +30,30 @@ public class MainFrame extends JFrame {
         cardLayout = new CardLayout();
         container = new JPanel(cardLayout);
 
+        // ======================
+        // USER 화면
+        // ======================
         UserSidePanel userPanel = new UserSidePanel();
         Router.getInstance().setUserSidePanel(userPanel);
 
-        AdminSidePanel adminPanel = new AdminSidePanel();
-        Router.getInstance().setAdminSidePanel(adminPanel);
+        // ======================
+        // ADMIN 화면 (사이드 + 콘텐츠)
+        // ======================
+        JPanel adminPanel = new JPanel(new BorderLayout());
 
+        AdminSidePanel side = new AdminSidePanel(this); // ⭐ 버튼 이벤트 MainFrame으로 전달
+        adminContent = new JPanel(new CardLayout());
+
+        // 관리자 내부 패널 등록
+        adminContent.add(new AdminMainPanel(), "ADMIN_MAIN");
+        adminContent.add(new AdminUserView(UserList.getInstance()), "ADMIN_USER");
+        adminContent.add(new AdminSubscriptionManagePanel(), "ADMIN_SUB");
+        adminContent.add(new AdminStatisticsPanel(), "ADMIN_STATS");
+
+        adminPanel.add(side, BorderLayout.WEST);
+        adminPanel.add(adminContent, BorderLayout.CENTER);
+
+        // 등록
         container.add(new LoginPanel(), Routes.LOGIN);
         container.add(userPanel, Routes.USER);
         container.add(adminPanel, Routes.ADMIN);
@@ -40,15 +63,48 @@ public class MainFrame extends JFrame {
         cardLayout.show(container, Routes.LOGIN);
     }
 
+    // ⭐ 전체 화면 전환
     public void switchTo(String screen) {
         cardLayout.show(container, screen);
 
-        // Resize window based on screen type
         if (screen.equals(Routes.ADMIN)) {
             setSize(UIConstants.ADMIN_SIDE_WINDOW_WIDTH, UIConstants.ADMIN_SIDE_WINDOW_HEIGHT);
         } else if (screen.equals(Routes.USER)) {
             setSize(UIConstants.USER_SIDE_WINDOW_WIDTH, UIConstants.USER_SIDE_WINDOW_HEIGHT);
         }
-        setLocationRelativeTo(null);  // Center the window after resize
+        setLocationRelativeTo(null);
+    }
+
+    // ⭐ 관리자 내부 패널 전환
+    public void switchAdminContent(String target) {
+        CardLayout cl = (CardLayout) adminContent.getLayout();
+        cl.show(adminContent, target);
+    }
+
+    // ⭐ AdminSidePanel 버튼 Event 처리
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+
+            case "MAIN":
+                switchAdminContent("ADMIN_MAIN");
+                break;
+
+            case "USER_VIEW":
+                switchAdminContent("ADMIN_USER");
+                break;
+
+            case "SUB_MANAGE":
+                switchAdminContent("ADMIN_SUB");
+                break;
+
+            case "STATISTICS":
+                switchAdminContent("ADMIN_STATS");
+                break;
+
+            case "LOGOUT":
+                switchTo(Routes.LOGIN);
+                break;
+        }
     }
 }
