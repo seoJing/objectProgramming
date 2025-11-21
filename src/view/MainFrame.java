@@ -27,6 +27,9 @@ public class MainFrame extends JFrame implements ActionListener {
         setSize(UIConstants.USER_SIDE_WINDOW_WIDTH, UIConstants.USER_SIDE_WINDOW_HEIGHT);
         setLocationRelativeTo(null);
 
+        // Router 등록
+        Router.getInstance().setMainFrame(this);
+
         cardLayout = new CardLayout();
         container = new JPanel(cardLayout);
 
@@ -41,19 +44,19 @@ public class MainFrame extends JFrame implements ActionListener {
         // ======================
         JPanel adminPanel = new JPanel(new BorderLayout());
 
-        AdminSidePanel side = new AdminSidePanel(this); // ⭐ 버튼 이벤트 MainFrame으로 전달
+        AdminSidePanel side = new AdminSidePanel(this); // 버튼 이벤트 MainFrame으로 전달
         adminContent = new JPanel(new CardLayout());
 
         // 관리자 내부 패널 등록
-        adminContent.add(new AdminMainPanel(), "ADMIN_MAIN");
-        adminContent.add(new AdminUserView(UserList.getInstance()), "ADMIN_USER");
-        adminContent.add(new AdminSubscriptionManagePanel(), "ADMIN_SUB");
-        adminContent.add(new AdminStatisticsPanel(), "ADMIN_STATS");
+        adminContent.add(new AdminMainPanel(), Routes.ADMIN_MAIN);
+        adminContent.add(new AdminUserView(UserList.getInstance()), Routes.ADMIN_USERS);
+        adminContent.add(new AdminSubscriptionManagePanel(), Routes.ADMIN_SUB_MANAGE);
+        adminContent.add(new AdminStatisticsPanel(), Routes.ADMIN_STATISTICS);
 
         adminPanel.add(side, BorderLayout.WEST);
         adminPanel.add(adminContent, BorderLayout.CENTER);
 
-        // 등록
+        // container 등록
         container.add(new LoginPanel(), Routes.LOGIN);
         container.add(userPanel, Routes.USER);
         container.add(adminPanel, Routes.ADMIN);
@@ -63,7 +66,7 @@ public class MainFrame extends JFrame implements ActionListener {
         cardLayout.show(container, Routes.LOGIN);
     }
 
-    // ⭐ 전체 화면 전환
+    // 전체 화면 전환
     public void switchTo(String screen) {
         cardLayout.show(container, screen);
 
@@ -75,31 +78,31 @@ public class MainFrame extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
     }
 
-    // ⭐ 관리자 내부 패널 전환
+    // 관리자 내부 패널 전환
     public void switchAdminContent(String target) {
         CardLayout cl = (CardLayout) adminContent.getLayout();
         cl.show(adminContent, target);
     }
 
-    // ⭐ AdminSidePanel 버튼 Event 처리
+    // 이벤트 처리
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
 
             case "MAIN":
-                switchAdminContent("ADMIN_MAIN");
+                switchAdminContent(Routes.ADMIN_MAIN);
                 break;
 
             case "USER_VIEW":
-                switchAdminContent("ADMIN_USER");
+                switchAdminContent(Routes.ADMIN_USERS);
                 break;
 
             case "SUB_MANAGE":
-                switchAdminContent("ADMIN_SUB");
+                switchAdminContent(Routes.ADMIN_SUB_MANAGE);
                 break;
 
             case "STATISTICS":
-                switchAdminContent("ADMIN_STATS");
+                switchAdminContent(Routes.ADMIN_STATISTICS);
                 break;
 
             case "LOGOUT":

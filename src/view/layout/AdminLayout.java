@@ -54,13 +54,14 @@ public class AdminLayout extends BaseLayout {
 
     @Override
     protected JPanel createNavigation() {
-        JPanel nav = new JPanel(new GridLayout(1, 4));
+        JPanel nav = new JPanel(new GridLayout(1, 5));
         nav.setPreferredSize(UIConstants.NAV_SIZE);
         nav.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
 
         nav.add(createNavButton("메인", Routes.ADMIN_MAIN));
         nav.add(createNavButton("구독매칭", Routes.ADMIN_SUBSCRIPTION_MACHINE));
         nav.add(createNavButton("구독관리", Routes.ADMIN_SUBSCRIPTION_MANAGE));
+        nav.add(createNavButton("거래내역", Routes.ADMIN_TRANSACTION_MANAGE));
         nav.add(createNavButton("통계분석", Routes.ADMIN_STATISTICS));
 
         return nav;

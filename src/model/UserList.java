@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserList {
+
     private static UserList instance;
-    private List<User> users;
+    private final List<User> users;
 
     private UserList() {
         this.users = new ArrayList<>();
@@ -17,6 +18,8 @@ public class UserList {
         }
         return instance;
     }
+
+    // ===================== CRUD =====================
 
     public void add(User user) {
         if (user != null) {
@@ -32,6 +35,7 @@ public class UserList {
         if (id == null) {
             return null;
         }
+
         for (User user : users) {
             if (id.equals(user.getId())) {
                 return user;
@@ -40,16 +44,8 @@ public class UserList {
         return null;
     }
 
-    public User findByIdAndPassword(String id, String password) {
-        if (id == null || password == null) {
-            return null;
-        }
-        for (User user : users) {
-            if (id.equals(user.getId()) && password.equals(user.getPassword())) {
-                return user;
-            }
-        }
-        return null;
+    public boolean exists(String id) {
+        return findById(id) != null;
     }
 
     public List<User> getAll() {
@@ -58,10 +54,6 @@ public class UserList {
 
     public int size() {
         return users.size();
-    }
-
-    public boolean exists(String id) {
-        return findById(id) != null;
     }
 
     public void clear() {

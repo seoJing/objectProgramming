@@ -16,6 +16,7 @@ public class AdminSidePanel extends JPanel {
         JButton btnStatistics = new JButton("통계 보기");
         JButton btnLogout = new JButton("로그아웃");
 
+        // ⭐ 우리가 정의한 관리자 패널 이벤트 코드
         btnMain.setActionCommand("MAIN");
         btnUsers.setActionCommand("USER_VIEW");
         btnSubscription.setActionCommand("SUB_MANAGE");

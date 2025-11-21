@@ -1,47 +1,71 @@
 package model;
 
-public class Transaction {
-    private String type;
-    private int amount;
-    private String location;
-    private String date;
-    private String category;
-    private int balance;
+import java.time.LocalDateTime;
 
-    public Transaction(String type, int amount, String location, String date, String category, int balance) {
+import util.UIConstants;
+
+public class Transaction {
+
+    private final TransactionType type;    // 입금 / 출금
+    private final int amount;              // 항상 양수
+    private final String location;         // 거래 장소
+    private final String category;         // 카테고리(식비/쇼핑 등)
+    private final String memo;             // 메모
+    private final LocalDateTime dateTime;  // 거래 시각
+    private int balanceAfter;        // 거래 후 잔액
+    private Account account;         // 거래 계좌
+
+    public Transaction(TransactionType type, int amount,
+                       String location, String category, String memo,
+                       LocalDateTime dateTime, int balanceAfter, Account account) {
         this.type = type;
         this.amount = amount;
         this.location = location;
-        this.date = date;
         this.category = category;
-        this.balance = balance;
+        this.memo = memo;
+        this.dateTime = dateTime;
+        this.balanceAfter = balanceAfter;
+        this.account = account;
     }
 
-    public String getType() {
-        return type;
+    /** 수입이면 양수, 지출이면 음수 반환 */
+    public int signedAmount() {
+        return (type == TransactionType.INCOME) ? amount : -amount;
     }
 
-    public int getAmount() {
-        return amount;
+    /** 거래 후 잔액 기록 */
+    public void setBalanceAfter(int balanceAfter) {
+        this.balanceAfter = balanceAfter;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
+    /** UI 날짜 출력 */
     public String getDate() {
-        return date;
+        if (dateTime != null)
+            return dateTime.format(UIConstants.UI_DATEFULL);
+        return "";
     }
 
-    public String getCategory() {
-        return category;
+    public TransactionType getType()        { return type; }
+    public int getAmount()                  { return amount; }
+    public String getLocation()             { return location; }
+    public String getCategory()             { return category; }
+    public String getMemo()                 { return memo; }
+    public LocalDateTime getDateTime()      { return dateTime; }
+    public int getBalanceAfter()            { return balanceAfter; }
+
+    public String getBank() {
+        return (account != null) ? account.getBank() : "";
+    }
+    /** 가계부에서 항목 출력용 */
+    public String summary() {
+        return category + " | " + amount + "원 | " + getDate();
     }
 
-    public int getBalance() {
-        return balance;
-    }
-
-    public void setBalance(int balance) {
-        this.balance = balance;
+    @Override
+    public String toString() {
+        return "[" + getDate() + "] "
+                + category + " - "
+                + amount + "원"
+                + (memo != null && !memo.isEmpty() ? (" (" + memo + ")") : "");
     }
 }

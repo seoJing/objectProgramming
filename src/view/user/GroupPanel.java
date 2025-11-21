@@ -10,9 +10,9 @@ import util.Routes;
 import util.UIConstants;
 import view.layout.UserLayout;
 
-public class groupPanel extends UserLayout {
+public class GroupPanel extends UserLayout {
 
-    public groupPanel() {
+    public GroupPanel() {
         super();
 
         JPanel content = createContent();
