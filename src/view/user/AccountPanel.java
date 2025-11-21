@@ -167,7 +167,13 @@ public class AccountPanel extends UserLayout {
         card.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override public void mouseClicked(java.awt.event.MouseEvent e) {
                 SessionManager.getInstance().setSelectedAccount(a);
-                Router.getInstance().navigateUser(Routes.TRANSACTION); // 혹은 상세로
+                Router.getInstance().navigateUser(Routes.TRANSACTION);
+            }
+            @Override public void mouseEntered(java.awt.event.MouseEvent e) {
+                card.setBackground(card.getBackground().darker());
+            }
+            @Override public void mouseExited(java.awt.event.MouseEvent e) {
+                card.setBackground(UIConstants.CARD_BG);
             }
         });
 

@@ -122,6 +122,13 @@ public class Calendar extends JPanel {
         b.setMinimumSize(d);
         b.setMaximumSize(d);
         b.addActionListener(e -> onPick.accept(date));
+        // 현재 날짜 강조
+        LocalDate today = LocalDate.now();
+        if (date.equals(today)) {
+            b.setForeground(UIConstants.USER_HEADER_COLOR);
+            b.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
+        }
+        b.addActionListener(e -> onPick.accept(date));
         return b;
     }
 
