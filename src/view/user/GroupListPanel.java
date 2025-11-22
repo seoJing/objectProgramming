@@ -18,6 +18,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import util.Router;
@@ -62,7 +63,7 @@ public class GroupListPanel extends UserLayout {
         center.add(modePanel);
         center.add(Box.createVerticalStrut(16));
 
-        // 아래 큰 카드: 첫 페이지의 리스트+총액을 합친 느낌
+        // 아래 큰 카드: 그룹핑 묶음 가격 예시
         JPanel groupPanel = new JPanel(new BorderLayout());
         groupPanel.setBackground(BACKGROUND_BUTTON);
 
@@ -70,31 +71,90 @@ public class GroupListPanel extends UserLayout {
         groupPanel.setPreferredSize(new Dimension(0, mergedHeight));
         groupPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, mergedHeight));
 
-        JLabel groupLabel = new JLabel("n/4 예시1 묶음 가격");
-        groupLabel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        groupLabel.setFont(NORMAL_FONT.deriveFont(13f));
-        groupLabel.setForeground(TEXT_PRIMARY_COLOR);
-        groupPanel.add(groupLabel, BorderLayout.NORTH);
+        // 제목
+        JLabel groupTitle = new JLabel("<그룹핑 묶음 가격>");
+        groupTitle.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+        groupTitle.setFont(NORMAL_FONT.deriveFont(13f));
+        groupTitle.setForeground(TEXT_PRIMARY_COLOR);
+        groupPanel.add(groupTitle, BorderLayout.NORTH);
 
+        // 안쪽 내용 패널 (4개 서비스 + 신청하기 버튼)
+        JPanel priceListPanel = new JPanel();
+        priceListPanel.setOpaque(false);
+        priceListPanel.setLayout(new BoxLayout(priceListPanel, BoxLayout.Y_AXIS));
+        priceListPanel.setBorder(BorderFactory.createEmptyBorder(0, 16, 16, 16));
+
+        // 각 행 생성: 라벨 + 신청하기 버튼
+priceListPanel.add(createPriceRow(
+        "YouTube 4인 그룹핑: 4,975원/월 (정가 19,900원)", "YouTube"
+));
+priceListPanel.add(Box.createVerticalStrut(6));
+
+priceListPanel.add(createPriceRow(
+        "Netflix 4인 그룹핑: 4,475원/월 (정가 17,900원)", "Netflix"
+));
+priceListPanel.add(Box.createVerticalStrut(6));
+
+priceListPanel.add(createPriceRow(
+        "Spotify 4인 그룹핑: 2,725원/월 (정가 10,900원)", "Spotify"
+));
+priceListPanel.add(Box.createVerticalStrut(6));
+
+priceListPanel.add(createPriceRow(
+        "Disney+ 4인 그룹핑: 2,475원/월 (정가 9,900원)", "Disney+"
+));
+
+        // 중앙에 리스트 붙이기
+        groupPanel.add(priceListPanel, BorderLayout.CENTER);
+
+        // 레이아웃 유지
         center.add(groupPanel);
+        center.add(Box.createVerticalStrut(16));   // 카드와 아래 여백
         center.add(Box.createVerticalGlue());
 
-        /* 이벤트 */
+        /* ==== 이벤트 ==== */
 
-        // 장바구니 버튼 → 첫 페이지로 이동
+        // 장바구니 탭
         basketBtn.addActionListener(e -> Router.getInstance().navigateUser(Routes.STORE));
 
-        // 큰 카드 클릭 → 상세 페이지
-        groupPanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                // TODO: 그룹핑 상세 페이지로 이동
-            }
-        });
+        // groupBtn은 현재 페이지(그룹핑 탭)이므로 선택만 유지하거나 필요 없으면 비워둠
+        // groupBtn.addActionListener(e -> Router.getInstance().navigateUser(Routes.GROUP_LIST));
 
         root.add(center, BorderLayout.CENTER);
         return root;
     }
+
+ 
+    private JPanel createPriceRow(String text, String serviceName) {
+        JPanel row = new JPanel(new BorderLayout());
+        row.setOpaque(false);
+
+        JTextArea textArea = new JTextArea(text);
+        textArea.setFont(NORMAL_FONT.deriveFont(13f));
+        textArea.setForeground(TEXT_PRIMARY_COLOR);
+        textArea.setEditable(false);
+        textArea.setOpaque(false);
+        textArea.setLineWrap(true);          // 줄바꿈 켜기
+        textArea.setWrapStyleWord(true);     // 단어 단위로 줄바꿈
+        textArea.setFocusable(false);
+        textArea.setBorder(null);
+
+        JButton applyBtn = new JButton("신청하기");
+        styleFlatButton(applyBtn);
+        applyBtn.setPreferredSize(new Dimension(90, 30));
+
+        applyBtn.addActionListener(e -> {
+            GroupDetailPanel.setSelectedServiceName(serviceName);
+            Router.getInstance().navigateUser(Routes.GROUP_DETAIL);
+        });
+
+        row.add(textArea, BorderLayout.CENTER);
+        row.add(applyBtn, BorderLayout.EAST);
+
+        return row;
+    }
+
+
 
     private static void styleFlatButton(JButton btn) {
         btn.setFocusPainted(false);
