@@ -37,4 +37,5 @@ public final class Routes {
     public static final String ADMIN_SUBSCRIPTION_MACHINE = "ADMIN_SUBSCRIPTION_MACHINE";
     public static final String ADMIN_SUBSCRIPTION_MANAGE = "ADMIN_SUBSCRIPTION_MANAGE";
     public static final String ADMIN_STATISTICS = "ADMIN_STATISTICS";
+    public static final String ADMIN_TRANSACTION_MANAGE = "ADMIN_TRANSACTION_MANAGE";
 }
