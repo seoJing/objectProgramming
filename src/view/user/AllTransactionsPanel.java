@@ -24,6 +24,8 @@ public class AllTransactionsPanel extends UserLayout {
 
     private JPanel listPanel;
     private JScrollPane scroll;
+    // 날짜 헤더 위치 저장용
+    private final Map<LocalDate, JComponent> dayHeaderMap = new HashMap<>();
 
     private static final DateTimeFormatter HHMM = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter HEADER_DOW =
@@ -54,8 +56,10 @@ public class AllTransactionsPanel extends UserLayout {
                         ? SessionManager.getInstance().getSelectedDate()
                         : LocalDate.now(),
                 picked -> {
+                    // 날짜 선택시: 세션에 저장하고, 리스트 다시 그리고, 그 날짜로 스크롤
                     SessionManager.getInstance().setSelectedDate(picked);
-                    loadAndRender();   // 선택 날짜로 즉시 새로고침(필터 동작은 선택)
+                    loadAndRender();
+                    scrollToDate(picked);
                 }
         );
         top.add(mini, BorderLayout.SOUTH);
@@ -78,6 +82,7 @@ public class AllTransactionsPanel extends UserLayout {
 
     private void loadAndRender() {
         listPanel.removeAll();
+        dayHeaderMap.clear();
 
         User user = SessionManager.getInstance().getCurrentUser();
         if (user == null) {
@@ -112,7 +117,9 @@ public class AllTransactionsPanel extends UserLayout {
                 else sumOut += amt;
             }
 
-            listPanel.add(makeDayHeader(day, sumIn, sumOut));   // ← dd일 … 형태
+            JComponent header = makeDayHeader(day, sumIn, sumOut);
+            listPanel.add(header);
+            dayHeaderMap.put(day, header);
             listPanel.add(Box.createVerticalStrut(8));
 
             for (Entry en : items) {
@@ -125,16 +132,37 @@ public class AllTransactionsPanel extends UserLayout {
         listPanel.add(Box.createVerticalGlue());
         revalidateRepaint();
     }
+
     private void revalidateRepaint() {
         listPanel.revalidate();
         listPanel.repaint();
+    }
+
+    private void scrollToDate(LocalDate day) {
+        JComponent header = dayHeaderMap.get(day);
+        if (header == null) return;
+
+        SwingUtilities.invokeLater(() -> {
+            Rectangle r = header.getBounds();              // 헤더의 위치
+            JViewport vp = scroll.getViewport();
+
+            // 현재 x 위치는 유지하고, y를 헤더가 위에 붙도록 맞춤
+            Point current = vp.getViewPosition();
+            int targetY = Math.max(0, r.y - 8);            // 살짝 위쪽 여유(8px)
+
+            vp.setViewPosition(new Point(current.x, targetY));
+        });
     }
 
     private static class Entry {
         final Account acc;
         final Transaction tx;
         final LocalDateTime when;
-        Entry(Account a, Transaction t, LocalDateTime w) { acc=a; tx=t; when=w; }
+        Entry(Account a, Transaction t, LocalDateTime w) {
+            acc=a;
+            tx=t;
+            when=w;
+        }
     }
 
     private JComponent makeDayHeader(LocalDate day, int sumIn, int sumOut) {
@@ -145,12 +173,14 @@ public class AllTransactionsPanel extends UserLayout {
         header.setMaximumSize(new Dimension(Integer.MAX_VALUE, UIConstants.DAY_HEADER_HEIGHT));
 
         GridBagConstraints g = new GridBagConstraints();
-        g.gridy = 0; g.insets = UIConstants.ZERO_INSETS;
+        g.gridy = 0;
+        g.insets = UIConstants.ZERO_INSETS;
 
         JLabel dayLabel = new JLabel(day.format(HEADER_DOW));
         dayLabel.setFont(UIConstants.NORMAL_FONT);
         dayLabel.setForeground(UIConstants.TEXT_MUTED);
-        g.gridx = 0; g.weightx = 1; g.anchor = GridBagConstraints.WEST;
+        g.gridx = 0;
+        g.weightx = 1; g.anchor = GridBagConstraints.WEST;
         header.add(dayLabel, g);
 
         int net = sumIn - sumOut;
@@ -161,7 +191,9 @@ public class AllTransactionsPanel extends UserLayout {
         netLabel.setForeground(net > 0 ? UIConstants.POS_GREEN : UIConstants.TEXT_DEFAULT);
         netLabel.setToolTipText("입금 +" + UIConstants.money(sumIn) + "원 / 출금 -" + UIConstants.money(sumOut) + "원");
 
-        g.gridx = 1; g.weightx = 0; g.anchor = GridBagConstraints.EAST;
+        g.gridx = 1;
+        g.weightx = 0;
+        g.anchor = GridBagConstraints.EAST;
         header.add(netLabel, g);
 
         return header;
@@ -194,7 +226,8 @@ public class AllTransactionsPanel extends UserLayout {
         });
 
         GridBagConstraints gc = new GridBagConstraints();
-        gc.gridy = 0; gc.insets = UIConstants.ZERO_INSETS;
+        gc.gridy = 0;
+        gc.insets = UIConstants.ZERO_INSETS;
 
         // 좌
         JPanel left = new JPanel();
@@ -203,7 +236,9 @@ public class AllTransactionsPanel extends UserLayout {
         left.add(Box.createHorizontalStrut(6));
         left.setBorder(UIConstants.ICON_LEFT_PADDING);
 
-        gc.gridx = 0; gc.weightx = 0; gc.anchor = GridBagConstraints.WEST;
+        gc.gridx = 0;
+        gc.weightx = 0;
+        gc.anchor = GridBagConstraints.WEST;
         row.add(left, gc);
 
         // 가운데(가맹점/시간/보조라벨: 은행명 포함)
@@ -229,7 +264,10 @@ public class AllTransactionsPanel extends UserLayout {
         center.add(Box.createVerticalStrut(4));
         center.add(subLabel);
 
-        gc.gridx = 1; gc.weightx = 1; gc.fill = GridBagConstraints.HORIZONTAL; gc.anchor = GridBagConstraints.WEST;
+        gc.gridx = 1;
+        gc.weightx = 1;
+        gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.anchor = GridBagConstraints.WEST;
         row.add(center, gc);
 
         // 우(금액)
@@ -243,7 +281,10 @@ public class AllTransactionsPanel extends UserLayout {
         right.setOpaque(false);
         right.add(amount, BorderLayout.EAST);
 
-        gc.gridx = 2; gc.weightx = 0; gc.anchor = GridBagConstraints.EAST; gc.insets = UIConstants.RIGHT_GAP_M;
+        gc.gridx = 2;
+        gc.weightx = 0;
+        gc.anchor = GridBagConstraints.EAST;
+        gc.insets = UIConstants.RIGHT_GAP_M;
         row.add(right, gc);
 
         return row;
