@@ -86,6 +86,7 @@ public final class UIConstants {
     public static final Border ACCOUNT_CARD_PADDING = BorderFactory.createEmptyBorder(8, 16, 25, 16);
     public static final Border ACCOUNT_BALANCE_RIGHT_PADDING = BorderFactory.createEmptyBorder(0, 12, 0, 0);
     public static final Border TOP_PANEL_BORDER   = BorderFactory.createEmptyBorder(6, 8, 50, 8);
+    public static final Border TOP_PANEL_CAL_BORDER   = BorderFactory.createEmptyBorder(6, 8, 10, 8);
     public static final Border LIST_PANEL_PADDING = BorderFactory.createEmptyBorder(8, 12, 8, 12);
     public static final Border DAY_HEADER_PADDING = BorderFactory.createEmptyBorder(4, 12, 4, 12);
     public static final Border ICON_LEFT_PADDING = BorderFactory.createEmptyBorder(0, 0, 0, 12);

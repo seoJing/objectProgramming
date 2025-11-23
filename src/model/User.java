@@ -5,9 +5,9 @@ import java.util.List;
 
 public class User {
 
-    // ================ Fields =================
+    // ================= Fields =================
     private String id;
-    private String password;
+    private String password;      // 해시된 비밀번호 저장
     private String name;
     private String gender;
     private int age;
@@ -19,10 +19,10 @@ public class User {
     private final List<Account> accountList;
     private final Ledger ledger;
 
-    // ================ Constructor =================
+    // ================= Constructor =================
     public User(
             String id,
-            String password,
+            String password,     // 해시된 비밀번호
             String name,
             String gender,
             int age,
@@ -45,77 +45,61 @@ public class User {
         this.ledger = new Ledger();
     }
 
-    // ================ Getter =================
+    // ================= Getter =================
 
-    public String getId() {
-        return id;
+    public String getId() { return id; }
+    public String getPassword() { return password; }   // 비밀번호 해시 반환
+    public String getName() { return name; }
+    public String getGender() { return gender; }
+    public int getAge() { return age; }
+    public String getOccupation() { return occupation; }
+    public String getResidence() { return residence; }
+    public String getPhoneNumber() { return phoneNumber; }
+    public boolean isAdmin() { return admin; }
+    public List<Account> getAccountList() { return accountList; }
+    public Ledger getLedger() { return ledger; }
+
+    // ================= Setter =================
+
+    public void setName(String name) { this.name = name; }
+    public void setGender(String gender) { this.gender = gender; }
+    public void setAge(int age) { this.age = age; }
+    public void setOccupation(String occupation) { this.occupation = occupation; }
+    public void setResidence(String residence) { this.residence = residence; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+    // ================= Account 관리 기능 =================
+
+    public void addAccount(Account account) {
+        accountList.add(account);
     }
 
-    public String getPassword() {
-        return password;
+    public void removeAccount(Account account) {
+        accountList.remove(account);
     }
 
-    public String getName() {
-        return name;
+    public Account getAccountByNumber(String accountNumber) {
+        for (Account acc : accountList) {
+            if (acc.getAccountNumber().equals(accountNumber)) {
+                return acc;
+            }
+        }
+        return null;
     }
 
-    public String getGender() {
-        return gender;
+    // ================= toString =================
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", gender='" + gender + '\'' +
+                ", age=" + age +
+                ", occupation='" + occupation + '\'' +
+                ", residence='" + residence + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", admin=" + admin +
+                '}';
     }
-
-    public int getAge() {
-        return age;
-    }
-
-    public String getOccupation() {
-        return occupation;
-    }
-
-    public String getResidence() {
-        return residence;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public boolean isAdmin() {
-        return admin;
-    }
-
-    public List<Account> getAccountList() {
-        return accountList;
-    }
-
-    public Ledger getLedger() {
-        return ledger;
-    }
-
-    // ================ Setter =================
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public void setOccupation(String occupation) {
-        this.occupation = occupation;
-    }
-
-    public void setResidence(String residence) {
-        this.residence = residence;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    // ================ Business Logic (확장 가능) =================
 }

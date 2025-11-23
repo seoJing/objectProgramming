@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Insets;
+import java.time.LocalDate;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -22,11 +24,8 @@ import util.SessionManager;
 import util.UIConstants;
 import view.layout.UserLayout;
 import view.user.shared.component.AlertItemPanel;
-import view.user.shared.component.ImageLoader;
 import view.user.shared.component.Calendar;
-
-import java.awt.*;
-import java.time.LocalDate;
+import view.user.shared.component.ImageLoader;
 
 public class MainPanel extends UserLayout {
 

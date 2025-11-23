@@ -42,7 +42,7 @@ public class AllTransactionsPanel extends UserLayout {
         // 상단 바(간단 타이틀)
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
-        top.setBorder(UIConstants.TOP_PANEL_BORDER);
+        top.setBorder(UIConstants.TOP_PANEL_CAL_BORDER);
 
         JLabel title = new JLabel("가계부");
         title.setFont(UIConstants.TITLE_FONT);
@@ -184,6 +184,12 @@ public class AllTransactionsPanel extends UserLayout {
                 SessionManager.getInstance().setSelectedAccount(a);
                 SessionManager.getInstance().setSelectedTransaction(tx);
                 Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL);
+            }
+            @Override public void mouseEntered(java.awt.event.MouseEvent e) {
+                row.setBackground(row.getBackground().darker());
+            }
+            @Override public void mouseExited(java.awt.event.MouseEvent e) {
+                row.setBackground(UIConstants.TX_ROW_BG);
             }
         });
 

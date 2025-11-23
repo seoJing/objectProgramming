@@ -1,16 +1,8 @@
 package view.layout;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.RenderingHints;
+import java.awt.*;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import util.Router;
 import util.Routes;
@@ -28,12 +20,13 @@ public class UserLayout extends BaseLayout {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // 하단에 퍼진 그림자 효과
+                // 하단 그림자
                 int shadowHeight = 8;
                 for (int i = 0; i < shadowHeight; i++) {
                     float alpha = (float) (0.15 * (1 - (i / (float) shadowHeight)));
                     g2d.setColor(new Color(0, 0, 0, (int)(alpha * 255)));
-                    g2d.drawLine(0, getHeight() - shadowHeight + i, getWidth(), getHeight() - shadowHeight + i);
+                    g2d.drawLine(0, getHeight() - shadowHeight + i,
+                            getWidth(), getHeight() - shadowHeight + i);
                 }
             }
         };
@@ -41,57 +34,49 @@ public class UserLayout extends BaseLayout {
         header.setBackground(UIConstants.HEADER_BACKGROUND_COLOR);
         header.setBorder(UIConstants.HEADER_PADDING);
 
-        // 중앙: 타이틀
+        /* ===== 왼쪽: subMate (왼쪽 정렬 + 세로 가운데) ===== */
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        leftPanel.setOpaque(false);
+
         JLabel titleLabel = new JLabel("subMate");
         titleLabel.setFont(UIConstants.TITLE_FONT);
         titleLabel.setForeground(UIConstants.USER_HEADER_COLOR);
-        header.add(titleLabel, BorderLayout.CENTER);
 
-        // 우측: 알람, 설정, 사용자 정보, 로그아웃
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        leftPanel.add(titleLabel);
+        header.add(leftPanel, BorderLayout.WEST);
+
+        /* ===== 오른쪽: 알람 / 설정 / 이름 / 로그아웃 ===== */
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 8));
         rightPanel.setOpaque(false);
 
-        // 알람 버튼
-        JButton alertBtn = new JButton("알람");
-        alertBtn.setFont(UIConstants.NORMAL_FONT);
-        alertBtn.setFocusPainted(false);
-        alertBtn.setBorderPainted(false);
-        alertBtn.setBackground(UIConstants.HEADER_BACKGROUND_COLOR);
-        alertBtn.setOpaque(false);
-        alertBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        alertBtn.addActionListener(e -> {
-            Router.getInstance().navigateUser(Routes.ALERT);
-        });
+        // 공통 스타일 버튼 (작은 글씨 + 여백 제거)
+        java.util.function.Function<String, JButton> makeHeaderButton = text -> {
+            JButton btn = new JButton(text);
+            btn.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 12)); // 작게
+            btn.setFocusPainted(false);
+            btn.setBorder(BorderFactory.createEmptyBorder());  // 테두리/여백 제거
+            btn.setContentAreaFilled(false);
+            btn.setOpaque(false);
+            btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            return btn;
+        };
+
+        JButton alertBtn = makeHeaderButton.apply("알람");
+        alertBtn.addActionListener(e -> Router.getInstance().navigateUser(Routes.ALERT));
         rightPanel.add(alertBtn);
 
-        // 설정 버튼
-        JButton settingBtn = new JButton("설정");
-        settingBtn.setFont(UIConstants.NORMAL_FONT);
-        settingBtn.setFocusPainted(false);
-        settingBtn.setBorderPainted(false);
-        settingBtn.setBackground(UIConstants.HEADER_BACKGROUND_COLOR);
-        settingBtn.setOpaque(false);
-        settingBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        settingBtn.addActionListener(e -> {
-            Router.getInstance().navigateUser(Routes.SETTING);
-        });
+        JButton settingBtn = makeHeaderButton.apply("설정");
+        settingBtn.addActionListener(e -> Router.getInstance().navigateUser(Routes.SETTING));
         rightPanel.add(settingBtn);
 
         if (SessionManager.getInstance().isLoggedIn()) {
             String userName = SessionManager.getInstance().getCurrentUser().getName();
             JLabel userLabel = new JLabel(userName + "님");
+            userLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 12));
             userLabel.setForeground(UIConstants.TEXT_SECONDARY_COLOR);
-            userLabel.setFont(UIConstants.NORMAL_FONT);
             rightPanel.add(userLabel);
-
-            JButton logoutBtn = new JButton("로그아웃");
-            logoutBtn.setFont(UIConstants.SMALL_FONT);
-            logoutBtn.setFocusPainted(false);
+            JButton logoutBtn = makeHeaderButton.apply("로그아웃");
             logoutBtn.setForeground(UIConstants.TEXT_SECONDARY_COLOR);
-            logoutBtn.setBackground(UIConstants.HEADER_BACKGROUND_COLOR);
-            logoutBtn.setOpaque(false);
-            logoutBtn.setBorderPainted(false);
-            logoutBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             logoutBtn.addActionListener(e -> {
                 SessionManager.getInstance().logout();
                 Router.getInstance().navigateTo(Routes.LOGIN);

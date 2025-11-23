@@ -68,21 +68,31 @@ public class TransactionDetailPanel extends UserLayout {
 
         bankAndNumber = new JLabel(); bankAndNumber.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
         when          = new JLabel(); when.setFont(UIConstants.NORMAL_FONT);
-        merchant      = new JLabel(); merchant.setFont(UIConstants.NORMAL_FONT);
+        merchant      = new JLabel(); merchant.setFont(UIConstants.TITLE_FONT);
         category      = new JLabel(); category.setFont(UIConstants.NORMAL_FONT);
         memo          = new JLabel(); memo.setFont(UIConstants.NORMAL_FONT);
         amount        = new JLabel(); amount.setFont(UIConstants.LARGE_FONT);
         balanceAfter  = new JLabel(); balanceAfter.setFont(UIConstants.NORMAL_FONT);
 
         GridBagConstraints g = new GridBagConstraints();
-        g.gridx=0; g.gridy=0; g.anchor=GridBagConstraints.WEST; g.insets=UIConstants.TOP_GAP_M;
+        g.gridx=0;
+        g.gridy=0;
+        g.anchor=GridBagConstraints.WEST;
+        g.insets=UIConstants.ZERO_INSETS;
         body.add(merchant, g);
-        g.gridy++; g.insets=new Insets(16,0,6,0); body.add(amount, g);
-        g.gridy++; body.add(category, g);
-        g.gridy++; body.add(bankAndNumber, g);
-        g.gridy++; body.add(when, g);
-        g.gridy++; body.add(memo, g);
-        g.gridy++; g.insets= UIConstants.ZERO_INSETS;  body.add(balanceAfter, g);
+        g.gridy++;
+        g.insets=new Insets(16,0,6,0); body.add(amount, g);
+        g.gridy++;
+        body.add(category, g);
+        g.gridy++;
+        body.add(bankAndNumber, g);
+        g.gridy++;
+        body.add(when, g);
+        g.gridy++;
+        body.add(memo, g);
+        g.gridy++;
+        g.insets= UIConstants.ZERO_INSETS;
+        body.add(balanceAfter, g);
 
         root.add(body, BorderLayout.CENTER);
         return root;
