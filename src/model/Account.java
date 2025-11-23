@@ -20,6 +20,16 @@ public class Account {
         this.userId = userId;
     }
 
+    // 2. [신규 추가] DataLoader용 (userId 포함 생성자)
+    public Account(String accountNumber, String bank, int initialBalance, String userId) {
+        this.accountNumber = accountNumber;
+        this.bank = bank;
+        this.initialBalance = initialBalance;
+        this.currentBalance = initialBalance;
+        this.transactionList = new ArrayList<>();
+        this.userId = userId;
+    }
+
     public void addTransaction(Transaction tx) {
         this.currentBalance += tx.signedAmount();
         tx.setBalanceAfter(this.currentBalance);
