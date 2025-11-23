@@ -58,6 +58,24 @@ public class SignupDialog extends JDialog {
         addRow(formPanel, "아이디", idField);
         addRow(formPanel, "비밀번호", pwField);
         addRow(formPanel, "비밀번호 확인", pwConfirmField);
+
+        // ====================== 비밀번호 보기 체크박스 ======================
+        JCheckBox showPassword = new JCheckBox("비밀번호 보기");
+
+        showPassword.addActionListener(e -> {
+            if (showPassword.isSelected()) {
+                pwField.setEchoChar((char) 0);  // 비밀번호 보이기
+                pwConfirmField.setEchoChar((char) 0);
+            } else {
+                pwField.setEchoChar('\u2022');       // 기본 원형 문자로 설정
+                pwConfirmField.setEchoChar('\u2022');
+            }
+        });
+
+        // 줄 정렬 맞추기 위해 레이블 한 칸 채우기
+        formPanel.add(new JLabel(" "));
+        formPanel.add(showPassword);
+
         addRow(formPanel, "이름", nameField);
         addRow(formPanel, "성별", genderField);
         addRow(formPanel, "나이", ageField);

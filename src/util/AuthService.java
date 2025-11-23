@@ -28,8 +28,19 @@ public class AuthService {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("ID는 필수 입력 항목입니다.");
         }
-        if (rawPassword == null || rawPassword.length() < 6) {
-            throw new IllegalArgumentException("비밀번호는 6자 이상이어야 합니다.");
+
+        if (rawPassword == null || rawPassword.isBlank()) {
+                throw new IllegalArgumentException("비밀번호를 입력해주세요.");
+        }
+
+        // 비밀번호 검증 (6자 이상 + 대문자 + 소문자 + 숫자 + 특수문자)
+        String passwordPattern = 
+            "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-={}|\\[\\]:;\"'<>,.?/]).{6,}$";
+    
+        if (rawPassword == null || !rawPassword.matches(passwordPattern)) {
+            throw new IllegalArgumentException(
+                "비밀번호는 6자 이상이며, 대문자/소문자/숫자/특수문자를 모두 포함해야 합니다."
+                );
         }
         if (userList.exists(id)) {
             throw new IllegalStateException("이미 존재하는 ID입니다.");
@@ -38,6 +49,7 @@ public class AuthService {
         // 비밀번호 해시 생성
         String passwordHash = PasswordUtil.hashPasswordWithIdSalt(id, rawPassword);
 
+        // 해시된 비밀번호 저장
         User newUser = new User(
                 id,
                 passwordHash,
@@ -69,7 +81,7 @@ public class AuthService {
 
         String inputHash = PasswordUtil.hashPasswordWithIdSalt(id, rawPassword);
 
-        if (!inputHash.equals(user.getPasswordHash())) {
+        if (!inputHash.equals(user.getPassword())) {
             throw new IllegalArgumentException("ID 또는 비밀번호가 올바르지 않습니다.");
         }
 
