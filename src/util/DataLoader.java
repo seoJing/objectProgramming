@@ -2,7 +2,6 @@ package util;
 
 import model.*;
 import java.io.File;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
@@ -12,12 +11,10 @@ public class DataLoader {
     private static final String DATA_PATH = "src/resources/data/";
 
     public static void loadAll() {
-        System.out.println("[DataLoader] 데이터 로딩 시작...");
         loadUsers();
         loadAccounts();
         loadSubscriptions();
         loadTransactions();
-        System.out.println("[DataLoader] 데이터 로딩 완료.");
     }
 
     private static File getFile(String fileName) {
@@ -26,9 +23,11 @@ public class DataLoader {
         return file;
     }
 
+    // 1. 유저 로딩
     private static void loadUsers() {
         File file = getFile("users.txt");
         if (!file.exists()) return;
+
         try (Scanner scan = new Scanner(file)) {
             while (scan.hasNext()) {
                 String id = scan.next();
@@ -41,7 +40,6 @@ public class DataLoader {
                 String phone = scan.next();
                 boolean isAdmin = scan.nextBoolean();
 
-                // 관리자는 로딩 제외 (요구사항 반영)
                 if (isAdmin || id.equals("admin")) continue;
 
                 if (UserList.getInstance().findById(id) == null) {
@@ -49,10 +47,11 @@ public class DataLoader {
                     UserList.getInstance().add(u);
                 }
             }
-            System.out.println("✅ 유저 로딩 완료: " + UserList.getInstance().size() + "명");
+            System.out.println("✅ 유저 로딩 완료 (" + UserList.getInstance().size() + "명, 관리자 제외)");
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    // 2. 계좌 로딩
     private static void loadAccounts() {
         File file = getFile("accounts.txt");
         if (!file.exists()) return;
@@ -68,12 +67,12 @@ public class DataLoader {
                     u.addAccount(new Account(accNum, bank, balance, userId));
                 }
             }
-            System.out.println("✅ 계좌 로딩 완료");
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    // 3. 구독 로딩
     private static void loadSubscriptions() {
-        File file = getFile("subscriptions.txt");
+        File file = getFile("subscription.txt");
         if (!file.exists()) return;
         try (Scanner scan = new Scanner(file)) {
             while (scan.hasNext()) {
@@ -84,10 +83,10 @@ public class DataLoader {
                 User u = UserList.getInstance().findById(userId);
                 if (u != null) u.getLedger().addSubscription(sub);
             }
-            System.out.println("✅ 구독 로딩 완료");
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    // 4. 거래내역 로딩
     private static void loadTransactions() {
         File file = getFile("transactions.txt");
         if (!file.exists()) return;
@@ -95,8 +94,11 @@ public class DataLoader {
         try (Scanner scan = new Scanner(file)) {
             while (scan.hasNext()) {
                 String accNum = scan.next();
-                Account targetAccount = findAccountByNumber(accNum);
 
+                // ★ [수정] 0을 만나면 '건너뛰기(continue)'가 아니라 '종료(break)'합니다.
+                if (accNum.equals("0")) break;
+
+                Account targetAccount = findAccountByNumber(accNum);
                 if (targetAccount == null) {
                     scan.nextLine(); // 계좌 못 찾으면 줄 건너뛰기
                     continue;
@@ -108,29 +110,25 @@ public class DataLoader {
                 String loc = scan.next();
                 String cat = scan.next();
 
-                // ★ [수정 핵심] 날짜인지 아닌지 직접 확인하는 강력한 로직
+                // 날짜/메모 스마트 판별
                 String temp = scan.next();
                 String memo = "";
                 String dateStr = "";
 
-                try {
-                    // 1. 일단 날짜라고 가정하고 파싱 시도
-                    LocalDate.parse(temp, DateTimeFormatter.ISO_DATE);
-                    // 2. 성공하면 날짜임 (메모 없음)
+                if (temp.startsWith("20") && temp.contains("T")) {
                     dateStr = temp;
-                } catch (Exception e) {
-                    // 3. 실패하면 메모임 -> 그 다음 토큰이 날짜
+                    memo = "";
+                } else {
                     memo = temp;
-                    dateStr = scan.next();
+                    if (scan.hasNext()) dateStr = scan.next();
                 }
 
-                LocalDateTime dt = LocalDate.parse(dateStr, DateTimeFormatter.ISO_DATE).atStartOfDay();
+                LocalDateTime dt = LocalDateTime.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
                 Transaction tx = new Transaction(type, amount, loc, cat, memo, dt, 0, targetAccount);
-
                 targetAccount.addTransaction(tx);
             }
-            System.out.println("✅ 거래내역 로딩 완료");
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+        }
     }
 
     private static Account findAccountByNumber(String accNum) {
