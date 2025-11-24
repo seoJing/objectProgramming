@@ -48,11 +48,10 @@ public class StorePanel extends UserLayout {
     // ✅ 현재 생성된 StorePanel 인스턴스 저장
     private static StorePanel instance;
 
-    // ✅ 카테고리별 구독 저장용 (문자열 대신 객체로)
+    //  카테고리별 구독 저장용
     private static class SubscriptionItem {
         String display; // "YouTube (그룹핑) - 4,975원/월"
-        int price;      // 4975
-
+        int price; 
         SubscriptionItem(String display, int price) {
             this.display = display;
             this.price = price;
@@ -65,16 +64,16 @@ public class StorePanel extends UserLayout {
     private int totalPrice = 0;
     private JLabel summaryText;
 
-    // ✅ 구독 리스트를 그릴 패널 (스크롤 안쪽)
+    // 구독 리스트를 그릴 패널 (스크롤 안쪽)
     private JPanel subsListPanel;
 
     public StorePanel() {
         super();
-        instance = this;   // ✅ 생성 시 자기 자신 저장
+        instance = this;   // 생성 시 자기 자신 저장
         setContent(createContent());
     }
 
-    // ✅ 다른 화면에서 StorePanel 사용 시
+    // 다른 화면에서 StorePanel 사용 시
     public static StorePanel getInstance() {
         return instance;
     }
@@ -169,7 +168,7 @@ public class StorePanel extends UserLayout {
 
         listOuter.add(listHeader, BorderLayout.NORTH);
 
-        // ✅ 리스트가 들어갈 패널 (각 항목 + 취소 버튼)
+        // 리스트가 들어갈 패널 (각 항목 + 취소 버튼)
         subsListPanel = new JPanel();
         subsListPanel.setOpaque(false);
         subsListPanel.setLayout(new BoxLayout(subsListPanel, BoxLayout.Y_AXIS));
@@ -281,7 +280,7 @@ public class StorePanel extends UserLayout {
         }
     }
 
-    // ✅ 그룹핑 신청 시 호출할 메서드 (1/4 가격)
+    //  그룹핑 신청 시 호출할 메서드 (1/4 가격)
     public void addGroupedSubscription(String serviceName) {
         if (serviceName == null || serviceName.isBlank()) return;
 
@@ -314,7 +313,7 @@ public class StorePanel extends UserLayout {
         addSubscription(category, serviceName + " (그룹핑)", groupPrice);
     }
 
-    // ✅ 공통 추가 로직
+    // 공통 추가 로직
     private void addSubscription(String category, String name, int price) {
         if (category == null || category.isBlank()) {
             category = "기타";
@@ -329,7 +328,7 @@ public class StorePanel extends UserLayout {
         refreshSubscriptionList();
     }
 
-    // ✅ 리스트 패널 다시 그리기 (카테고리 + 각 항목 + 취소 버튼)
+    // 리스트 패널 그리기 (카테고리 + 각 항목 + 취소 버튼)
     private void refreshSubscriptionList() {
         subsListPanel.removeAll();
 
