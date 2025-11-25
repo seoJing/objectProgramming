@@ -4,16 +4,35 @@ import model.*;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class DataLoader {
 
     private static final String DATA_PATH = "src/resources/data/";
 
+    // 상품 정보를 임시로 저장할 맵 (ID -> ProductInfo)
+    private static final Map<String, ProductInfo> productMap = new HashMap<>();
+
+    // 내부적으로만 사용할 상품 정보 클래스
+    private static class ProductInfo {
+        String category;
+        String name;
+        int price;
+
+        public ProductInfo(String category, String name, int price) {
+            this.category = category;
+            this.name = name;
+            this.price = price;
+        }
+    }
+
     public static void loadAll() {
         loadUsers();
         loadAccounts();
-        loadSubscriptions();
+        loadProducts();      // 1. 상품 정보 먼저 로딩
+        loadSubscriptions(); // 2. 구독 정보 로딩 (상품 ID 참조)
         loadTransactions();
     }
 
@@ -23,7 +42,70 @@ public class DataLoader {
         return file;
     }
 
-    // 1. 유저 로딩
+    // ========================================================
+    // 1. 상품 정보 로딩 (products.txt)
+    // 포맷: 상품ID 카테고리 상품명 가격
+    // ========================================================
+    private static void loadProducts() {
+        File file = getFile("products.txt");
+        if (!file.exists()) return;
+
+        try (Scanner scan = new Scanner(file)) {
+            while (scan.hasNext()) {
+                String pid = scan.next();
+                String category = scan.next();
+                String name = scan.next();
+                int price = scan.nextInt();
+
+                productMap.put(pid, new ProductInfo(category, name, price));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ========================================================
+    // 2. 구독 정보 로딩 (subscription.txt)
+    // 포맷: 유저ID 상품ID 결제일 주기 인원수
+    // ========================================================
+    private static void loadSubscriptions() {
+        File file = getFile("subscription.txt");
+        if (!file.exists()) return;
+
+        try (Scanner scan = new Scanner(file)) {
+            while (scan.hasNext()) {
+                String userId = scan.next();
+                String productId = scan.next();
+                String paymentDate = scan.next();
+                int period = scan.nextInt();
+                int users = scan.nextInt();
+
+                // 상품 ID로 미리 로드해둔 정보 조회
+                ProductInfo product = productMap.get(productId);
+
+                if (product != null) {
+                    // 상품 정보와 구독 정보를 합쳐서 객체 생성
+                    SubscriptionService sub = new SubscriptionService(
+                            product.name,
+                            product.price,
+                            paymentDate,
+                            userId,
+                            period,
+                            users
+                    );
+
+                    // 유저에게 구독 추가
+                    User u = UserList.getInstance().findById(userId);
+                    if (u != null) {
+                        u.getLedger().addSubscription(sub);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void loadUsers() {
         File file = getFile("users.txt");
         if (!file.exists()) return;
@@ -47,11 +129,9 @@ public class DataLoader {
                     UserList.getInstance().add(u);
                 }
             }
-            System.out.println("✅ 유저 로딩 완료 (" + UserList.getInstance().size() + "명, 관리자 제외)");
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    // 2. 계좌 로딩
     private static void loadAccounts() {
         File file = getFile("accounts.txt");
         if (!file.exists()) return;
@@ -70,23 +150,6 @@ public class DataLoader {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    // 3. 구독 로딩
-    private static void loadSubscriptions() {
-        File file = getFile("subscription.txt");
-        if (!file.exists()) return;
-        try (Scanner scan = new Scanner(file)) {
-            while (scan.hasNext()) {
-                String userId = scan.next();
-                SubscriptionService sub = new SubscriptionService(
-                        scan.next(), scan.nextInt(), scan.next(), userId, scan.nextInt(), scan.nextInt()
-                );
-                User u = UserList.getInstance().findById(userId);
-                if (u != null) u.getLedger().addSubscription(sub);
-            }
-        } catch (Exception e) { e.printStackTrace(); }
-    }
-
-    // 4. 거래내역 로딩
     private static void loadTransactions() {
         File file = getFile("transactions.txt");
         if (!file.exists()) return;
@@ -94,13 +157,11 @@ public class DataLoader {
         try (Scanner scan = new Scanner(file)) {
             while (scan.hasNext()) {
                 String accNum = scan.next();
-
-                // ★ [수정] 0을 만나면 '건너뛰기(continue)'가 아니라 '종료(break)'합니다.
                 if (accNum.equals("0")) break;
 
                 Account targetAccount = findAccountByNumber(accNum);
                 if (targetAccount == null) {
-                    scan.nextLine(); // 계좌 못 찾으면 줄 건너뛰기
+                    scan.nextLine();
                     continue;
                 }
 
@@ -110,14 +171,12 @@ public class DataLoader {
                 String loc = scan.next();
                 String cat = scan.next();
 
-                // 날짜/메모 스마트 판별
                 String temp = scan.next();
                 String memo = "";
                 String dateStr = "";
 
                 if (temp.startsWith("20") && temp.contains("T")) {
                     dateStr = temp;
-                    memo = "";
                 } else {
                     memo = temp;
                     if (scan.hasNext()) dateStr = scan.next();
@@ -127,8 +186,7 @@ public class DataLoader {
                 Transaction tx = new Transaction(type, amount, loc, cat, memo, dt, 0, targetAccount);
                 targetAccount.addTransaction(tx);
             }
-        } catch (Exception e) {
-        }
+        } catch (Exception e) { }
     }
 
     private static Account findAccountByNumber(String accNum) {
