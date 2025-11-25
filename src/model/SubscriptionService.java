@@ -70,6 +70,21 @@ public class SubscriptionService {
     // 기능 4: 전체 정보 출력
     // ==============================
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        SubscriptionService other = (SubscriptionService) obj;
+        return serviceName.equals(other.serviceName) &&
+               userId.equals(other.userId) &&
+               paymentDate.equals(other.paymentDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return serviceName.hashCode() * 31 + userId.hashCode() * 17 + paymentDate.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "SubscriptionService{" +
                 "serviceName='" + serviceName + '\'' +
