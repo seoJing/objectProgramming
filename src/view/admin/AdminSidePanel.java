@@ -19,13 +19,14 @@ public class AdminSidePanel extends JPanel {
 
         contentContainer.add(new AdminMainPanel(), Routes.ADMIN_MAIN);
         contentContainer.add(new AdminStatisticsPanel(), Routes.ADMIN_STATISTICS);
-        contentContainer.add(new AdminSubscriptionMachinePanel(), Routes.ADMIN_SUBSCRIPTION_MACHINE);
         contentContainer.add(new AdminSubscriptionManagePanel(), Routes.ADMIN_SUBSCRIPTION_MANAGE);
         contentContainer.add(new AdminTransactionPanel(), Routes.ADMIN_TRANSACTION_MANAGE);
+        contentContainer.add(new AdminDashboardPanel(), Routes.ADMIN_DASHBOARD);
 
         add(contentContainer, BorderLayout.CENTER);
 
-        cardLayout.show(contentContainer, Routes.ADMIN_MAIN);
+        // 🔥 처음 화면을 대시보드로 변경
+        cardLayout.show(contentContainer, Routes.ADMIN_DASHBOARD);
     }
 
     public void switchTo(String screen) {
