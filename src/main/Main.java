@@ -2,13 +2,12 @@ package main;
 
 import javax.swing.SwingUtilities;
 
-import model.Account;
 import model.User;
 import model.UserList;
+import util.DataLoader;
 import util.Router;
 import util.SessionManager;
 import view.MainFrame;
-import util.DataLoader;
 
 public class Main {
     public static void main(String[] args) {
@@ -31,16 +30,14 @@ public class Main {
         });
     }
 
-    /** 개발 편의를 위한 임시 로그인 세팅 */
+    /** 개발 편의를 위한 임시 로그인 세팅 - 파일에서 로드된 실제 u001 사용자로 자동 로그인 */
     private static void seedDevLogin() {
-        User u = new User("u001", "pw", "서징규", "M", 21, "student", "Seoul", "010-0000-0000", false);
-        Account a1 = new Account("111-222-333", "신한은행", 200_000);
-        u.addAccount(a1);                    // 유저에 계좌 연결
-        SessionManager.getInstance().login(u);   // ★ 현재 사용자 등록
+        // DataLoader에서 로드된 실제 u001 사용자 조회
+        User user = UserList.getInstance().findById("u001");
 
-        //임시로 유저 보는 코드
-        model.UserList.getInstance().add(u);
-
-
+        if (user != null) {
+            // 파일에서 로드된 실제 사용자로 로그인
+            SessionManager.getInstance().login(user);
+        }
     }
 }

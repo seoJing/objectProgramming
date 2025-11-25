@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
 import model.SubscriptionService;
+import model.User;
 import util.Router;
 import util.Routes;
 import util.SessionManager;
@@ -27,26 +28,18 @@ import view.user.shared.component.PanelHeader;
 
 public class SubscriptionPanel extends UserLayout {
 
-    /**
-     * Mock 구독 서비스 데이터 생성
-     */
-    private List<SubscriptionService> generateMockSubscriptions() {
-        List<SubscriptionService> subscriptions = new ArrayList<>();
-
-        subscriptions.add(new SubscriptionService("YouTube Premium", 19900, "2024-12-01", "tjwlsrb1021", 12, 1));
-        subscriptions.add(new SubscriptionService("Netflix", 17900, "2024-12-05", "tjwlsrb1021", 12, 2));
-        subscriptions.add(new SubscriptionService("Spotify", 10900, "2024-12-10", "tjwlsrb1021", 12, 3));
-        subscriptions.add(new SubscriptionService("Disney+", 9900, "2024-12-15", "tjwlsrb1021", 12, 1));
-        subscriptions.add(new SubscriptionService("Apple Music", 10900, "2024-12-20", "tjwlsrb1021", 12, 2));
-
-        return subscriptions;
-    }
-
     public SubscriptionPanel() {
         super();
+    }
 
-        JPanel content = createContent();
-        setContent(content);
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (visible) {
+            // 화면이 보일 때마다 새로 콘텐츠 생성 (구독 해지 후 반영)
+            JPanel content = createContent();
+            setContent(content);
+        }
     }
 
     private JPanel createContent() {
@@ -76,7 +69,12 @@ public class SubscriptionPanel extends UserLayout {
         listPanel.setBackground(Color.WHITE);
         listPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        List<SubscriptionService> subscriptions = generateMockSubscriptions();
+        // 현재 사용자의 실제 구독 서비스 데이터 조회
+        User user = SessionManager.getInstance().getCurrentUser();
+        List<SubscriptionService> subscriptions = new ArrayList<>();
+        if (user != null && user.getLedger() != null) {
+            subscriptions = user.getLedger().getSubscriptionList();
+        }
 
         if (subscriptions.isEmpty()) {
             JLabel emptyLabel = new JLabel("구독 중인 서비스가 없습니다.");
