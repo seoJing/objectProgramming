@@ -4,20 +4,22 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Insets;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
 import model.SubscriptionService;
+import model.User;
 import util.Router;
 import util.Routes;
 import util.SessionManager;
@@ -29,43 +31,24 @@ import view.user.shared.component.ImageLoader;
 
 public class MainPanel extends UserLayout {
 
-    /**
-     * Mock 구독 서비스 데이터 (5개)
-     */
-    private SubscriptionService[] getMockSubscriptions() {
-        return new SubscriptionService[] {
-            new SubscriptionService("YouTube", 19900, "2024-12-01", "tjwlsrb1021", 12, 1),
-            new SubscriptionService("Netflix", 17900, "2024-12-05", "tjwlsrb1021", 12, 2),
-            new SubscriptionService("Spotify", 10900, "2024-12-10", "tjwlsrb1021", 12, 3),
-            new SubscriptionService("Disney+", 9900, "2024-12-15", "tjwlsrb1021", 12, 1),
-            new SubscriptionService("Apple Music", 10900, "2024-12-20", "tjwlsrb1021", 12, 2)
-        };
-    }
-
-    /**
-     * Mock 알람 데이터 (5개)
-     */
-    private String[] getMockAlerts() {
-        return new String[] {
-            "2일 후에 유튜브 프리미엄 결제 예정이에요. 연결된 계좌 잔액이 부족해요.",
-            "넷플릭스 구독이 3일 뒤에 갱신됩니다. 결제일을 확인해주세요.",
-            "Spotify 프리미엄 결제가 1주일 남았습니다. 미리 확인해주세요.",
-            "Disney+ 구독료 결제가 내일입니다. 준비 바랍니다.",
-            "Apple Music 결제가 예정되어 있습니다. 계좌 잔액을 확인하세요."
-        };
-    }
-
     public MainPanel() {
         super();
-
-        JPanel content = createContent();
-        setContent(content);
     }
 
     Calendar cal = new Calendar(LocalDate.now(), picked -> {
         SessionManager.getInstance().setSelectedDate(picked);          // 날짜 저장(옵션)
         Router.getInstance().navigateUser(Routes.ALL_TRANSACTIONS);    // 전체 거래 화면으로 이동
     });
+
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (visible) {
+            // 화면이 보일 때마다 새로 콘텐츠 생성 (구독 해지 후 반영)
+            JPanel content = createContent();
+            setContent(content);
+        }
+    }
 
     private JPanel createContent() {
         JPanel panel = new JPanel();
@@ -88,23 +71,7 @@ public class MainPanel extends UserLayout {
 
         // 3. 구독 서비스 아이콘 가로 스크롤 리스트
         panel.add(createSubscriptionScrollList());
-
-
-
         panel.add(Box.createVerticalStrut(8));
-
-        // 캘린더: 셀 36px, 간격 6px, 패딩 8px
-        Calendar cal = new Calendar(
-                LocalDate.now(),
-                picked -> {
-                    SessionManager.getInstance().setSelectedDate(picked);
-                    Router.getInstance().navigateUser(Routes.ALL_TRANSACTIONS);
-                },
-                36, 6, new Insets(8, 8, 30, 8)
-        );
-
-
-
         panel.add(Box.createVerticalGlue());
         return panel;
     }
@@ -116,9 +83,15 @@ public class MainPanel extends UserLayout {
         wrapperPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
         wrapperPanel.setBackground(Color.WHITE);
 
-        // Mock 알람 데이터 - 첫 번째 알람만 표시
-        String[] mockAlerts = getMockAlerts();
-        AlertItemPanel alertItem = new AlertItemPanel(mockAlerts[0]);
+        // 동적으로 생성된 알람 데이터 - 다음 결제일이 임박한 구독부터 우선 표시
+        String alertMessage = generateAlertMessage();
+
+        // 알람이 있으면 표시, 없으면 빈 패널 반환
+        if (alertMessage == null || alertMessage.isEmpty()) {
+            return wrapperPanel;
+        }
+
+        AlertItemPanel alertItem = new AlertItemPanel(alertMessage);
         alertItem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         // 알람 클릭 시 alertPanel로 이동
@@ -136,6 +109,53 @@ public class MainPanel extends UserLayout {
         return wrapperPanel;
     }
 
+    /**
+     * 현재 사용자의 구독 정보를 기반으로 동적 알람 메시지 생성
+     * 다음 결제일이 가장 임박한 구독을 우선으로 표시
+     */
+    private String generateAlertMessage() {
+        User user = SessionManager.getInstance().getCurrentUser();
+
+        if (user == null || user.getLedger() == null) {
+            return "";
+        }
+
+        List<SubscriptionService> subscriptions = user.getLedger().getSubscriptionList();
+        if (subscriptions == null || subscriptions.isEmpty()) {
+            return "";
+        }
+
+        // 다음 결제일 기준으로 정렬 (가장 임박한 순서)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        SubscriptionService nextSubscription = subscriptions.stream()
+            .min((s1, s2) -> {
+                LocalDate date1 = LocalDate.parse(s1.getNextPaymentDate(), formatter);
+                LocalDate date2 = LocalDate.parse(s2.getNextPaymentDate(), formatter);
+                return date1.compareTo(date2);
+            })
+            .orElse(null);
+
+        if (nextSubscription == null) {
+            return "";
+        }
+
+        // 오늘부터의 남은 일수 계산
+        LocalDate nextPaymentDate = LocalDate.parse(nextSubscription.getNextPaymentDate(), formatter);
+        LocalDate today = LocalDate.now();
+        long daysUntilPayment = java.time.temporal.ChronoUnit.DAYS.between(today, nextPaymentDate);
+
+        // 일수에 따른 메시지 생성
+        if (daysUntilPayment <= 1) {
+            return "내일 " + nextSubscription.getServiceName() + " 결제가 예정됩니다. 계좌 잔액을 확인하세요.";
+        } else if (daysUntilPayment <= 7) {
+            return daysUntilPayment + "일 후 " + nextSubscription.getServiceName() + " 결제 예정입니다. 준비 바랍니다.";
+        } else if (daysUntilPayment <= 30) {
+            return nextSubscription.getServiceName() + " 구독이 " + daysUntilPayment + "일 뒤에 갱신됩니다. 결제일을 확인해주세요.";
+        } else {
+            return nextSubscription.getServiceName() + " 결제가 예정되어 있습니다. 계좌 잔액을 확인하세요.";
+        }
+    }
+
     private JPanel createSubscriptionScrollList() {
         JPanel containerPanel = new JPanel(new BorderLayout());
         containerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
@@ -146,10 +166,20 @@ public class MainPanel extends UserLayout {
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.X_AXIS));
         listPanel.setBackground(Color.WHITE);
 
-        // Mock 구독 서비스 데이터
-        SubscriptionService[] mockSubscriptions = getMockSubscriptions();
-        for (int i = 0; i < mockSubscriptions.length; i++) {
-            JButton serviceBtn = createSubscriptionButton(mockSubscriptions[i], i);
+        // 현재 사용자의 실제 구독 서비스 데이터 조회
+        User user = SessionManager.getInstance().getCurrentUser();
+        List<SubscriptionService> subscriptions = new ArrayList<>();
+
+        if (user != null && user.getLedger() != null) {
+            List<SubscriptionService> userSubscriptions = user.getLedger().getSubscriptionList();
+            if (userSubscriptions != null) {
+                subscriptions = userSubscriptions;
+            }
+        }
+
+        // 구독 서비스 버튼 생성
+        for (int i = 0; i < subscriptions.size(); i++) {
+            JButton serviceBtn = createSubscriptionButton(subscriptions.get(i), i);
             listPanel.add(serviceBtn);
             listPanel.add(Box.createHorizontalStrut(10));
         }
@@ -188,8 +218,8 @@ public class MainPanel extends UserLayout {
         };
 
         // 이미지 아이콘 설정 (서비스별로 다른 이미지 사용)
-        String imageName = subscription.getServiceName().toLowerCase() + ".png";
-        ImageIcon icon = ImageLoader.loadImage(imageName, 60, 60);
+        // ImageLoader가 .png 확장자를 자동으로 추가하므로 서비스명만 전달
+        ImageIcon icon = ImageLoader.loadImage(subscription.getServiceName(), 60, 60);
 
         if (icon != null) {
             btn.setIcon(icon);
@@ -215,65 +245,5 @@ public class MainPanel extends UserLayout {
         });
 
         return btn;
-    }
-
-    private JPanel createCalendarBox() {
-        JPanel boxPanel = new JPanel(new BorderLayout()) {
-            @Override
-            protected void paintComponent(java.awt.Graphics g) {
-                java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
-                g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(getBackground());
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
-                g2d.setColor(UIConstants.SHADOW_LIGHT);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
-            }
-        };
-        boxPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
-        boxPanel.setBackground(UIConstants.BACKGROUND_LIGHT);
-        boxPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        boxPanel.setOpaque(false);
-
-        JLabel titleLabel = new JLabel("이번달 지출 캘린더");
-        titleLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 14));
-        titleLabel.setForeground(UIConstants.TEXT_PRIMARY_COLOR);
-        boxPanel.add(titleLabel, BorderLayout.NORTH);
-
-        JLabel contentLabel = new JLabel("캘린더 (추후 구현 예정)");
-        contentLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 12));
-        contentLabel.setForeground(UIConstants.TEXT_DISABLED_COLOR);
-        boxPanel.add(contentLabel, BorderLayout.CENTER);
-
-        return boxPanel;
-    }
-
-    private JPanel createExpenseListBox() {
-        JPanel boxPanel = new JPanel(new BorderLayout()) {
-            @Override
-            protected void paintComponent(java.awt.Graphics g) {
-                java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
-                g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(getBackground());
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
-                g2d.setColor(UIConstants.SHADOW_LIGHT);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
-            }
-        };
-        boxPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 600));
-        boxPanel.setBackground(UIConstants.BACKGROUND_LIGHT);
-        boxPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        boxPanel.setOpaque(false);
-
-        JLabel titleLabel = new JLabel("지출 목록");
-        titleLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 14));
-        titleLabel.setForeground(UIConstants.TEXT_PRIMARY_COLOR);
-        boxPanel.add(titleLabel, BorderLayout.NORTH);
-
-        JLabel contentLabel = new JLabel("날짜별 지출 목록 (추후 구현 예정)");
-        contentLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 12));
-        contentLabel.setForeground(UIConstants.TEXT_DISABLED_COLOR);
-        boxPanel.add(contentLabel, BorderLayout.CENTER);
-
-        return boxPanel;
     }
 }
