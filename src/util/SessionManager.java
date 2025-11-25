@@ -61,12 +61,6 @@ public class SessionManager {
         return selectedSubscription;
     }
 
-    // ================== Setter ==================
-
-    public void setCurrentUser(User user) {
-        this.currentUser = user;
-    }
-
     public void setSelectedAccount(Account account) {
         this.selectedAccount = account;
     }

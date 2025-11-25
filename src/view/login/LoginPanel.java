@@ -1,15 +1,15 @@
 package view.login;
 
+import util.AuthService;
+import util.SessionManager;
+import model.User;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.Frame;
 
-import util.AuthService;
 import util.Router;
 import util.Routes;
-import util.SessionManager;
 import util.UIConstants;
-import model.User;
 
 public class LoginPanel extends JPanel {
 

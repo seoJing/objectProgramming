@@ -23,7 +23,7 @@ public class Main {
         User u = new User("u001", "pw", "서징규", "M", 21, "student", "Seoul", "010-0000-0000", false);
         Account a1 = new Account("111-222-333", "신한은행", 200_000);
         u.addAccount(a1);                    // 유저에 계좌 연결
-        SessionManager.getInstance().setCurrentUser(u);   // ★ 현재 사용자 등록
+        SessionManager.getInstance().login(u);   // ★ 현재 사용자 등록
 
         //임시로 유저 보는 코드
         model.UserList.getInstance().add(u);
