@@ -35,8 +35,8 @@ public class InformationSection extends JPanel {
         serviceNamePanel.setAlignmentX(0.0f); // 왼쪽 정렬
 
         // 이미지 추가
-        String imageName = subscription.getServiceName().toLowerCase() + ".png";
-        ImageIcon icon = ImageLoader.loadImage(imageName, 32, 32);
+        // ImageLoader가 .png 확장자를 자동으로 추가하므로 서비스명만 전달
+        ImageIcon icon = ImageLoader.loadImage(subscription.getServiceName(), 32, 32);
         if (icon != null) {
             JLabel imageLabel = new JLabel(icon);
             serviceNamePanel.add(imageLabel);
