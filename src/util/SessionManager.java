@@ -16,8 +16,6 @@ public class SessionManager {
     private Transaction selectedTransaction;
     private LocalDate selectedDate;
 
-    private boolean fromAllTransactions = false;
-
     private SessionManager() {}
 
     public static SessionManager getInstance() {
@@ -33,14 +31,12 @@ public class SessionManager {
         this.currentUser = user;
         this.selectedSubscription = null;
         this.selectedAccount = null;
-        this.fromAllTransactions = false;
     }
 
     public void logout() {
         this.currentUser = null;
         this.selectedSubscription = null;
         this.selectedAccount = null;
-        this.fromAllTransactions = false;
     }
 
     public boolean isLoggedIn() {
@@ -65,7 +61,6 @@ public class SessionManager {
         return selectedSubscription;
     }
 
-
     public void setSelectedAccount(Account account) {
         this.selectedAccount = account;
     }
@@ -84,11 +79,4 @@ public class SessionManager {
 
     public void setSelectedDate(LocalDate d) { this.selectedDate = d; }
     public LocalDate getSelectedDate() { return selectedDate; }
-
-    public boolean isFromAllTransactions() {   // ★ 추가
-        return fromAllTransactions;
-    }
-    public void setFromAllTransactions(boolean fromAllTransactions) { // ★ 추가
-        this.fromAllTransactions = fromAllTransactions;
-    }
 }

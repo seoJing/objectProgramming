@@ -50,17 +50,7 @@ public class TransactionDetailPanel extends UserLayout {
         top.setBorder(UIConstants.TOP_PANEL_BORDER);
 
         JButton back = new JButton("x");
-        back.addActionListener(e -> {
-            SessionManager sm = SessionManager.getInstance();
-            if (sm.isFromAllTransactions()) {
-                // 전체 거래 화면으로 돌아갈 때는 플래그를 한 번 쓰고 리셋
-                sm.setFromAllTransactions(false);
-                Router.getInstance().navigateUser(Routes.ALL_TRANSACTIONS);
-            } else {
-                // 기본: 계좌별 거래 화면으로
-                Router.getInstance().navigateUser(Routes.TRANSACTION);
-            }
-        });
+        back.addActionListener(e -> Router.getInstance().navigateUser(Routes.TRANSACTION));
         top.add(back, BorderLayout.EAST);
 
         JLabel title = new JLabel("거래 상세");
@@ -126,7 +116,7 @@ public class TransactionDetailPanel extends UserLayout {
         bankAndNumber.setText(acc.getBank() + " / " + acc.getAccountNumber());
         memo.setText("메모: " + safe(tx.getMemo()));
 
-        balanceAfter.setText("거래 후 잔액: " + UIConstants.won(tx.getBalanceAfter()));
+
 
     }
 

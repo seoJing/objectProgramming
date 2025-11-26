@@ -4,6 +4,7 @@ import model.Account;
 import model.Transaction;
 import model.TransactionType;
 import model.User;
+import service.AccountService;
 import util.SessionManager;
 import util.UIConstants;
 import util.Router;
@@ -23,27 +24,24 @@ public class AllTransactionsPanel extends UserLayout {
 
     private JPanel listPanel;
     private JScrollPane scroll;
+    // 날짜 헤더 위치 저장용
+    private final Map<LocalDate, JComponent> dayHeaderMap = new HashMap<>();
 
-    // 날짜 헤더 위치 저장용 (날짜순 정렬)
-    private final java.util.NavigableMap<LocalDate, JComponent> dayHeaderMap =
-            new java.util.TreeMap<>();
-
-    private static final DateTimeFormatter HHMM =
-            DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter HHMM = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter HEADER_DOW =
             DateTimeFormatter.ofPattern("d일 E요일", Locale.KOREAN);
 
     public AllTransactionsPanel() {
         super();
         setContent(createContent());
-        loadAndRender();      // 최초 한 번만 전체 거래 렌더링
+        loadAndRender();
     }
 
     private JPanel createContent() {
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(UIConstants.PANEL_BG);
 
-        // 상단 바
+        // 상단 바(간단 타이틀)
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
         top.setBorder(UIConstants.TOP_PANEL_CAL_BORDER);
@@ -53,17 +51,14 @@ public class AllTransactionsPanel extends UserLayout {
         title.setForeground(UIConstants.TEXT_DEFAULT);
         top.add(title, BorderLayout.WEST);
 
-        // === 미니 캘린더 ===
-        LocalDate initialDate =
-                (SessionManager.getInstance().getSelectedDate() != null)
-                        ? SessionManager.getInstance().getSelectedDate()
-                        : LocalDate.now();
-
         Calendar mini = new Calendar(
-                initialDate,
+                SessionManager.getInstance().getSelectedDate() != null
+                        ? SessionManager.getInstance().getSelectedDate()
+                        : LocalDate.now(),
                 picked -> {
-                    // 날짜 선택 시: 세션에 저장 + 해당 날짜 위치로 스크롤만 수행
+                    // 날짜 선택시: 세션에 저장하고, 리스트 다시 그리고, 그 날짜로 스크롤
                     SessionManager.getInstance().setSelectedDate(picked);
+                    loadAndRender();
                     scrollToDate(picked);
                 }
         );
@@ -85,7 +80,6 @@ public class AllTransactionsPanel extends UserLayout {
         return root;
     }
 
-    /** 모든 계좌의 거래 내역을 다시 그리기 */
     private void loadAndRender() {
         listPanel.removeAll();
         dayHeaderMap.clear();
@@ -97,24 +91,23 @@ public class AllTransactionsPanel extends UserLayout {
             return;
         }
 
-        List<Account> accounts = user.getAccountList();
+        AccountService svc = AccountService.getInstance();
+        List<Account> accounts = svc.getAccounts(user);
 
-        // 1) 계좌별 거래를 날짜(LocalDate)로 그룹 (내림차순 정렬)
+        // 1) 모든 계좌 거래를 날짜(LocalDate)로 그룹(내림차순)
         Map<LocalDate, List<Entry>> byDay = new TreeMap<>(Comparator.reverseOrder());
         for (Account acc : accounts) {
-            for (Transaction t : acc.getTransactionList()) {
+            for (Transaction t : svc.getTransactions(acc)) {
                 LocalDateTime dt = extractDateTime(t);
                 byDay.computeIfAbsent(dt.toLocalDate(), k -> new ArrayList<>())
                         .add(new Entry(acc, t, dt));
             }
         }
 
-        // 2) 날짜별로 헤더 + 행 렌더링
+        // 2) 날짜별로 시간 내림차순 정렬 + 헤더(일별 순합계) + 행 렌더
         for (Map.Entry<LocalDate, List<Entry>> e : byDay.entrySet()) {
             LocalDate day = e.getKey();
             List<Entry> items = e.getValue();
-
-            // 시간 내림차순
             items.sort(Comparator.comparing((Entry en) -> en.when).reversed());
 
             int sumIn = 0, sumOut = 0;
@@ -126,12 +119,11 @@ public class AllTransactionsPanel extends UserLayout {
 
             JComponent header = makeDayHeader(day, sumIn, sumOut);
             listPanel.add(header);
-            dayHeaderMap.put(day, header);    // 날짜 -> 헤더 컴포넌트 저장
-
+            dayHeaderMap.put(day, header);
             listPanel.add(Box.createVerticalStrut(8));
 
             for (Entry en : items) {
-                listPanel.add(makeRow(en.acc, en.tx, en.when));
+                listPanel.add(makeRow(en.acc, en.tx, en.when)); // 기존 행 그대로 재사용
                 listPanel.add(Box.createVerticalStrut(6));
             }
             listPanel.add(Box.createVerticalStrut(10));
@@ -139,12 +131,6 @@ public class AllTransactionsPanel extends UserLayout {
 
         listPanel.add(Box.createVerticalGlue());
         revalidateRepaint();
-
-        // 프로그램 처음 열었을 때도 선택된 날짜가 있으면 거기로 한 번 이동
-        LocalDate selected = SessionManager.getInstance().getSelectedDate();
-        if (selected != null) {
-            scrollToDate(selected);
-        }
     }
 
     private void revalidateRepaint() {
@@ -153,34 +139,18 @@ public class AllTransactionsPanel extends UserLayout {
     }
 
     private void scrollToDate(LocalDate day) {
-        if (day == null || dayHeaderMap.isEmpty()) return;
-
-        LocalDate target = day;
-
-        // 정확히 해당 날짜가 없으면 그보다 이전 날짜 중 제일 가까운 걸로
-        if (!dayHeaderMap.containsKey(day)) {
-            var floor = dayHeaderMap.floorEntry(day);
-            if (floor != null) {
-                target = floor.getKey();
-            } else {
-                // 전부 미래면 제일 위 날짜로
-                target = dayHeaderMap.firstKey();
-            }
-        }
-
-        JComponent header = dayHeaderMap.get(target);
+        JComponent header = dayHeaderMap.get(day);
         if (header == null) return;
 
         SwingUtilities.invokeLater(() -> {
-            // header가 listPanel 안에서 가지는 y 좌표
-            int y = header.getY();
+            Rectangle r = header.getBounds();              // 헤더의 위치
+            JViewport vp = scroll.getViewport();
 
-            // 약간 위 여유 주고, 음수는 0으로 보정
-            int targetY = Math.max(y - 8, 0);
+            // 현재 x 위치는 유지하고, y를 헤더가 위에 붙도록 맞춤
+            Point current = vp.getViewPosition();
+            int targetY = Math.max(0, r.y - 8);            // 살짝 위쪽 여유(8px)
 
-            // ➜ 스크롤바 값을 "고정된 값"으로 그냥 세팅
-            JScrollBar bar = scroll.getVerticalScrollBar();
-            bar.setValue(targetY);
+            vp.setViewPosition(new Point(current.x, targetY));
         });
     }
 
@@ -188,14 +158,12 @@ public class AllTransactionsPanel extends UserLayout {
         final Account acc;
         final Transaction tx;
         final LocalDateTime when;
-
-        Entry(Account acc, Transaction tx, LocalDateTime when) {
-            this.acc = acc;
-            this.tx = tx;
-            this.when = when;
+        Entry(Account a, Transaction t, LocalDateTime w) {
+            acc=a;
+            tx=t;
+            when=w;
         }
     }
-
 
     private JComponent makeDayHeader(LocalDate day, int sumIn, int sumOut) {
         JPanel header = new JPanel(new GridBagLayout());
@@ -211,16 +179,13 @@ public class AllTransactionsPanel extends UserLayout {
         JLabel dayLabel = new JLabel(day.format(HEADER_DOW));
         dayLabel.setFont(UIConstants.NORMAL_FONT);
         dayLabel.setForeground(UIConstants.TEXT_MUTED);
-
         g.gridx = 0;
-        g.weightx = 1;
-        g.anchor = GridBagConstraints.WEST;
+        g.weightx = 1; g.anchor = GridBagConstraints.WEST;
         header.add(dayLabel, g);
 
         int net = sumIn - sumOut;
         String sign = net >= 0 ? "+" : "-";
         int abs = Math.abs(net);
-
         JLabel netLabel = new JLabel(sign + UIConstants.money(abs) + "원");
         netLabel.setFont(UIConstants.NORMAL_FONT);
         netLabel.setForeground(net > 0 ? UIConstants.POS_GREEN : UIConstants.TEXT_DEFAULT);
@@ -241,27 +206,21 @@ public class AllTransactionsPanel extends UserLayout {
         row.setBorder(UIConstants.TX_ROW_BORDER);
         row.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
+        // 바인딩 + 클릭 → 상세로
         row.putClientProperty("account", account);
         row.putClientProperty("tx", t);
-
         row.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                Account a = (Account) ((JComponent) e.getSource()).getClientProperty("account");
-                Transaction tx = (Transaction) ((JComponent) e.getSource()).getClientProperty("tx");
+            @Override public void mouseClicked(java.awt.event.MouseEvent e) {
+                Account a = (Account)((JComponent)e.getSource()).getClientProperty("account");
+                Transaction tx = (Transaction)((JComponent)e.getSource()).getClientProperty("tx");
                 SessionManager.getInstance().setSelectedAccount(a);
                 SessionManager.getInstance().setSelectedTransaction(tx);
-                SessionManager.getInstance().setFromAllTransactions(true);
                 Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL);
             }
-
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
+            @Override public void mouseEntered(java.awt.event.MouseEvent e) {
                 row.setBackground(row.getBackground().darker());
             }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
+            @Override public void mouseExited(java.awt.event.MouseEvent e) {
                 row.setBackground(UIConstants.TX_ROW_BG);
             }
         });
@@ -270,6 +229,7 @@ public class AllTransactionsPanel extends UserLayout {
         gc.gridy = 0;
         gc.insets = UIConstants.ZERO_INSETS;
 
+        // 좌
         JPanel left = new JPanel();
         left.setOpaque(false);
         left.setLayout(new BoxLayout(left, BoxLayout.X_AXIS));
@@ -281,6 +241,7 @@ public class AllTransactionsPanel extends UserLayout {
         gc.anchor = GridBagConstraints.WEST;
         row.add(left, gc);
 
+        // 가운데(가맹점/시간/보조라벨: 은행명 포함)
         JPanel center = new JPanel();
         center.setOpaque(false);
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
@@ -292,8 +253,7 @@ public class AllTransactionsPanel extends UserLayout {
         time.setFont(UIConstants.SMALL_FONT);
         time.setForeground(UIConstants.TEXT_MUTED);
 
-        String sub = safe(t.getCategory()) + "  |  " +
-                account.getBank() + " / " + account.getAccountNumber();
+        String sub = safe(t.getCategory()) + "  |  " + account.getBank() + " / " + account.getAccountNumber();
         JLabel subLabel = new JLabel(sub);
         subLabel.setFont(UIConstants.SMALL_FONT);
         subLabel.setForeground(UIConstants.TEXT_MUTED);
@@ -310,6 +270,7 @@ public class AllTransactionsPanel extends UserLayout {
         gc.anchor = GridBagConstraints.WEST;
         row.add(center, gc);
 
+        // 우(금액)
         boolean deposit = (t.getType() == TransactionType.INCOME);
         String sign = deposit ? "+" : "-";
         JLabel amount = new JLabel(sign + UIConstants.money(t.getAmount()) + "원");
@@ -329,13 +290,13 @@ public class AllTransactionsPanel extends UserLayout {
         return row;
     }
 
+    // Transaction 날짜/시간 추출 (TransactionPanel과 동일 로직)
     private static LocalDateTime extractDateTime(Transaction t) {
         try {
             var m = t.getClass().getMethod("getDateTime");
             Object v = m.invoke(t);
             if (v instanceof LocalDateTime dt) return dt;
         } catch (Exception ignored) {}
-
         try {
             var m = t.getClass().getMethod("getDate");
             Object v = m.invoke(t);
@@ -350,7 +311,7 @@ public class AllTransactionsPanel extends UserLayout {
                     try { return LocalDateTime.parse(s, f); } catch (Exception ignore) {}
                 }
                 try {
-                    var d = LocalDate.parse(s, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+                    var d = java.time.LocalDate.parse(s, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
                     return d.atStartOfDay();
                 } catch (Exception ignore) {}
             }
@@ -358,7 +319,5 @@ public class AllTransactionsPanel extends UserLayout {
         return LocalDateTime.now();
     }
 
-    private static String safe(String s) {
-        return (s == null) ? "" : s;
-    }
+    private static String safe(String s) { return s == null ? "" : s; }
 }

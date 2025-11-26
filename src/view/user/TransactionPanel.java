@@ -37,6 +37,7 @@ import model.Account;
 import model.Transaction;
 import model.TransactionType;
 import model.User;
+import service.AccountService;
 import util.Router;
 import util.Routes;
 import util.SessionManager;
@@ -152,7 +153,7 @@ public class TransactionPanel extends UserLayout {
         User user = SessionManager.getInstance().getCurrentUser();
         if (user == null) return;
 
-        List<Account> accounts = user.getAccountList();
+        List<Account> accounts = AccountService.getInstance().getAccounts(user);
         accountCombo.removeAllItems();
         for (Account a : accounts) accountCombo.addItem(a);
 
@@ -186,7 +187,7 @@ public class TransactionPanel extends UserLayout {
         // 상단 잔액
         balanceLabel.setText(UIConstants.won(account.getCurrentBalance()));
 
-        List<Transaction> txs = account.getTransactionList();
+        List<Transaction> txs = AccountService.getInstance().getTransactions(account);
         // 날짜별 그룹 (내림차순)
         Map<LocalDate, List<Transaction>> byDay = new TreeMap<>(Comparator.reverseOrder());
         for (Transaction t : txs) {
@@ -277,8 +278,7 @@ public class TransactionPanel extends UserLayout {
                 Transaction tx = (Transaction)((JComponent)e.getSource()).getClientProperty("tx");
                 SessionManager.getInstance().setSelectedAccount(a);
                 SessionManager.getInstance().setSelectedTransaction(tx);
-                SessionManager.getInstance().setFromAllTransactions(false);
-                Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL);
+                Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL); // ★ 새 라우트
             }
             @Override public void mouseEntered(java.awt.event.MouseEvent e) {
                 row.setBackground(row.getBackground().darker());
