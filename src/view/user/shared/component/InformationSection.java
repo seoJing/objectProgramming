@@ -24,8 +24,8 @@ public class InformationSection extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(java.awt.Color.WHITE);
         setBorder(javax.swing.BorderFactory.createEmptyBorder(30, 16, 20, 16));
-        setMaximumSize(new Dimension(Integer.MAX_VALUE, 160));
-        setPreferredSize(new Dimension(Integer.MAX_VALUE, 160));
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+        setPreferredSize(new Dimension(Integer.MAX_VALUE, 150));
 
         // 서비스명과 이미지를 담을 패널
         JPanel serviceNamePanel = new JPanel();
@@ -52,31 +52,11 @@ public class InformationSection extends JPanel {
         add(serviceNamePanel);
         add(Box.createVerticalStrut(12));
 
-        // 공유 여부에 따른 금액 표시
-        if (subscription.getNumberOfUsers() > 1) {
-            // 공유 중인 경우: 개인 부담금을 메인으로 표시
-            int personalCost = subscription.getPersonalCost();
-            JLabel personalCostLabel = new JLabel(String.format("%,d원", personalCost));
-            personalCostLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 40));
-            personalCostLabel.setForeground(new Color(33, 33, 33));
-            personalCostLabel.setAlignmentX(0.0f);
-            add(personalCostLabel);
-
-            add(Box.createVerticalStrut(8));
-
-            // 공유 인원 라벨
-            JLabel sharingLabel = new JLabel(subscription.getNumberOfUsers() + "명이 공유 중 (총 " + String.format("%,d원", subscription.getAmount()) + ")");
-            sharingLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 12));
-            sharingLabel.setForeground(new Color(100, 100, 100));
-            sharingLabel.setAlignmentX(0.0f);
-            add(sharingLabel);
-        } else {
-            // 혼자 사용하는 경우: 월 요금을 메인으로 표시
-            JLabel amountLabel = new JLabel(String.format("%,d원", subscription.getAmount()));
-            amountLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 40));
-            amountLabel.setForeground(new Color(33, 33, 33));
-            amountLabel.setAlignmentX(0.0f);
-            add(amountLabel);
-        }
+        // 금액 라벨
+        JLabel amountLabel = new JLabel(String.format("%,d원", subscription.getAmount()));
+        amountLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 40));
+        amountLabel.setForeground(new Color(33, 33, 33));
+        amountLabel.setAlignmentX(0.0f); // 왼쪽 정렬
+        add(amountLabel);
     }
 }

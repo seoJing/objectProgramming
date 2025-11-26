@@ -34,9 +34,9 @@ public class AuthService {
         }
 
         // 비밀번호 검증 (6자 이상 + 대문자 + 소문자 + 숫자 + 특수문자)
-        String passwordPattern = 
+        String passwordPattern =
             "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-={}|\\[\\]:;\"'<>,.?/]).{6,}$";
-    
+
         if (rawPassword == null || !rawPassword.matches(passwordPattern)) {
             throw new IllegalArgumentException(
                 "비밀번호는 6자 이상이며, 대문자/소문자/숫자/특수문자를 모두 포함해야 합니다."
