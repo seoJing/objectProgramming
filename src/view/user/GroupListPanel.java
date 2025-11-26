@@ -51,7 +51,7 @@ public class GroupListPanel extends UserLayout {
         center.add(label);
         center.add(Box.createVerticalStrut(8));
 
-        // 위 버튼 줄: 첫 페이지와 동일
+        // 위 버튼 줄
         JPanel modePanel = new JPanel(new GridLayout(1, 2, BUTTON_HORIZONTAL_GAP, 0));
         modePanel.setOpaque(false);
         JButton basketBtn = new JButton("장바구니");
@@ -67,64 +67,59 @@ public class GroupListPanel extends UserLayout {
         JPanel groupPanel = new JPanel(new BorderLayout());
         groupPanel.setBackground(BACKGROUND_BUTTON);
 
-        int mergedHeight = 260 + 16 + 120; // 두 카드 합친 높이 근사
+        int mergedHeight = 260 + 16 + 120;
         groupPanel.setPreferredSize(new Dimension(0, mergedHeight));
         groupPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, mergedHeight));
 
-        // 제목
         JLabel groupTitle = new JLabel("<그룹핑 묶음 가격>");
         groupTitle.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
         groupTitle.setFont(NORMAL_FONT.deriveFont(13f));
         groupTitle.setForeground(TEXT_PRIMARY_COLOR);
         groupPanel.add(groupTitle, BorderLayout.NORTH);
 
-        // 안쪽 내용 패널 (4개 서비스 + 신청하기 버튼)
         JPanel priceListPanel = new JPanel();
         priceListPanel.setOpaque(false);
         priceListPanel.setLayout(new BoxLayout(priceListPanel, BoxLayout.Y_AXIS));
         priceListPanel.setBorder(BorderFactory.createEmptyBorder(0, 16, 16, 16));
 
-        // 각 행 생성: 라벨 + 신청하기 버튼
-priceListPanel.add(createPriceRow(
-        "YouTube 4인 그룹핑: 4,975원/월 (정가 19,900원)", "YouTube"
-));
-priceListPanel.add(Box.createVerticalStrut(6));
+        // 예시 4개 (여기서 선택된 serviceName은 영어 키로만 사용)
+        priceListPanel.add(createPriceRow(
+                "YouTube 그룹핑 예시 (정가는 products.txt 기준)",
+                "YouTube"
+        ));
+        priceListPanel.add(Box.createVerticalStrut(6));
 
-priceListPanel.add(createPriceRow(
-        "Netflix 4인 그룹핑: 4,475원/월 (정가 17,900원)", "Netflix"
-));
-priceListPanel.add(Box.createVerticalStrut(6));
+        priceListPanel.add(createPriceRow(
+                "Netflix 그룹핑 예시 (정가는 products.txt 기준)",
+                "Netflix"
+        ));
+        priceListPanel.add(Box.createVerticalStrut(6));
 
-priceListPanel.add(createPriceRow(
-        "Spotify 4인 그룹핑: 2,725원/월 (정가 10,900원)", "Spotify"
-));
-priceListPanel.add(Box.createVerticalStrut(6));
+        priceListPanel.add(createPriceRow(
+                "Spotify 그룹핑 예시 (정가는 products.txt 기준)",
+                "Spotify"
+        ));
+        priceListPanel.add(Box.createVerticalStrut(6));
 
-priceListPanel.add(createPriceRow(
-        "Disney+ 4인 그룹핑: 2,475원/월 (정가 9,900원)", "Disney+"
-));
+        priceListPanel.add(createPriceRow(
+                "Disney+ 그룹핑 예시 (정가는 products.txt 기준)",
+                "Disney+"
+        ));
 
-        // 중앙에 리스트 붙이기
         groupPanel.add(priceListPanel, BorderLayout.CENTER);
 
-        // 레이아웃 유지
         center.add(groupPanel);
-        center.add(Box.createVerticalStrut(16));   // 카드와 아래 여백
+        center.add(Box.createVerticalStrut(16));
         center.add(Box.createVerticalGlue());
 
-        /* ==== 이벤트 ==== */
-
-        // 장바구니 탭
+        // 이벤트
         basketBtn.addActionListener(e -> Router.getInstance().navigateUser(Routes.STORE));
-
-        // groupBtn은 현재 페이지(그룹핑 탭)이므로 선택만 유지하거나 필요 없으면 비워둠
-        // groupBtn.addActionListener(e -> Router.getInstance().navigateUser(Routes.GROUP_LIST));
+        // groupBtn은 현재 페이지라 동작 없음
 
         root.add(center, BorderLayout.CENTER);
         return root;
     }
 
- 
     private JPanel createPriceRow(String text, String serviceName) {
         JPanel row = new JPanel(new BorderLayout());
         row.setOpaque(false);
@@ -134,8 +129,8 @@ priceListPanel.add(createPriceRow(
         textArea.setForeground(TEXT_PRIMARY_COLOR);
         textArea.setEditable(false);
         textArea.setOpaque(false);
-        textArea.setLineWrap(true);          // 줄바꿈 켜기
-        textArea.setWrapStyleWord(true);     // 단어 단위로 줄바꿈
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
         textArea.setFocusable(false);
         textArea.setBorder(null);
 
@@ -153,8 +148,6 @@ priceListPanel.add(createPriceRow(
 
         return row;
     }
-
-
 
     private static void styleFlatButton(JButton btn) {
         btn.setFocusPainted(false);

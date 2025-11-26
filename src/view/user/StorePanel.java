@@ -1,5 +1,20 @@
 package view.user;
 
+import model.SubscriptionService;
+import model.User;
+import util.SessionManager;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import java.time.LocalDate;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
 import static util.UIConstants.BACKGROUND_BUTTON;
 import static util.UIConstants.BACKGROUND_LIGHT;
 import static util.UIConstants.BUTTON_HORIZONTAL_GAP;
@@ -45,13 +60,28 @@ import view.layout.UserLayout;
  */
 public class StorePanel extends UserLayout {
 
-    // ✅ 현재 생성된 StorePanel 인스턴스 저장
+    // 현재 생성된 StorePanel 인스턴스 저장
     private static StorePanel instance;
 
-    // ✅ 카테고리별 구독 저장용 (문자열 대신 객체로)
+    // products.txt 한 줄 정보
+    private static class Product {
+        String code;
+        String category;
+        String name;   // 화면에 보일 이름 (언더바는 공백으로 변환)
+        int price;
+
+        Product(String code, String category, String name, int price) {
+            this.code = code;
+            this.category = category;
+            this.name = name;
+            this.price = price;
+        }
+    }
+
+    // 장바구니 카테고리별 구독 저장용
     private static class SubscriptionItem {
         String display; // "YouTube (그룹핑) - 4,975원/월"
-        int price;      // 4975
+        int price;
 
         SubscriptionItem(String display, int price) {
             this.display = display;
@@ -60,24 +90,94 @@ public class StorePanel extends UserLayout {
     }
 
     private final Map<String, List<SubscriptionItem>> categorySubs = new HashMap<>();
+    private final List<Product> products = new ArrayList<>();
 
     // 총 금액
     private int totalPrice = 0;
     private JLabel summaryText;
 
-    // ✅ 구독 리스트를 그릴 패널 (스크롤 안쪽)
+    // 구독 리스트를 그릴 패널 (스크롤 안쪽)
     private JPanel subsListPanel;
 
     public StorePanel() {
         super();
-        instance = this;   // ✅ 생성 시 자기 자신 저장
+        instance = this;   // 생성 시 자기 자신 저장
+        loadProductsFromFile(); // products.txt 읽기
         setContent(createContent());
     }
 
-    // ✅ 다른 화면에서 StorePanel 사용 시
     public static StorePanel getInstance() {
         return instance;
     }
+
+    /* ====================== products.txt 로드 ====================== */
+
+private void loadProductsFromFile() {
+    if (!products.isEmpty()) return; // 이미 읽었으면 패스
+
+    // 1차 시도: 클래스패스(resources/data/products.txt)에서 읽기
+    try (InputStream in = getClass().getClassLoader()
+            .getResourceAsStream("resources/data/products.txt")) {
+
+        if (in != null) {
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                parseProducts(br);
+                return;
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    // 2차 시도: 프로젝트 기준 상대경로 src/resources/data/products.txt 에서 읽기
+    try {
+        Path path = Paths.get("src", "resources", "data", "products.txt");
+
+        if (!Files.exists(path)) {
+            System.err.println("products.txt 를 찾을 수 없습니다. 시도한 경로: "
+                    + path.toAbsolutePath());
+            return;
+        }
+
+        try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            parseProducts(br);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+/**
+ * 실제 한 줄씩 읽어서 products 리스트에 넣는 공통 로직
+ */
+private void parseProducts(BufferedReader br) throws IOException {
+    String line;
+    while ((line = br.readLine()) != null) {
+        line = line.trim();
+        if (line.isEmpty()) continue;
+
+        String[] parts = line.split("\\s+");
+        if (parts.length < 4) continue;
+
+        String code = parts[0];
+        String category = parts[1];
+
+        int price = Integer.parseInt(parts[parts.length - 1]);
+
+        StringBuilder nameBuilder = new StringBuilder();
+        for (int i = 2; i < parts.length - 1; i++) {
+            if (i > 2) nameBuilder.append(' ');
+            nameBuilder.append(parts[i]);
+        }
+        String rawName = nameBuilder.toString();
+        String displayName = rawName.replace('_', ' ');
+
+        products.add(new Product(code, category, displayName, price));
+    }
+}
+
+
 
     /* ====================== UI 구성 ====================== */
 
@@ -85,13 +185,11 @@ public class StorePanel extends UserLayout {
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(BACKGROUND_LIGHT);
 
-        // 가운데 메인 컨텐츠
         JPanel centerPanel = new JPanel();
         centerPanel.setOpaque(false);
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
-        // 타이틀
         JLabel basketLabel = new JLabel("구독 장바구니", SwingConstants.CENTER);
         basketLabel.setFont(SMALL_FONT.deriveFont(Font.PLAIN, 13f));
         basketLabel.setForeground(TEXT_PRIMARY_COLOR);
@@ -99,7 +197,6 @@ public class StorePanel extends UserLayout {
         centerPanel.add(basketLabel);
         centerPanel.add(Box.createVerticalStrut(8));
 
-        // ===== 장바구니 / 그룹핑 버튼 줄 =====
         JPanel modePanel = new JPanel(new GridLayout(1, 2, BUTTON_HORIZONTAL_GAP, 0));
         modePanel.setOpaque(false);
 
@@ -113,12 +210,10 @@ public class StorePanel extends UserLayout {
         centerPanel.add(modePanel);
         centerPanel.add(Box.createVerticalStrut(16));
 
-        // ===== 카테고리별 구독 리스트 =====
         JPanel listOuter = new JPanel(new BorderLayout());
         listOuter.setBackground(BACKGROUND_BUTTON);
         listOuter.setPreferredSize(new Dimension(0, 260));
 
-        // 제목 + [구독 추가] 버튼을 담는 헤더 패널
         JPanel listHeader = new JPanel(new BorderLayout());
         listHeader.setOpaque(false);
 
@@ -169,7 +264,6 @@ public class StorePanel extends UserLayout {
 
         listOuter.add(listHeader, BorderLayout.NORTH);
 
-        // ✅ 리스트가 들어갈 패널 (각 항목 + 취소 버튼)
         subsListPanel = new JPanel();
         subsListPanel.setOpaque(false);
         subsListPanel.setLayout(new BoxLayout(subsListPanel, BoxLayout.Y_AXIS));
@@ -182,7 +276,6 @@ public class StorePanel extends UserLayout {
         centerPanel.add(listOuter);
         centerPanel.add(Box.createVerticalStrut(16));
 
-        // ===== 총액 패널 =====
         JPanel summaryPanel = new JPanel(new BorderLayout());
         summaryPanel.setBackground(BACKGROUND_BUTTON);
         summaryPanel.setPreferredSize(new Dimension(0, 120));
@@ -205,7 +298,6 @@ public class StorePanel extends UserLayout {
         groupBtn.addActionListener(e -> Router.getInstance().navigateUser(Routes.GROUP_LIST));
         basketBtn.addActionListener(e -> Router.getInstance().navigateUser(Routes.STORE));
 
-        // 처음 화면 갱신
         refreshSubscriptionList();
 
         return root;
@@ -214,42 +306,57 @@ public class StorePanel extends UserLayout {
     /* ====================== 장바구니 팝업/로직 ====================== */
 
     private void showCartDialog() {
-        // 예시 데이터
-        String[] serviceNames = {
-            "YouTube", "Netflix", "Spotify", "Disney+",
-            "직접 입력(기타 서비스)"
-        };
-        int[] servicePrices = {
-            19900, 17900, 10900, 9900,
-            0
-        };
-        String[] serviceCategories = {
-            "엔터테인먼트", "OTT", "음악", "OTT",
-            ""
-        };
+        if (products.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "products.txt에 상품 정보가 없습니다.",
+                    "오류",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        String[] options = new String[products.size() + 1];
+        for (int i = 0; i < products.size(); i++) {
+            Product p = products.get(i);
+            options[i] = p.name + " - " + p.price + "원";
+        }
+        options[products.size()] = "직접 입력(기타 서비스)";
 
         String choice = (String) JOptionPane.showInputDialog(
-            this,
-            "추가할 구독을 선택하세요.",
-            "장바구니",
-            JOptionPane.PLAIN_MESSAGE,
-            null,
-            serviceNames,
-            serviceNames[0]
+                this,
+                "추가할 구독을 선택하세요.",
+                "장바구니",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                options,
+                options[0]
         );
 
         if (choice == null) return;
-
-        int idx = Arrays.asList(serviceNames).indexOf(choice);
-        if (idx == -1) return;
 
         if (choice.startsWith("직접 입력")) {
             showCustomAddDialog();
             return;
         }
 
-        addSubscription(serviceCategories[idx], serviceNames[idx], servicePrices[idx]);
-        JOptionPane.showMessageDialog(this, choice + " 구독을 추가했습니다.", "구독 추가", JOptionPane.INFORMATION_MESSAGE);
+        Product selectedProduct = null;
+        for (Product p : products) {
+            String label = p.name + " - " + p.price + "원";
+            if (label.equals(choice)) {
+                selectedProduct = p;
+                break;
+            }
+        }
+        if (selectedProduct == null) return;
+
+        addSubscription(selectedProduct.category, selectedProduct.name, selectedProduct.price);
+        JOptionPane.showMessageDialog(
+                this,
+                selectedProduct.name + " 구독을 추가했습니다.",
+                "구독 추가",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     private void showCustomAddDialog() {
@@ -266,8 +373,8 @@ public class StorePanel extends UserLayout {
         panel.add(categoryField);
 
         int result = JOptionPane.showConfirmDialog(
-            this, panel, "기타 서비스 추가",
-            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+                this, panel, "기타 서비스 추가",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
         );
 
         if (result != JOptionPane.OK_OPTION) return;
@@ -281,55 +388,116 @@ public class StorePanel extends UserLayout {
         }
     }
 
-    // ✅ 그룹핑 신청 시 호출할 메서드 (1/4 가격)
-    public void addGroupedSubscription(String serviceName) {
-        if (serviceName == null || serviceName.isBlank()) return;
+    /* ===== 그룹핑 신청 시 호출: serviceName + 인원수 ===== */
 
+    public void addGroupedSubscription(String serviceName, int people) {
+        if (serviceName == null || serviceName.isBlank()) return;
+        if (people <= 0) people = 1;
+
+        Product base = findProductForService(serviceName);
         String category;
         int fullPrice;
 
+        if (base != null) {
+            category = base.category;
+            fullPrice = base.price;
+        } else {
+            // 혹시 못 찾았을 때 기본값 (예전 하드코딩 내용)
+            switch (serviceName) {
+                case "YouTube":
+                    category = "영상/스트리밍";
+                    fullPrice = 14900;
+                    break;
+                case "Netflix":
+                    category = "OTT";
+                    fullPrice = 17000;
+                    break;
+                case "Spotify":
+                    category = "음악";
+                    fullPrice = 10900;
+                    break;
+                case "Disney+":
+                    category = "OTT";
+                    fullPrice = 9900;
+                    break;
+                default:
+                    category = "기타(그룹핑)";
+                    fullPrice = 0;
+            }
+        }
+
+        int sharePrice = (people > 0) ? fullPrice / people : fullPrice;
+        String displayName = serviceName + " (" + people + "인 그룹핑)";
+
+        addSubscription(category, displayName, sharePrice);
+    }
+
+    private Product findProductForService(String serviceName) {
+        String keyword;
         switch (serviceName) {
-            case "YouTube":
-                category = "엔터테인먼트";
-                fullPrice = 19900;
-                break;
-            case "Netflix":
-                category = "OTT";
-                fullPrice = 17900;
-                break;
-            case "Spotify":
-                category = "음악";
-                fullPrice = 10900;
-                break;
-            case "Disney+":
-                category = "OTT";
-                fullPrice = 9900;
-                break;
-            default:
-                category = "기타(그룹핑)";
-                fullPrice = 0;
+            case "YouTube":  keyword = "유튜브"; break;
+            case "Netflix":  keyword = "넷플릭스"; break;
+            case "Spotify":  keyword = "스포티파이"; break;
+            case "Disney+":  keyword = "디즈니플러스"; break;
+            default:         keyword = null;
         }
+        if (keyword == null) return null;
 
-        int groupPrice = fullPrice / 4;
-        addSubscription(category, serviceName + " (그룹핑)", groupPrice);
+        for (Product p : products) {
+            if (p.name.contains(keyword)) {
+                return p;
+            }
+        }
+        return null;
     }
 
-    // ✅ 공통 추가 로직
     private void addSubscription(String category, String name, int price) {
-        if (category == null || category.isBlank()) {
-            category = "기타";
-        }
-
-        List<SubscriptionItem> list = categorySubs.computeIfAbsent(category, k -> new ArrayList<>());
-        String display = name + " - " + price + "원/월";
-        list.add(new SubscriptionItem(display, price));
-
-        totalPrice += price;
-        updateSummaryLabel();
-        refreshSubscriptionList();
+    if (category == null || category.isBlank()) {
+        category = "기타";
     }
 
-    // ✅ 리스트 패널 다시 그리기 (카테고리 + 각 항목 + 취소 버튼)
+    List<SubscriptionItem> list = categorySubs.computeIfAbsent(category, k -> new ArrayList<>());
+    String display = name + " - " + price + "원/월";
+    list.add(new SubscriptionItem(display, price));
+
+    totalPrice += price;
+    updateSummaryLabel();
+    refreshSubscriptionList();
+
+    // 현재 로그인한 유저의 Ledger에도 추가
+    User currentUser = SessionManager.getInstance().getCurrentUser();
+    if (currentUser != null) {
+        String paymentDate = LocalDate.now().toString();
+
+        SubscriptionService service = new SubscriptionService(
+                name,
+                price,
+                paymentDate,
+                currentUser.getId(),
+                12,      // 결제 주기
+                1        // 그룹핑이 아닌 기본 추가는 1명
+        );
+
+        System.out.println("=======================================");
+        System.out.println("[구독 추가 시작] " + name);
+
+        int beforeCount = currentUser.getLedger().getSubscriptionList().size();
+        System.out.println("추가 전 구독 개수: " + beforeCount);
+
+        System.out.println("추가되는 구독 데이터: " + service);
+
+        // 실제 Ledger에 저장
+        currentUser.getLedger().addSubscription(service);
+
+        int afterCount = currentUser.getLedger().getSubscriptionList().size();
+        System.out.println("추가 후 구독 개수: " + afterCount);
+        System.out.println("=======================================");
+    }
+}
+
+
+    /* ====================== 리스트 패널 그리기 ====================== */
+
     private void refreshSubscriptionList() {
         subsListPanel.removeAll();
 
@@ -350,7 +518,6 @@ public class StorePanel extends UserLayout {
             Collections.sort(sortedCategories);
 
             for (String category : sortedCategories) {
-                // 카테고리 제목
                 JLabel catLabel = new JLabel("[" + category + "]");
                 catLabel.setFont(NORMAL_FONT.deriveFont(Font.BOLD, 13f));
                 catLabel.setForeground(TEXT_PRIMARY_COLOR);
@@ -395,15 +562,12 @@ public class StorePanel extends UserLayout {
                         refreshSubscriptionList();
                     });
 
-                    // X축으로: [텍스트]  -  (여백)  -  [버튼]
                     row.add(subLabel);
                     row.add(Box.createHorizontalGlue());
                     row.add(cancelBtn);
 
                     subsListPanel.add(row);
                 }
-
-
                 subsListPanel.add(Box.createVerticalStrut(8));
             }
         }
@@ -426,4 +590,7 @@ public class StorePanel extends UserLayout {
         btn.setForeground(TEXT_PRIMARY_COLOR);
         btn.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
     }
+
 }
+
+
