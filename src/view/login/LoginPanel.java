@@ -123,9 +123,7 @@ public class LoginPanel extends JPanel {
         return btn;
     }
 
-    private void onLogin() {
-        String id = idField.getText().trim();
-        String pw = new String(passwordField.getPassword());
+    
 
 /*
 로그인 성공 시 SessionManager에 사용자 정보 저장
@@ -137,22 +135,40 @@ public class LoginPanel extends JPanel {
 UI는 SessionManager만 보고 로그인 상태를 다룸
 → 로그인 로직이 한 곳에 모임 (Single Source of Truth)
 */
-        try {
-            User user = authService.login(id, pw);
+    private void onLogin() {
+    String id = idField.getText().trim();
+    String pw = new String(passwordField.getPassword());
 
-            SessionManager.getInstance().login(user);
-            errorLabel.setText(" ");
+    try {
+        User user = authService.login(id, pw);
 
-            if (user.isAdmin()) {
-                Router.getInstance().navigateTo(Routes.ADMIN);
-            } else {
-                Router.getInstance().navigateTo(Routes.USER);
-            }
+        // 세션 등록
+        SessionManager.getInstance().login(user);
 
-        } catch (Exception ex) {
-            errorLabel.setText(ex.getMessage());
+        // 에러 초기화
+        errorLabel.setText(" ");
+
+        // ============================
+        //  로그인 후 화면 동적 생성
+        // ============================
+
+        if (user.isAdmin()) {
+            // 관리자 화면을 '지금' 생성
+            view.admin.AdminSidePanel adminPanel = new view.admin.AdminSidePanel();
+            Router.getInstance().getMainFrame().addScreen(Routes.ADMIN, adminPanel);
+            Router.getInstance().navigateTo(Routes.ADMIN);
+
+        } else {
+            // 일반 사용자 화면을 '지금' 생성
+            view.user.UserSidePanel userPanel = new view.user.UserSidePanel();
+            Router.getInstance().getMainFrame().addScreen(Routes.USER, userPanel);
+            Router.getInstance().navigateTo(Routes.USER);
         }
+
+    } catch (Exception ex) {
+        errorLabel.setText(ex.getMessage());
     }
+}
 
     private void openSignupDialog() {
         Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);

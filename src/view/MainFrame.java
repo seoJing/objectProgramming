@@ -1,16 +1,13 @@
 package view;
 
 import java.awt.CardLayout;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import util.Router;
 import util.Routes;
 import util.UIConstants;
-import view.admin.AdminSidePanel;
 import view.login.LoginPanel;
-import view.user.UserSidePanel;
 
 public class MainFrame extends JFrame {
     private CardLayout cardLayout;
@@ -22,37 +19,39 @@ public class MainFrame extends JFrame {
         setSize(UIConstants.USER_SIDE_WINDOW_WIDTH, UIConstants.USER_SIDE_WINDOW_HEIGHT);
         setLocationRelativeTo(null);
 
-        //  Router에 메인 프레임 등록 (navigateTo가 동작하려면 필요)
+        // Router에 메인 프레임 등록
         Router.getInstance().setMainFrame(this);
 
         cardLayout = new CardLayout();
         container = new JPanel(cardLayout);
 
-        UserSidePanel userPanel = new UserSidePanel();
-        Router.getInstance().setUserSidePanel(userPanel);
-
-        AdminSidePanel adminPanel = new AdminSidePanel();
-        Router.getInstance().setAdminSidePanel(adminPanel);
-
-         //  여기서 사용하는 LoginPanel이 곧 로그인 화면
+        // 초기 화면 구성 (로그인 화면만 실제 화면)
         container.add(new LoginPanel(), Routes.LOGIN);
-        container.add(userPanel, Routes.USER);
-        container.add(adminPanel, Routes.ADMIN);
+        container.add(new JPanel(), Routes.USER);   // 로그인 후 UserSidePanel로 교체될 자리
+        container.add(new JPanel(), Routes.ADMIN);  // 로그인 후 AdminSidePanel로 교체될 자리
 
         add(container);
 
         cardLayout.show(container, Routes.USER);
     }
 
+    /** 
+     * 로그인 후 동적으로 화면을 교체하기 위한 메서드 
+     */
+    public void addScreen(String route, JPanel panel) {
+        container.add(panel, route);
+    }
+
     public void switchTo(String screen) {
         cardLayout.show(container, screen);
 
-        // Resize window based on screen type
+        // 화면 크기 조정
         if (screen.equals(Routes.ADMIN)) {
             setSize(UIConstants.ADMIN_SIDE_WINDOW_WIDTH, UIConstants.ADMIN_SIDE_WINDOW_HEIGHT);
         } else if (screen.equals(Routes.USER)) {
             setSize(UIConstants.USER_SIDE_WINDOW_WIDTH, UIConstants.USER_SIDE_WINDOW_HEIGHT);
         }
-        setLocationRelativeTo(null);  // Center the window after resize
+
+        setLocationRelativeTo(null);  // 창 가운데 정렬
     }
 }
