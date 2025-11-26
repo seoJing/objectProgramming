@@ -24,7 +24,6 @@ import javax.swing.JScrollPane;
 
 import model.Account;
 import model.User;
-import service.AccountService;
 import util.Router;
 import util.Routes;
 import util.SessionManager;
@@ -34,6 +33,7 @@ import view.layout.UserLayout;
 public class AccountPanel extends UserLayout {
 
     private JLabel totalAssetLabel;
+    private JLabel ownerLabel;
     private JPanel listPanel;
 
     public AccountPanel() {
@@ -47,9 +47,16 @@ public class AccountPanel extends UserLayout {
         User user = SessionManager.getInstance().getCurrentUser();
         if (user == null) return;
 
-        // 서비스에서 사용자 계좌와 총 자산 가져오기 (mock 가능)
-        List<Account> accounts = AccountService.getInstance().getAccounts(user);
-        int total = AccountService.getInstance().getTotalBalance(user);
+        if (ownerLabel != null) {
+            ownerLabel.setText(user.getName() + "님의 총 자산");
+        }
+
+        // 서비스에서 사용자 계좌와 총 자산 가져오기
+        List<Account> accounts = user.getAccountList();
+        int total = 0;
+        for (Account a : accounts) {
+            total += a.getCurrentBalance();
+        }
 
         totalAssetLabel.setText(UIConstants.won(total));
         // 리스트 초기화 후 다시 그림
@@ -73,7 +80,9 @@ public class AccountPanel extends UserLayout {
         top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
         top.setBorder(UIConstants.ACCOUNT_HEADER_PADDING);
 
-        JLabel total = new JLabel(SessionManager.getInstance().getCurrentUser().getName() + "님의 총 자산");
+        User user = SessionManager.getInstance().getCurrentUser();
+        String name = (user != null ? user.getName() : "");
+        JLabel total = new JLabel(name + "님의 총 자산");
         total.setFont(UIConstants.NORMAL_FONT);
         total.setForeground(UIConstants.TEXT_MUTED);
 
@@ -121,7 +130,7 @@ public class AccountPanel extends UserLayout {
         return root;
     }
 
-    /** 한 줄짜리 계좌 카드 컴포넌트 */
+    // 한 줄짜리 계좌 카드 컴포넌트
     private JComponent makeAccountCard(Account a) {
         JPanel card = new JPanel(new BorderLayout());
         card.setOpaque(true);
