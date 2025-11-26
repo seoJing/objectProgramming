@@ -28,7 +28,7 @@ public final class UIConstants {
     public static final Color TEXT_TERTIARY_COLOR = new Color(120, 120, 120);
     public static final Color TEXT_DISABLED_COLOR = new Color(150, 150, 150);
 
-    // ⭐️ 추가된 Accent Color (대시보드 숫자 강조 색) 
+    // ⭐️ 추가된 Accent Color (대시보드 숫자 강조 색)
     public static final Color ACCENT_COLOR = new Color(52, 152, 219);
 
     // Colors - Background
