@@ -2,14 +2,11 @@ package view.user;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import model.Account;
@@ -19,7 +16,6 @@ import model.User;
 import util.Router;
 import util.Routes;
 import util.SessionManager;
-import util.SubscriptionSavingsUtil;
 import util.UIConstants;
 import view.layout.UserLayout;
 import view.user.shared.component.InformationSection;
@@ -91,24 +87,13 @@ public class SubscriptionDetailPanel extends UserLayout {
             // 상단 헤더
             panel.add(new PanelHeader("구독 상세보기"), BorderLayout.NORTH);
 
-            // 중앙 섹션 (정보 + 거래내역 + 절약액)
-            JPanel centerSection = new JPanel(new BorderLayout(0, 16));
-            centerSection.setBackground(Color.WHITE);
-            centerSection.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+            // 상단 정보 섹션
+            JPanel topSection = new JPanel(new BorderLayout());
+            topSection.setBackground(Color.WHITE);
+            topSection.add(new InformationSection(subscription), BorderLayout.NORTH);
+            topSection.add(new TransactionHistoryList(transactions), BorderLayout.CENTER);
 
-            // 상단 정보
-            centerSection.add(new InformationSection(subscription), BorderLayout.NORTH);
-
-            // 거래 내역
-            centerSection.add(new TransactionHistoryList(transactions), BorderLayout.CENTER);
-
-            // 절약액 UI (거래내역 아래)
-            JPanel savingsPanel = createSavingsPanel(subscription);
-            if (savingsPanel != null) {
-                centerSection.add(savingsPanel, BorderLayout.SOUTH);
-            }
-
-            panel.add(centerSection, BorderLayout.CENTER);
+            panel.add(topSection, BorderLayout.CENTER);
 
             // 하단 버튼 섹션
             panel.add(createButtonSection(subscription), BorderLayout.SOUTH);
@@ -146,47 +131,6 @@ public class SubscriptionDetailPanel extends UserLayout {
         buttonPanel.add(cancelBtn);
 
         return buttonPanel;
-    }
-
-    // ==============================
-    // 절약액 UI 생성 함수
-    // ==============================
-
-    /**
-     * 절약액 UI 패널 생성
-     */
-    private JPanel createSavingsPanel(SubscriptionService subscription) {
-        Object[] savings = SubscriptionSavingsUtil.calculateSavings(subscription);
-        if (savings == null) {
-            return null;
-        }
-
-        String message = (String) savings[1];
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(Color.WHITE);
-        panel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-
-        // underline 처리된 텍스트 라벨
-        JLabel savingsLabel = new JLabel(message);
-        savingsLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 12));
-        savingsLabel.setForeground(new Color(51, 51, 51));
-        savingsLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        // underline 보더 생성
-        savingsLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(51, 51, 51)));
-
-        // 클릭 이벤트
-        savingsLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                Router.getInstance().navigateUser(Routes.GROUP_LIST);
-            }
-        });
-
-        panel.add(savingsLabel, BorderLayout.WEST);
-
-        return panel;
     }
 
 }

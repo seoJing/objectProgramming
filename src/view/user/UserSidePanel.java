@@ -26,6 +26,7 @@ public class UserSidePanel extends JPanel {
         contentContainer.add(new AlertPanel(), Routes.ALERT);
         contentContainer.add(new StorePanel(), Routes.STORE);
         contentContainer.add(new StoreDetailPanel(), Routes.STORE_DETAIL);
+        contentContainer.add(new GroupPanel(), Routes.GROUP);
         contentContainer.add(new GroupListPanel(), Routes.GROUP_LIST);
         contentContainer.add(new GroupDetailPanel(), Routes.GROUP_DETAIL);
         contentContainer.add(new SettingPanel(), Routes.SETTING);

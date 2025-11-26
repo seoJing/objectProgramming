@@ -22,7 +22,6 @@ import model.User;
 import util.Router;
 import util.Routes;
 import util.SessionManager;
-import util.SubscriptionSavingsUtil;
 import util.UIConstants;
 import view.layout.UserLayout;
 import view.user.shared.component.PanelHeader;
@@ -152,18 +151,17 @@ public class SubscriptionPanel extends UserLayout {
         serviceNameLabel.setForeground(new Color(33, 33, 33));
         leftPanel.add(serviceNameLabel);
 
-        String paymentInfo = String.format("결제일: %s | 금액: %,d원", subscription.getPaymentDate(), subscription.getAmount());
-
-        JLabel paymentInfoLabel = new JLabel(paymentInfo);
+        JLabel paymentInfoLabel = new JLabel(
+            String.format("결제일: %s | 금액: %,d원", subscription.getPaymentDate(), subscription.getAmount())
+        );
         paymentInfoLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 11));
         paymentInfoLabel.setForeground(new Color(120, 120, 120));
         leftPanel.add(paymentInfoLabel);
 
         itemPanel.add(leftPanel, BorderLayout.WEST);
 
-        // 우측: 금액 (공유 계정이면 실제 구독료, 아니면 전체 금액)
-        int displayAmount = SubscriptionSavingsUtil.calculateActualPrice(subscription);
-        JLabel amountLabel = new JLabel(String.format("%,d원", displayAmount));
+        // 우측: 금액
+        JLabel amountLabel = new JLabel(String.format("%,d원", subscription.getAmount()));
         amountLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 16));
         amountLabel.setForeground(new Color(11, 218, 81));
         itemPanel.add(amountLabel, BorderLayout.EAST);
@@ -199,10 +197,8 @@ public class SubscriptionPanel extends UserLayout {
 
         expensePanel.add(leftPanel, BorderLayout.WEST);
 
-        // 우측: 총 금액 (공유 계정이면 실제 지불액으로 계산)
-        int totalAmount = subscriptions.stream()
-            .mapToInt(SubscriptionSavingsUtil::calculateActualPrice)
-            .sum();
+        // 우측: 총 금액
+        int totalAmount = subscriptions.stream().mapToInt(SubscriptionService::getAmount).sum();
         JLabel totalLabel = new JLabel(String.format("%,d원", totalAmount));
         totalLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 18));
         totalLabel.setForeground(new Color(11, 218, 81));
