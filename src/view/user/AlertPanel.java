@@ -3,6 +3,10 @@ package view.user;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -11,22 +15,73 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
+import model.SubscriptionService;
+import model.User;
 import util.Router;
 import util.Routes;
+import util.SessionManager;
 import view.layout.UserLayout;
 import view.user.shared.component.AlertItemPanel;
 import view.user.shared.component.PanelHeader;
 
 public class AlertPanel extends UserLayout {
 
-    private String[] getMockAlerts() {
-        return new String[] {
-            "2일 후에 유튜브 프리미엄 결제 예정이에요. 연결된 계좌 잔액이 부족해요.",
-            "넷플릭스 구독이 3일 뒤에 갱신됩니다. 결제일을 확인해주세요.",
-            "Spotify 프리미엄 결제가 1주일 남았습니다. 미리 확인해주세요.",
-            "Disney+ 구독료 결제가 내일입니다. 준비 바랍니다.",
-            "Apple Music 결제가 예정되어 있습니다. 계좌 잔액을 확인하세요."
-        };
+    /**
+     * 모든 구독의 알람 메시지를 동적으로 생성합니다.
+     * 각 구독의 다음 결제일을 기반으로 알람을 만들고 결제일 순으로 정렬합니다.
+     *
+     * @return 생성된 알람 메시지 리스트
+     */
+    private List<String> generateAlertMessages() {
+        List<String> alertMessages = new ArrayList<>();
+
+        User user = SessionManager.getInstance().getCurrentUser();
+        if (user == null || user.getLedger() == null) {
+            return alertMessages;
+        }
+
+        List<SubscriptionService> subscriptions = user.getLedger().getSubscriptionList();
+        if (subscriptions == null || subscriptions.isEmpty()) {
+            return alertMessages;
+        }
+
+        // 결제일 기준으로 정렬 (임박한 순)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        subscriptions.sort((s1, s2) -> {
+            LocalDate date1 = LocalDate.parse(s1.getNextPaymentDate(), formatter);
+            LocalDate date2 = LocalDate.parse(s2.getNextPaymentDate(), formatter);
+            return date1.compareTo(date2);
+        });
+
+        // 각 구독의 알람 메시지 생성
+        for (SubscriptionService sub : subscriptions) {
+            String alertMessage = generateAlertMessage(sub);
+            if (alertMessage != null && !alertMessage.isEmpty()) {
+                alertMessages.add(alertMessage);
+            }
+        }
+
+        return alertMessages;
+    }
+
+    /**
+     * 단일 구독의 알람 메시지를 생성합니다.
+     */
+    private String generateAlertMessage(SubscriptionService subscription) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate nextPaymentDate = LocalDate.parse(subscription.getNextPaymentDate(), formatter);
+        LocalDate today = LocalDate.now();
+        long daysUntilPayment = java.time.temporal.ChronoUnit.DAYS.between(today, nextPaymentDate);
+
+        if (daysUntilPayment <= 1) {
+            return "내일 " + subscription.getServiceName() + " 결제가 예정됩니다. 계좌 잔액을 확인하세요.";
+        } else if (daysUntilPayment <= 7) {
+            return daysUntilPayment + "일 후 " + subscription.getServiceName() + " 결제 예정입니다. 준비 바랍니다.";
+        } else if (daysUntilPayment <= 30) {
+            return subscription.getServiceName() + " 구독이 " + daysUntilPayment + "일 뒤에 갱신됩니다. 결제일을 확인해주세요.";
+        } else {
+            return subscription.getServiceName() + " 결제가 예정되어 있습니다. 계좌 잔액을 확인하세요.";
+        }
     }
 
     public AlertPanel() {
@@ -49,12 +104,12 @@ public class AlertPanel extends UserLayout {
         listPanel.setBackground(Color.WHITE);
         listPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Mock 알람 데이터
-        String[] mockAlerts = getMockAlerts();
+        // 동적으로 생성된 알람 메시지
+        List<String> alertMessages = generateAlertMessages();
 
-        // 샘플 알람 아이템들
-        for (int i = 0; i < mockAlerts.length; i++) {
-            AlertItemPanel alertItemPanel = new AlertItemPanel(mockAlerts[i]);
+        // 알람 아이템들 표시
+        for (String alertMessage : alertMessages) {
+            AlertItemPanel alertItemPanel = new AlertItemPanel(alertMessage);
 
             // 알람 아이템을 래퍼 패널로 감싸서 클릭 시 페이지 이동
             JPanel wrapperPanel = new JPanel(new BorderLayout());

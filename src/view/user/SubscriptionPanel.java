@@ -18,35 +18,29 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
 import model.SubscriptionService;
+import model.User;
 import util.Router;
 import util.Routes;
 import util.SessionManager;
+import util.SubscriptionSavingsUtil;
 import util.UIConstants;
 import view.layout.UserLayout;
 import view.user.shared.component.PanelHeader;
 
 public class SubscriptionPanel extends UserLayout {
 
-    /**
-     * Mock 구독 서비스 데이터 생성
-     */
-    private List<SubscriptionService> generateMockSubscriptions() {
-        List<SubscriptionService> subscriptions = new ArrayList<>();
-
-        subscriptions.add(new SubscriptionService("YouTube Premium", 19900, "2024-12-01", "tjwlsrb1021", 12, 1));
-        subscriptions.add(new SubscriptionService("Netflix", 17900, "2024-12-05", "tjwlsrb1021", 12, 2));
-        subscriptions.add(new SubscriptionService("Spotify", 10900, "2024-12-10", "tjwlsrb1021", 12, 3));
-        subscriptions.add(new SubscriptionService("Disney+", 9900, "2024-12-15", "tjwlsrb1021", 12, 1));
-        subscriptions.add(new SubscriptionService("Apple Music", 10900, "2024-12-20", "tjwlsrb1021", 12, 2));
-
-        return subscriptions;
-    }
-
     public SubscriptionPanel() {
         super();
+    }
 
-        JPanel content = createContent();
-        setContent(content);
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (visible) {
+            // 화면이 보일 때마다 새로 콘텐츠 생성 (구독 해지 후 반영)
+            JPanel content = createContent();
+            setContent(content);
+        }
     }
 
     private JPanel createContent() {
@@ -76,7 +70,12 @@ public class SubscriptionPanel extends UserLayout {
         listPanel.setBackground(Color.WHITE);
         listPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        List<SubscriptionService> subscriptions = generateMockSubscriptions();
+        // 현재 사용자의 실제 구독 서비스 데이터 조회
+        User user = SessionManager.getInstance().getCurrentUser();
+        List<SubscriptionService> subscriptions = new ArrayList<>();
+        if (user != null && user.getLedger() != null) {
+            subscriptions = user.getLedger().getSubscriptionList();
+        }
 
         if (subscriptions.isEmpty()) {
             JLabel emptyLabel = new JLabel("구독 중인 서비스가 없습니다.");
@@ -153,17 +152,18 @@ public class SubscriptionPanel extends UserLayout {
         serviceNameLabel.setForeground(new Color(33, 33, 33));
         leftPanel.add(serviceNameLabel);
 
-        JLabel paymentInfoLabel = new JLabel(
-            String.format("결제일: %s | 금액: %,d원", subscription.getPaymentDate(), subscription.getAmount())
-        );
+        String paymentInfo = String.format("결제일: %s | 금액: %,d원", subscription.getPaymentDate(), subscription.getAmount());
+
+        JLabel paymentInfoLabel = new JLabel(paymentInfo);
         paymentInfoLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 11));
         paymentInfoLabel.setForeground(new Color(120, 120, 120));
         leftPanel.add(paymentInfoLabel);
 
         itemPanel.add(leftPanel, BorderLayout.WEST);
 
-        // 우측: 금액
-        JLabel amountLabel = new JLabel(String.format("%,d원", subscription.getAmount()));
+        // 우측: 금액 (공유 계정이면 실제 구독료, 아니면 전체 금액)
+        int displayAmount = SubscriptionSavingsUtil.calculateActualPrice(subscription);
+        JLabel amountLabel = new JLabel(String.format("%,d원", displayAmount));
         amountLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 16));
         amountLabel.setForeground(new Color(11, 218, 81));
         itemPanel.add(amountLabel, BorderLayout.EAST);
@@ -199,8 +199,10 @@ public class SubscriptionPanel extends UserLayout {
 
         expensePanel.add(leftPanel, BorderLayout.WEST);
 
-        // 우측: 총 금액
-        int totalAmount = subscriptions.stream().mapToInt(SubscriptionService::getAmount).sum();
+        // 우측: 총 금액 (공유 계정이면 실제 지불액으로 계산)
+        int totalAmount = subscriptions.stream()
+            .mapToInt(SubscriptionSavingsUtil::calculateActualPrice)
+            .sum();
         JLabel totalLabel = new JLabel(String.format("%,d원", totalAmount));
         totalLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 18));
         totalLabel.setForeground(new Color(11, 218, 81));

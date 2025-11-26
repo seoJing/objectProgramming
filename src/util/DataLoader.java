@@ -16,16 +16,21 @@ public class DataLoader {
     private static final Map<String, ProductInfo> productMap = new HashMap<>();
 
     // 내부적으로만 사용할 상품 정보 클래스
-    private static class ProductInfo {
-        String category;
-        String name;
-        int price;
+    public static class ProductInfo {
+        public String category;
+        public String name;
+        public int price;
 
         public ProductInfo(String category, String name, int price) {
             this.category = category;
             this.name = name;
             this.price = price;
         }
+    }
+
+    // 상품 정보 맵 접근 메서드
+    public static Map<String, ProductInfo> getProductMap() {
+        return productMap;
     }
 
     public static void loadAll() {

@@ -31,11 +31,10 @@ public final class Routes {
     public static final String GROUP_DETAIL = "GROUP_DETAIL";
     public static final String STORE_DETAIL = "STORE_DETAIL";
 
-
     // Admin screens
     public static final String ADMIN_MAIN = "ADMIN_MAIN";
-    public static final String ADMIN_SUBSCRIPTION_MACHINE = "ADMIN_SUBSCRIPTION_MACHINE";
-    public static final String ADMIN_SUBSCRIPTION_MANAGE = "ADMIN_SUBSCRIPTION_MANAGE";
+    public static final String ADMIN_DASHBOARD = "ADMIN_DASHBOARD";
+    public static final String ADMIN_SUBSCRIPTION_MANAGE = "ADMIN_SUBSCRIPTION_MANAGE"; // ✔ 유지됨
     public static final String ADMIN_STATISTICS = "ADMIN_STATISTICS";
     public static final String ADMIN_TRANSACTION_MANAGE = "ADMIN_TRANSACTION_MANAGE";
 }

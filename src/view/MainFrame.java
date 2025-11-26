@@ -41,7 +41,7 @@ public class MainFrame extends JFrame {
 
         add(container);
 
-        cardLayout.show(container, Routes.LOGIN);
+        cardLayout.show(container, Routes.USER);
     }
 
     public void switchTo(String screen) {
