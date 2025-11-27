@@ -1,5 +1,18 @@
 package view.user;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.time.format.DateTimeFormatter;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
 import model.Account;
 import model.Transaction;
 import model.TransactionType;
@@ -8,11 +21,6 @@ import util.Routes;
 import util.SessionManager;
 import util.UIConstants;
 import view.layout.UserLayout;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.time.format.DateTimeFormatter;
 
 public class TransactionDetailPanel extends UserLayout {
 
@@ -32,7 +40,6 @@ public class TransactionDetailPanel extends UserLayout {
         setContent(createContent());
         loadDataFromSession();
 
-        // 보일 때마다 세션에서 다시 읽기 (캐시되어도 OK)
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override public void componentShown(java.awt.event.ComponentEvent e) {
                 loadDataFromSession();
@@ -53,11 +60,9 @@ public class TransactionDetailPanel extends UserLayout {
         back.addActionListener(e -> {
             SessionManager sm = SessionManager.getInstance();
             if (sm.isFromAllTransactions()) {
-                // 전체 거래 화면으로 돌아갈 때는 플래그를 한 번 쓰고 리셋
                 sm.setFromAllTransactions(false);
                 Router.getInstance().navigateUser(Routes.ALL_TRANSACTIONS);
             } else {
-                // 기본: 계좌별 거래 화면으로
                 Router.getInstance().navigateUser(Routes.TRANSACTION);
             }
         });

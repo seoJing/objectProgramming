@@ -1,9 +1,21 @@
 package view.admin;
 
-import javax.swing.*;
-import java.awt.*;
-import util.Routes;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import util.Router;
+import util.Routes;
 import util.UIConstants;
 import view.layout.AdminLayout;
 
@@ -103,8 +115,6 @@ public class AdminDashboardPanel extends AdminLayout {
         JButton btn = new JButton(text);
         btn.setFocusPainted(false);
         btn.setBackground(UIConstants.BACKGROUND_BUTTON);
-        
-        // 🔥 글자색을 PRIMARY COLOR로 변경
         btn.setForeground(UIConstants.TEXT_PRIMARY_COLOR);
 
         btn.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 14));

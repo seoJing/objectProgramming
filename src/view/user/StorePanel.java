@@ -62,13 +62,11 @@ public class StorePanel extends UserLayout {
 
     // products.txt 한 줄 정보
     private static class Product {
-        String code;
         String category;
         String name;   // 화면에 보일 이름 (언더바는 공백으로 변환)
         int price;
 
-        Product(String code, String category, String name, int price) {
-            this.code = code;
+        Product(String category, String name, int price) {
             this.category = category;
             this.name = name;
             this.price = price;
@@ -80,18 +78,11 @@ public class StorePanel extends UserLayout {
         String display; // "YouTube (그룹핑) - 4,975원/월"
         int price;
         int numberOfUsers;
-        String serviceName; // 원본 서비스 이름
-
-        SubscriptionItem(String display, int price) {
-            this(display, price, 1);
-        }
 
         SubscriptionItem(String display, int price, int numberOfUsers) {
             this.display = display;
             this.price = price;
             this.numberOfUsers = numberOfUsers;
-            // display에서 서비스 이름 추출 (첫 번째 공백까지)
-            this.serviceName = display.split(" ")[0];
         }
     }
 
@@ -166,7 +157,6 @@ private void parseProducts(BufferedReader br) throws IOException {
         String[] parts = line.split("\\s+");
         if (parts.length < 4) continue;
 
-        String code = parts[0];
         String category = parts[1];
 
         int price = Integer.parseInt(parts[parts.length - 1]);
@@ -179,7 +169,7 @@ private void parseProducts(BufferedReader br) throws IOException {
         String rawName = nameBuilder.toString();
 
         // txt 파일의 원본 이름(언더스코어 포함)을 그대로 저장
-        products.add(new Product(code, category, rawName, price));
+        products.add(new Product(category, rawName, price));
     }
 }
 

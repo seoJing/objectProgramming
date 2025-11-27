@@ -45,7 +45,6 @@ public class AlertPanel extends UserLayout {
             return alertMessages;
         }
 
-        // 결제일 기준으로 정렬 (임박한 순)
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         subscriptions.sort((s1, s2) -> {
             LocalDate date1 = LocalDate.parse(s1.getNextPaymentDate(), formatter);
@@ -53,7 +52,6 @@ public class AlertPanel extends UserLayout {
             return date1.compareTo(date2);
         });
 
-        // 각 구독의 알람 메시지 생성
         for (SubscriptionService sub : subscriptions) {
             String alertMessage = generateAlertMessage(sub);
             if (alertMessage != null && !alertMessage.isEmpty()) {
@@ -104,14 +102,10 @@ public class AlertPanel extends UserLayout {
         listPanel.setBackground(Color.WHITE);
         listPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // 동적으로 생성된 알람 메시지
         List<String> alertMessages = generateAlertMessages();
-
-        // 알람 아이템들 표시
         for (String alertMessage : alertMessages) {
             AlertItemPanel alertItemPanel = new AlertItemPanel(alertMessage);
 
-            // 알람 아이템을 래퍼 패널로 감싸서 클릭 시 페이지 이동
             JPanel wrapperPanel = new JPanel(new BorderLayout());
             wrapperPanel.setOpaque(false);
             wrapperPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -119,11 +113,9 @@ public class AlertPanel extends UserLayout {
 
             alertItemPanel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-            // 알람 클릭 시 특정 페이지로 이동
             alertItemPanel.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseClicked(java.awt.event.MouseEvent e) {
-                    // 삭제 버튼이 아닌 영역 클릭 시
                     if (e.getX() < alertItemPanel.getWidth() - 50) {
                         Router.getInstance().navigateUser(Routes.SUBSCRIPTION);
                     }

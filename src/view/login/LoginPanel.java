@@ -1,36 +1,25 @@
 package view.login;
 
-import util.AuthService;
-import util.SessionManager;
-import model.User;
-
-import javax.swing.*;
-import java.awt.*;
-
-import util.Router;
-import util.Routes;
-import util.UIConstants;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Frame;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JPasswordField;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import java.awt.Component;
-import java.awt.Frame;
-import java.awt.Color;
 
-/**
- * 로그인 화면
- * - ID / 비밀번호 입력
- * - 로그인 버튼: AuthService.login() 호출 (내부에서 해시 비교)
- * - 회원가입 버튼: SignupDialog 띄우기
- */
+import model.User;
+import util.AuthService;
+import util.Router;
+import util.Routes;
+import util.SessionManager;
+import util.UIConstants;
+
 public class LoginPanel extends JPanel {
 
     private final AuthService authService;
@@ -123,40 +112,31 @@ public class LoginPanel extends JPanel {
         return btn;
     }
 
-    // ============================
-    //  화면 생성 책임 제거
-    // ============================
     private void onLogin() {
-    String id = idField.getText().trim();
-    String pw = new String(passwordField.getPassword());
+        String id = idField.getText().trim();
+        String pw = new String(passwordField.getPassword());
 
-    try {
-        User user = authService.login(id, pw);
+        try {
+            User user = authService.login(id, pw);
 
-        System.out.println("★ 로그인 성공: " + user.getId());
-        System.out.println("Router.getMainFrame() = " + Router.getInstance().getMainFrame());
+            System.out.println("★ 로그인 성공: " + user.getId());
+            System.out.println("Router.getMainFrame() = " + Router.getInstance().getMainFrame());
 
-        System.out.println(" ★ 로그인 성공: " + user.getId());
+            System.out.println(" ★ 로그인 성공: " + user.getId());
 
-        // 세션 저장
-        SessionManager.getInstance().login(user);
-        errorLabel.setText(" ");
+            SessionManager.getInstance().login(user);
+            errorLabel.setText(" ");
 
-        // ========= 여기서 Router만 호출 =========
-        if (user.isAdmin()) {
-            Router.getInstance().navigateTo(Routes.ADMIN);
-        } else {
-            Router.getInstance().navigateTo(Routes.USER);
+            if (user.isAdmin()) {
+                Router.getInstance().navigateTo(Routes.ADMIN);
+            } else {
+                Router.getInstance().navigateTo(Routes.USER);
+            }
+
+        } catch (Exception ex) {
+            errorLabel.setText(ex.getMessage());
         }
-
-    } catch (Exception ex) {
-        errorLabel.setText(ex.getMessage());
     }
-
-    
-}
-
-
 
     private void openSignupDialog() {
         Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
@@ -164,6 +144,4 @@ public class LoginPanel extends JPanel {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
-
-    
 }

@@ -1,11 +1,24 @@
 package view.login;
 
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
 import model.User;
 import util.AuthService;
 import util.UIConstants;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class SignupDialog extends JDialog {
 
@@ -64,15 +77,14 @@ public class SignupDialog extends JDialog {
 
         showPassword.addActionListener(e -> {
             if (showPassword.isSelected()) {
-                pwField.setEchoChar((char) 0);  // 비밀번호 보이기
+                pwField.setEchoChar((char) 0);
                 pwConfirmField.setEchoChar((char) 0);
             } else {
-                pwField.setEchoChar('\u2022');       // 기본 원형 문자로 설정
+                pwField.setEchoChar('\u2022');
                 pwConfirmField.setEchoChar('\u2022');
             }
         });
 
-        // 줄 정렬 맞추기 위해 레이블 한 칸 채우기
         formPanel.add(new JLabel(" "));
         formPanel.add(showPassword);
 

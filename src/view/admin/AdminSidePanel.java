@@ -17,7 +17,6 @@ public class AdminSidePanel extends JPanel {
         cardLayout = new CardLayout();
         contentContainer = new JPanel(cardLayout);
 
-        contentContainer.add(new AdminMainPanel(), Routes.ADMIN_MAIN);
         contentContainer.add(new AdminStatisticsPanel(), Routes.ADMIN_STATISTICS);
         contentContainer.add(new AdminSubscriptionManagePanel(), Routes.ADMIN_SUBSCRIPTION_MANAGE);
         contentContainer.add(new AdminTransactionPanel(), Routes.ADMIN_TRANSACTION_MANAGE);
@@ -25,7 +24,6 @@ public class AdminSidePanel extends JPanel {
 
         add(contentContainer, BorderLayout.CENTER);
 
-        // 🔥 처음 화면을 대시보드로 변경
         cardLayout.show(contentContainer, Routes.ADMIN_DASHBOARD);
     }
 

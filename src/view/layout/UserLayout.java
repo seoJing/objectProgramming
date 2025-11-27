@@ -1,8 +1,19 @@
 package view.layout;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.RenderingHints;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import util.Router;
 import util.Routes;
@@ -52,9 +63,9 @@ public class UserLayout extends BaseLayout {
         // 공통 스타일 버튼 (작은 글씨 + 여백 제거)
         java.util.function.Function<String, JButton> makeHeaderButton = text -> {
             JButton btn = new JButton(text);
-            btn.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 12)); // 작게
+            btn.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 12));
             btn.setFocusPainted(false);
-            btn.setBorder(BorderFactory.createEmptyBorder());  // 테두리/여백 제거
+            btn.setBorder(BorderFactory.createEmptyBorder());
             btn.setContentAreaFilled(false);
             btn.setOpaque(false);
             btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -66,7 +77,6 @@ public class UserLayout extends BaseLayout {
         rightPanel.add(alertBtn);
 
         JButton settingBtn = makeHeaderButton.apply("설정");
-        settingBtn.addActionListener(e -> Router.getInstance().navigateUser(Routes.SETTING));
         rightPanel.add(settingBtn);
 
         if (SessionManager.getInstance().isLoggedIn()) {
@@ -91,7 +101,6 @@ public class UserLayout extends BaseLayout {
 
     @Override
     protected JPanel createNavigation() {
-        // 그림자를 위한 외부 패널
         JPanel shadowPanel = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -99,7 +108,6 @@ public class UserLayout extends BaseLayout {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // 상단에 퍼진 그림자 효과
                 int shadowHeight = 8;
                 for (int i = 0; i < shadowHeight; i++) {
                     float alpha = (float) (0.15 * (1 - (i / (float) shadowHeight)));

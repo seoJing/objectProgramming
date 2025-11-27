@@ -1,11 +1,27 @@
 package view.admin;
 
-import model.*;
-import view.layout.*;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
+import model.Account;
+import model.Transaction;
+import model.User;
+import model.UserList;
+import view.layout.AdminLayout;
 
 public class AdminTransactionPanel extends AdminLayout {
 
@@ -73,7 +89,6 @@ public class AdminTransactionPanel extends AdminLayout {
 
         panel.add(new JScrollPane(transactionTable), BorderLayout.CENTER);
 
-        // 이벤트 리스너
         userCombo.addActionListener(e -> {
             User selectedUser = (User) userCombo.getSelectedItem();
             if (selectedUser != null) loadAccounts(selectedUser);
@@ -95,7 +110,6 @@ public class AdminTransactionPanel extends AdminLayout {
     }
 
     private void loadAccounts(User user) {
-        // 🔽 [수정] AccountService 제거 -> user.getAccountList()
         List<Account> accounts = user.getAccountList();
 
         accountCombo.removeAllItems();
@@ -106,7 +120,6 @@ public class AdminTransactionPanel extends AdminLayout {
     }
 
     private void loadTransactions(Account account) {
-        // 🔽 [수정] AccountService 제거 -> account.getTransactionList()
         List<Transaction> transactions = account.getTransactionList();
 
         tableModel.setRowCount(0);

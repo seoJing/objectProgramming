@@ -32,10 +32,9 @@ public class InformationSection extends JPanel {
         serviceNamePanel.setLayout(new BoxLayout(serviceNamePanel, BoxLayout.X_AXIS));
         serviceNamePanel.setOpaque(false);
         serviceNamePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        serviceNamePanel.setAlignmentX(0.0f); // 왼쪽 정렬
+        serviceNamePanel.setAlignmentX(0.0f);
 
         // 이미지 추가
-        // ImageLoader가 .png 확장자를 자동으로 추가하므로 서비스명만 전달
         ImageIcon icon = ImageLoader.loadImage(subscription.getServiceName(), 32, 32);
         if (icon != null) {
             JLabel imageLabel = new JLabel(icon);
@@ -52,7 +51,6 @@ public class InformationSection extends JPanel {
         add(serviceNamePanel);
         add(Box.createVerticalStrut(12));
 
-        // 공유 여부에 따른 금액 표시
         if (subscription.getNumberOfUsers() > 1) {
             // 공유 중인 경우: 개인 부담금을 메인으로 표시
             int personalCost = subscription.getPersonalCost();

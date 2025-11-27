@@ -39,10 +39,9 @@ public class AccountPanel extends UserLayout {
     public AccountPanel() {
         super();
         setContent(createContent());
-        reload(); // 최초 로딩
+        reload();
     }
 
-    /** 필요할 때(계좌추가 후 등) 다시 호출해서 갱신 */
     public void reload() {
         User user = SessionManager.getInstance().getCurrentUser();
         if (user == null) return;
@@ -51,7 +50,6 @@ public class AccountPanel extends UserLayout {
             ownerLabel.setText(user.getName() + "님의 총 자산");
         }
 
-        // 서비스에서 사용자 계좌와 총 자산 가져오기
         List<Account> accounts = user.getAccountList();
         int total = 0;
         for (Account a : accounts) {
@@ -59,7 +57,6 @@ public class AccountPanel extends UserLayout {
         }
 
         totalAssetLabel.setText(UIConstants.won(total));
-        // 리스트 초기화 후 다시 그림
         listPanel.removeAll();
         for (Account a : accounts) {
             listPanel.add(makeAccountCard(a));
@@ -87,7 +84,7 @@ public class AccountPanel extends UserLayout {
         total.setForeground(UIConstants.TEXT_MUTED);
 
         totalAssetLabel = new JLabel("0원");
-        totalAssetLabel.setFont(UIConstants.HERO_FONT); // 크게 보이게
+        totalAssetLabel.setFont(UIConstants.HERO_FONT);
         totalAssetLabel.setForeground(Color.BLACK);
 
         top.add(total);
@@ -171,7 +168,6 @@ public class AccountPanel extends UserLayout {
         balance.setBorder(UIConstants.ACCOUNT_BALANCE_RIGHT_PADDING);
         card.add(balance, BorderLayout.EAST);
 
-        // 카드 클릭 -> 해당 계좌 선택 후 거래 내역 화면으로 이동
         card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         card.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -195,7 +191,6 @@ public class AccountPanel extends UserLayout {
             Image img = new ImageIcon(url).getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
             return new ImageIcon(img);
         } catch (Exception e) {
-            // 리소스 없으면 빈 공간
             return new ImageIcon(new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB));
         }
     }

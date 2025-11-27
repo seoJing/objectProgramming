@@ -26,10 +26,6 @@ public class SubscriptionService {
         this.numberOfUsers = numberOfUsers;
     }
 
-    // ==============================
-    // 기본 getter/setter
-    // ==============================
-
     public String getServiceName() { return serviceName; }
     public int getAmount() { return amount; }
     public String getPaymentDate() { return paymentDate; }
@@ -42,33 +38,23 @@ public class SubscriptionService {
     public void setSubscriptionPeriod(int subscriptionPeriod) { this.subscriptionPeriod = subscriptionPeriod; }
     public void setNumberOfUsers(int numberOfUsers) { this.numberOfUsers = numberOfUsers; }
 
-    // ==============================
-    // 기능 1: 다음 결제일 계산
-    // ==============================
+    // 다음 결제일 계산
     public String getNextPaymentDate() {
         LocalDate date = LocalDate.parse(paymentDate, FORMATTER);
         LocalDate nextDate = date.plusMonths(subscriptionPeriod);
         return nextDate.format(FORMATTER);
     }
 
-    // ==============================
-    // 기능 2: 1/N 금액 계산 (공유 인원 고려)
-    // ==============================
+    // 1/N 금액 계산 (공유 인원 고려)
     public int getPersonalCost() {
         if (numberOfUsers <= 1) return amount;
         return amount / numberOfUsers;
     }
 
-    // ==============================
-    // 기능 3: 요약 출력
-    // ==============================
     public String summary() {
         return serviceName + " | " + amount + "원 | 다음 결제일: " + getNextPaymentDate();
     }
 
-    // ==============================
-    // 기능 4: 전체 정보 출력
-    // ==============================
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

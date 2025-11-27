@@ -1,7 +1,5 @@
 package service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +9,6 @@ public class AdminSubscriptionService {
 
     private static AdminSubscriptionService instance;
     private List<SubscriptionService> list;
-
-    private static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private AdminSubscriptionService() {
         list = new ArrayList<>();

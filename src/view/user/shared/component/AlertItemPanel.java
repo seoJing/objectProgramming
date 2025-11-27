@@ -11,10 +11,6 @@ import javax.swing.JPanel;
 
 import util.UIConstants;
 
-/**
- * 알람 아이템 컴포넌트
- * AlertPanel과 MainPanel에서 공유
- */
 public class AlertItemPanel extends JPanel {
 
     public AlertItemPanel(String title) {
@@ -25,21 +21,18 @@ public class AlertItemPanel extends JPanel {
         setBorder(null);
         setOpaque(false);
 
-        // 그림자 효과와 배경
         setUI(new javax.swing.plaf.basic.BasicPanelUI() {
             @Override
             public void paint(java.awt.Graphics g, javax.swing.JComponent c) {
                 java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
                 g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // 그림자 효과
                 int shadowSize = 6;
                 for (int i = shadowSize; i > 0; i--) {
                     g2d.setColor(new Color(0, 0, 0, (int) (12 * (1 - i / (float) shadowSize))));
                     g2d.fillRoundRect(i, i, c.getWidth() - 2 * i, c.getHeight() - 2 * i, 12, 12);
                 }
 
-                // 배경
                 g2d.setColor(c.getBackground());
                 g2d.fillRoundRect(0, 0, c.getWidth(), c.getHeight(), 12, 12);
 
@@ -78,17 +71,13 @@ public class AlertItemPanel extends JPanel {
         deleteBtn.setOpaque(false);
         deleteBtn.setForeground(new Color(170, 170, 170));
         deleteBtn.addActionListener(e -> {
-            // 부모 패널에서 이 아이템 제거
             java.awt.Container parent = AlertItemPanel.this.getParent();
             if (parent != null) {
-                // 제거할 컴포넌트 결정 (wrapper가 있으면 wrapper 제거, 아니면 자신 제거)
                 java.awt.Component toRemove = AlertItemPanel.this;
                 java.awt.Container removeParent = parent;
 
-                // Wrapper로 감싸져 있는지 확인 (wrapperPanel은 BorderLayout 사용)
                 if (parent instanceof javax.swing.JPanel &&
                     ((javax.swing.JPanel) parent).getComponentCount() == 1) {
-                    // 부모가 AlertItemPanel만 포함하고 있으면 wrapper일 가능성
                     java.awt.Container grandParent = parent.getParent();
                     if (grandParent != null) {
                         toRemove = (java.awt.Component) parent;
@@ -96,7 +85,6 @@ public class AlertItemPanel extends JPanel {
                     }
                 }
 
-                // 제거 전에 인덱스 찾기
                 int index = -1;
                 for (int i = 0; i < removeParent.getComponentCount(); i++) {
                     if (removeParent.getComponent(i) == toRemove) {
@@ -105,10 +93,8 @@ public class AlertItemPanel extends JPanel {
                     }
                 }
 
-                // 컴포넌트 제거
                 removeParent.remove(toRemove);
 
-                // 다음 컴포넌트가 Strut이면 제거
                 if (index >= 0 && index < removeParent.getComponentCount()) {
                     java.awt.Component next = removeParent.getComponent(index);
                     if (next instanceof javax.swing.Box.Filler) {

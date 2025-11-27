@@ -15,9 +15,7 @@ public class Transaction {
     private int balanceAfter;        // 거래 후 잔액
     private Account account;         // 거래 계좌
 
-    public Transaction(TransactionType type, int amount,
-                       String location, String category, String memo,
-                       LocalDateTime dateTime, int balanceAfter, Account account) {
+    public Transaction(TransactionType type, int amount, String location, String category, String memo, LocalDateTime dateTime, int balanceAfter, Account account) {
         this.type = type;
         this.amount = amount;
         this.location = location;
@@ -28,17 +26,14 @@ public class Transaction {
         this.account = account;
     }
 
-    /** 수입이면 양수, 지출이면 음수 반환 */
     public int signedAmount() {
         return (type == TransactionType.INCOME) ? amount : -amount;
     }
 
-    /** 거래 후 잔액 기록 */
     public void setBalanceAfter(int balanceAfter) {
         this.balanceAfter = balanceAfter;
     }
 
-    /** UI 날짜 출력 */
     public String getDate() {
         if (dateTime != null)
             return dateTime.format(UIConstants.UI_DATEFULL);
@@ -56,7 +51,6 @@ public class Transaction {
     public String getBank() {
         return (account != null) ? account.getBank() : "";
     }
-    /** 가계부에서 항목 출력용 */
     public String summary() {
         return category + " | " + amount + "원 | " + getDate();
     }

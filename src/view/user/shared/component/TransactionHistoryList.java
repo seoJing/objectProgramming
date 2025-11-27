@@ -1,6 +1,9 @@
 package view.user.shared.component;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.util.List;
 
 import javax.swing.Box;
@@ -9,9 +12,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-import java.awt.Component;
-import java.awt.Color;
-import java.awt.Font;
 
 import model.Transaction;
 
@@ -22,14 +22,12 @@ import model.Transaction;
 public class TransactionHistoryList extends JScrollPane {
 
     public TransactionHistoryList(List<Transaction> transactions) {
-        // 스크롤 가능한 거래 내역 리스트
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setBackground(java.awt.Color.WHITE);
         listPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
         if (transactions.isEmpty()) {
-            // 거래내역이 없을 때 플레이스홀더 표시
             listPanel.add(Box.createVerticalGlue());
 
             JLabel placeholderLabel = new JLabel("거래내역이 없습니다");
@@ -41,8 +39,7 @@ public class TransactionHistoryList extends JScrollPane {
             listPanel.add(Box.createVerticalGlue());
         } else {
             for (Transaction transaction : transactions) {
-                // TransactionItemPanel 사용
-                TransactionItemPanel itemPanel = new TransactionItemPanel(transaction);
+                TransactionItem itemPanel = new TransactionItem(transaction);
                 listPanel.add(itemPanel);
                 listPanel.add(Box.createVerticalStrut(8));
             }

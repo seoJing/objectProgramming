@@ -1,11 +1,11 @@
 package util;
 
-import model.User;
-import model.UserList;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+
+import model.User;
+import model.UserList;
 
 public class UserDataLoader {
 
@@ -19,11 +19,10 @@ public class UserDataLoader {
 
                 if (line.isBlank()) continue;
 
-                // 공백 기준으로 split → users.txt 형식 그대로 사용
                 String[] parts = line.split(" ");
 
                 String id = parts[0];
-                String rawPassword = parts[1];  // 규칙에 맞는 비밀번호
+                String rawPassword = parts[1];
                 String name = parts[2];
                 String gender = parts[3];
                 int age = Integer.parseInt(parts[4]);
@@ -32,7 +31,6 @@ public class UserDataLoader {
                 String phone = parts[7];
                 boolean admin = Boolean.parseBoolean(parts[8]);
 
-                // 회원가입 규칙과 동일하게 해시 적용
                 String passwordHash = PasswordUtil.hashPasswordWithIdSalt(id, rawPassword);
 
                 User user = new User(
@@ -50,7 +48,7 @@ public class UserDataLoader {
                 UserList.getInstance().add(user);
             }
 
-            System.out.println(" users.txt 로딩 완료. 총 " 
+            System.out.println(" users.txt 로딩 완료. 총 "
                 + UserList.getInstance().size() + "명 등록됨");
 
         } catch (IOException e) {
