@@ -58,11 +58,10 @@ public class AdminLayout extends BaseLayout {
         nav.setPreferredSize(UIConstants.NAV_SIZE);
         nav.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
 
-        nav.add(createNavButton("메인", Routes.ADMIN_DASHBOARD));
+        nav.add(createNavButton("대시보드", Routes.ADMIN_DASHBOARD));
         nav.add(createNavButton("구독관리", Routes.ADMIN_SUBSCRIPTION_MANAGE));
         nav.add(createNavButton("결제내역", Routes.ADMIN_TRANSACTION_MANAGE));
         nav.add(createNavButton("통계분석", Routes.ADMIN_STATISTICS));
-        nav.add(createNavButton("대시보드", Routes.ADMIN_DASHBOARD));
 
         return nav;
     }
