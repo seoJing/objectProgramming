@@ -43,13 +43,13 @@ public class Router {
     public void navigateTo(String screen) {
         if (mainFrame == null) return;
 
-    if (route.equals(Routes.ADMIN)) {
-        mainFrame.showAdminView();
-    } else if (route.equals(Routes.USER)) {
-        mainFrame.showUserView();
-    } else {
-        mainFrame.switchTo(route);  
-    }
+        if (screen.equals(Routes.ADMIN)) {
+            mainFrame.showAdminView();
+        } else if (screen.equals(Routes.USER)) {
+            mainFrame.showUserView();
+        } else {
+            mainFrame.switchTo(screen);
+        }
     }
 
     // ================== 유저 화면 내부 전환 ==================

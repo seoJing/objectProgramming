@@ -102,7 +102,7 @@ public class ImageLoader {
             case "티빙":
                 return "tving";
             case "디즈니플러스":
-                return "disneyplus";
+                return "disney+";
             case "라프텔":
                 return "laftel";
             case "왓챠":
