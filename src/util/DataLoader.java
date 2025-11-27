@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import model.Account;
+import model.SubscriptionList;
 import model.SubscriptionService;
 import model.Transaction;
 import model.TransactionType;
@@ -64,7 +65,19 @@ public class DataLoader {
                 String name = scan.next();
                 int price = scan.nextInt();
 
-                productMap.put(pid, new ProductInfo(category, name, price));
+                ProductInfo productInfo = new ProductInfo(category, name, price);
+                productMap.put(pid, productInfo);
+
+                // SubscriptionList에도 전체 상품 정보 로드
+                SubscriptionService product = new SubscriptionService(
+                        name,
+                        price,
+                        "0000-00-00",  // 기본값
+                        "PRODUCT",     // 상품 ID로 사용
+                        12,            // 기본 주기
+                        1              // 기본 인원
+                );
+                SubscriptionList.getInstance().add(product);
             }
         } catch (Exception e) {
             e.printStackTrace();

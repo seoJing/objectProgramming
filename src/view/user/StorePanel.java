@@ -18,14 +18,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,9 +36,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import model.SubscriptionList;
 import model.SubscriptionService;
 import model.User;
 import model.UserList;
+import util.DataLoader;
 import util.Router;
 import util.Routes;
 import util.SessionManager;
@@ -57,25 +51,10 @@ import view.layout.UserLayout;
  */
 public class StorePanel extends UserLayout {
 
-    // 현재 생성된 StorePanel 인스턴스 저장
     private static StorePanel instance;
 
-    // products.txt 한 줄 정보
-    private static class Product {
-        String category;
-        String name;   // 화면에 보일 이름 (언더바는 공백으로 변환)
-        int price;
-
-        Product(String category, String name, int price) {
-            this.category = category;
-            this.name = name;
-            this.price = price;
-        }
-    }
-
-    // 장바구니 카테고리별 구독 저장용
     private static class SubscriptionItem {
-        String display; // "YouTube (그룹핑) - 4,975원/월"
+        String display;
         int price;
         int numberOfUsers;
 
@@ -87,95 +66,19 @@ public class StorePanel extends UserLayout {
     }
 
     private final Map<String, List<SubscriptionItem>> categorySubs = new HashMap<>();
-    private final List<Product> products = new ArrayList<>();
-
-    // 총 금액
     private int totalPrice = 0;
     private JLabel summaryText;
-
-    // 구독 리스트를 그릴 패널 (스크롤 안쪽)
     private JPanel subsListPanel;
 
     public StorePanel() {
         super();
-        instance = this;   // 생성 시 자기 자신 저장
-        loadProductsFromFile(); // products.txt 읽기
+        instance = this;
         setContent(createContent());
     }
 
     public static StorePanel getInstance() {
         return instance;
     }
-
-    /* ====================== products.txt 로드 ====================== */
-
-private void loadProductsFromFile() {
-    if (!products.isEmpty()) return; // 이미 읽었으면 패스
-
-    // 1차 시도: 클래스패스(resources/data/products.txt)에서 읽기
-    try (InputStream in = getClass().getClassLoader()
-            .getResourceAsStream("resources/data/products.txt")) {
-
-        if (in != null) {
-            try (BufferedReader br = new BufferedReader(
-                    new InputStreamReader(in, StandardCharsets.UTF_8))) {
-                parseProducts(br);
-                return;
-            }
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-
-    // 2차 시도: 프로젝트 기준 상대경로 src/resources/data/products.txt 에서 읽기
-    try {
-        Path path = Paths.get("src", "resources", "data", "products.txt");
-
-        if (!Files.exists(path)) {
-            System.err.println("products.txt 를 찾을 수 없습니다. 시도한 경로: "
-                    + path.toAbsolutePath());
-            return;
-        }
-
-        try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-            parseProducts(br);
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
-
-/**
- * 실제 한 줄씩 읽어서 products 리스트에 넣는 공통 로직
- */
-private void parseProducts(BufferedReader br) throws IOException {
-    String line;
-    while ((line = br.readLine()) != null) {
-        line = line.trim();
-        if (line.isEmpty()) continue;
-
-        String[] parts = line.split("\\s+");
-        if (parts.length < 4) continue;
-
-        String category = parts[1];
-
-        int price = Integer.parseInt(parts[parts.length - 1]);
-
-        StringBuilder nameBuilder = new StringBuilder();
-        for (int i = 2; i < parts.length - 1; i++) {
-            if (i > 2) nameBuilder.append(' ');
-            nameBuilder.append(parts[i]);
-        }
-        String rawName = nameBuilder.toString();
-
-        // txt 파일의 원본 이름(언더스코어 포함)을 그대로 저장
-        products.add(new Product(category, rawName, price));
-    }
-}
-
-
-
-    /* ====================== UI 구성 ====================== */
 
     private JPanel createContent() {
         JPanel root = new JPanel(new BorderLayout());
@@ -318,22 +221,39 @@ private void parseProducts(BufferedReader br) throws IOException {
     /* ====================== 장바구니 팝업/로직 ====================== */
 
     private void showCartDialog() {
-        if (products.isEmpty()) {
+        List<SubscriptionService> sortedSubscriptions = SubscriptionList.getInstance().getSortedByName();
+
+        // 현재 로그인 유저의 Ledger 가져오기
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        List<SubscriptionService> availableSubscriptions = new ArrayList<>();
+
+        // 이미 구독 중인 서비스는 제외
+        if (currentUser != null) {
+            for (SubscriptionService sub : sortedSubscriptions) {
+                if (!currentUser.getLedger().isSubscribed(sub.getServiceName())) {
+                    availableSubscriptions.add(sub);
+                }
+            }
+        } else {
+            availableSubscriptions = sortedSubscriptions;
+        }
+
+        if (availableSubscriptions.isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
-                    "products.txt에 상품 정보가 없습니다.",
-                    "오류",
-                    JOptionPane.WARNING_MESSAGE
+                    "추가할 수 있는 상품 정보가 없습니다.",
+                    "알림",
+                    JOptionPane.INFORMATION_MESSAGE
             );
             return;
         }
 
-        String[] options = new String[products.size() + 1];
-        for (int i = 0; i < products.size(); i++) {
-            Product p = products.get(i);
-            options[i] = p.name + " - " + p.price + "원";
+        String[] options = new String[availableSubscriptions.size() + 1];
+        int idx = 0;
+        for (SubscriptionService sub : availableSubscriptions) {
+            options[idx++] = sub.getServiceName() + " - " + sub.getAmount() + "원";
         }
-        options[products.size()] = "직접 입력(기타 서비스)";
+        options[availableSubscriptions.size()] = "직접 입력(기타 서비스)";
 
         String choice = (String) JOptionPane.showInputDialog(
                 this,
@@ -352,23 +272,36 @@ private void parseProducts(BufferedReader br) throws IOException {
             return;
         }
 
-        Product selectedProduct = null;
-        for (Product p : products) {
-            String label = p.name + " - " + p.price + "원";
+        SubscriptionService selectedProduct = null;
+        for (SubscriptionService sub : availableSubscriptions) {
+            String label = sub.getServiceName() + " - " + sub.getAmount() + "원";
             if (label.equals(choice)) {
-                selectedProduct = p;
+                selectedProduct = sub;
                 break;
             }
         }
         if (selectedProduct == null) return;
 
-        addSubscription(selectedProduct.category, selectedProduct.name, selectedProduct.price);
+        Map<String, DataLoader.ProductInfo> productMap = DataLoader.getProductMap();
+        DataLoader.ProductInfo productInfo = findProductInfoByName(selectedProduct.getServiceName(), productMap);
+        String category = (productInfo != null) ? productInfo.category : "기타";
+
+        addSubscription(category, selectedProduct.getServiceName(), selectedProduct.getAmount());
         JOptionPane.showMessageDialog(
                 this,
-                selectedProduct.name + " 구독을 추가했습니다.",
+                selectedProduct.getServiceName() + " 구독을 추가했습니다.",
                 "구독 추가",
                 JOptionPane.INFORMATION_MESSAGE
         );
+    }
+
+    private DataLoader.ProductInfo findProductInfoByName(String name, Map<String, DataLoader.ProductInfo> productMap) {
+        for (DataLoader.ProductInfo p : productMap.values()) {
+            if (p.name.equals(name)) {
+                return p;
+            }
+        }
+        return null;
     }
 
     private void showCustomAddDialog() {
@@ -400,26 +333,28 @@ private void parseProducts(BufferedReader br) throws IOException {
         }
     }
 
-    /* ===== 그룹핑 신청 시 호출: serviceName + 인원수 ===== */
-
     public void addGroupedSubscription(String serviceName, int people) {
         if (serviceName == null || serviceName.isBlank()) return;
         if (people <= 0) people = 1;
 
-        Product base = findProductForService(serviceName);
+        // 현재 로그인 유저 확인
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser != null && currentUser.getLedger().isSubscribed(serviceName)) {
+            JOptionPane.showMessageDialog(null, "이미 구독 중인 서비스입니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        DataLoader.ProductInfo base = findProductForService(serviceName);
 
         if (base == null) {
             JOptionPane.showMessageDialog(null, "상품 정보를 찾을 수 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-
-        // 원래 금액(fullPrice)을 저장하고 numberOfUsers를 people로 설정
-        // 상세보기에서 fullPrice / numberOfUsers로 계산되도록 함
         addSubscription(base.category, base.name, base.price, people);
     }
 
-    private Product findProductForService(String serviceName) {
+    private DataLoader.ProductInfo findProductForService(String serviceName) {
         String keyword;
         switch (serviceName) {
             case "YouTube":  keyword = "유튜브"; break;
@@ -430,7 +365,7 @@ private void parseProducts(BufferedReader br) throws IOException {
         }
         if (keyword == null) return null;
 
-        for (Product p : products) {
+        for (DataLoader.ProductInfo p : DataLoader.getProductMap().values()) {
             if (p.name.contains(keyword)) {
                 return p;
             }
@@ -450,7 +385,6 @@ private void parseProducts(BufferedReader br) throws IOException {
         List<SubscriptionItem> list = categorySubs.computeIfAbsent(category, k -> new ArrayList<>());
         String display = name + " - " + price + "원/월";
 
-        // 임시 저장 객체 생성 (Ledger에는 추가하지 않음)
         list.add(new SubscriptionItem(display, price, numberOfUsers));
 
         totalPrice += price;
@@ -460,7 +394,6 @@ private void parseProducts(BufferedReader br) throws IOException {
 
 
     /* ====================== 리스트 패널 그리기 ====================== */
-
     private void refreshSubscriptionList() {
         subsListPanel.removeAll();
 
@@ -544,8 +477,6 @@ private void parseProducts(BufferedReader br) throws IOException {
                 + won(totalPrice) + "</html>");
     }
 
-    /* ====================== 공통 스타일 함수 ====================== */
-
     private static void styleFlatButton(JButton btn) {
         btn.setFocusPainted(false);
         btn.setFont(NORMAL_FONT);
@@ -553,8 +484,6 @@ private void parseProducts(BufferedReader br) throws IOException {
         btn.setForeground(TEXT_PRIMARY_COLOR);
         btn.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
     }
-
-    /* ====================== 저장 및 취소 로직 ====================== */
 
     private void saveSubs() {
         if (categorySubs.isEmpty()) {
@@ -578,12 +507,11 @@ private void parseProducts(BufferedReader br) throws IOException {
             return;
         }
 
-        // 모든 카테고리의 구독을 Ledger에 추가
         int addedCount = 0;
         for (List<SubscriptionItem> items : categorySubs.values()) {
             for (SubscriptionItem item : items) {
                 SubscriptionService service = new SubscriptionService(
-                        item.display.split(" - ")[0], // display에서 가격 제거한 이름
+                        item.display.split(" - ")[0],
                         item.price,
                         LocalDate.now().toString(),
                         sessionUser.getId(),
@@ -599,8 +527,8 @@ private void parseProducts(BufferedReader br) throws IOException {
         System.out.println("[장바구니 저장] " + addedCount + "개의 구독이 추가되었습니다.");
         JOptionPane.showMessageDialog(this, addedCount + "개의 구독이 저장되었습니다.", "완료", JOptionPane.INFORMATION_MESSAGE);
 
-        // 저장 후 장바구니 초기화
         clearCart();
+        Router.getInstance().navigateUser(Routes.MAIN);
     }
 
     private void clearCart() {

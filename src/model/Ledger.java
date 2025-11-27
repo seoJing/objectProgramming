@@ -59,4 +59,14 @@ public class Ledger {
     public int getMonthlyExpense() {
         return calculateSubscriptionExpense() + calculateTransactionExpense();
     }
+
+    // 특정 서비스를 이미 구독 중인지 확인
+    public boolean isSubscribed(String serviceName) {
+        for (SubscriptionService subscription : subscriptionList) {
+            if (subscription.getServiceName().equals(serviceName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
