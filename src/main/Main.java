@@ -6,6 +6,7 @@ import model.User;
 import model.UserList;
 import util.DataLoader;
 import util.Router;
+import util.Routes;
 import util.SessionManager;
 import view.MainFrame;
 
@@ -23,16 +24,21 @@ public class Main {
                     .flatMap(a -> a.getTransactionList().stream())
                     .forEach(System.out::println);*/
 
-            seedDevLogin();
             MainFrame frame = new MainFrame();
             Router.getInstance().setMainFrame(frame);
             frame.setVisible(true);
 
-            // seedDevLogin();    // 개발 편의를 위한 임시 로그인 세팅
+            // ===== 로그인 방식 선택 =====
+            // true: u001 계정으로 바로 로그인 (시연용)
+            // false: 로그인 화면부터 시작 (정상 흐름)
+            final boolean DEMO_MODE = true;
+
+            if (DEMO_MODE) {
+                seedDevLogin();    // u001로 바로 로그인
+            }
         });
     }
 
-    /** 개발 편의를 위한 임시 로그인 세팅 - 파일에서 로드된 실제 u001 사용자로 자동 로그인 */
     private static void seedDevLogin() {
         // DataLoader에서 로드된 실제 u001 사용자 조회
         User user = UserList.getInstance().findById("u001");
@@ -40,9 +46,15 @@ public class Main {
         if (user != null) {
             // 파일에서 로드된 실제 사용자로 로그인
             SessionManager.getInstance().login(user);
+
+            // 로그인 후 화면 전환
+            if (user.isAdmin()) {
+                Router.getInstance().navigateTo(Routes.ADMIN);
+            } else {
+                Router.getInstance().navigateTo(Routes.USER);
+            }
         }
     }
-    */
 }
 
 

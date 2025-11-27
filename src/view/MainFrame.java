@@ -8,10 +8,14 @@ import util.Router;
 import util.Routes;
 import util.UIConstants;
 import view.login.LoginPanel;
+import view.user.UserSidePanel;
+import view.admin.AdminSidePanel;
 
 public class MainFrame extends JFrame {
     private CardLayout cardLayout;
     private JPanel container;
+    private UserSidePanel userPanel;
+    private AdminSidePanel adminPanel;
 
     public MainFrame() {
         setTitle("구독 관리형 가계부");
@@ -32,7 +36,8 @@ public class MainFrame extends JFrame {
 
         add(container);
 
-        cardLayout.show(container, Routes.USER);
+        // 초기 화면: 로그인 화면
+        cardLayout.show(container, Routes.LOGIN);
     }
 
     /** 
@@ -53,5 +58,23 @@ public class MainFrame extends JFrame {
         }
 
         setLocationRelativeTo(null);  // 창 가운데 정렬
+    }
+
+    public void showUserView() {
+        if (userPanel == null) {
+            userPanel = new UserSidePanel();
+            container.add(userPanel, Routes.USER);
+            Router.getInstance().setUserSidePanel(userPanel);
+        }
+        switchTo(Routes.USER);
+    }
+
+    public void showAdminView() {
+        if (adminPanel == null) {
+            adminPanel = new AdminSidePanel();
+            container.add(adminPanel, Routes.ADMIN);
+            Router.getInstance().setAdminSidePanel(adminPanel);
+        }
+        switchTo(Routes.ADMIN);
     }
 }

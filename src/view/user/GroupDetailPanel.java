@@ -135,6 +135,9 @@ public class GroupDetailPanel extends UserLayout {
             "알림",
             JOptionPane.INFORMATION_MESSAGE
     );
+
+    // 5) 장바구니(STORE)로 라우팅
+    util.Router.getInstance().navigateUser(util.Routes.STORE);
 });
 
 
