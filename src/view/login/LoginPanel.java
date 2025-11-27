@@ -45,6 +45,7 @@ public class LoginPanel extends JPanel {
     }
 
     private void initUI() {
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(UIConstants.WHITE);
 
@@ -113,7 +114,6 @@ public class LoginPanel extends JPanel {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btn.setBackground(UIConstants.NAV_HOVER_COLOR);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 btn.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
             }
@@ -123,18 +123,9 @@ public class LoginPanel extends JPanel {
         return btn;
     }
 
-    
-
-/*
-로그인 성공 시 SessionManager에 사용자 정보 저장
-
-로그인 여부/관리자 여부를 SessionManager가 판단
-
-로그아웃하면 SessionManager가 모든 상태를 초기화
-
-UI는 SessionManager만 보고 로그인 상태를 다룸
-→ 로그인 로직이 한 곳에 모임 (Single Source of Truth)
-*/
+    // ============================
+    //  화면 생성 책임 제거
+    // ============================
     private void onLogin() {
     String id = idField.getText().trim();
     String pw = new String(passwordField.getPassword());
@@ -142,33 +133,30 @@ UI는 SessionManager만 보고 로그인 상태를 다룸
     try {
         User user = authService.login(id, pw);
 
-        // 세션 등록
-        SessionManager.getInstance().login(user);
+        System.out.println("★ 로그인 성공: " + user.getId());
+        System.out.println("Router.getMainFrame() = " + Router.getInstance().getMainFrame());
 
-        // 에러 초기화
+        System.out.println(" ★ 로그인 성공: " + user.getId());
+
+        // 세션 저장
+        SessionManager.getInstance().login(user);
         errorLabel.setText(" ");
 
-        // ============================
-        //  로그인 후 화면 동적 생성
-        // ============================
-
+        // ========= 여기서 Router만 호출 =========
         if (user.isAdmin()) {
-            // 관리자 화면을 '지금' 생성
-            view.admin.AdminSidePanel adminPanel = new view.admin.AdminSidePanel();
-            Router.getInstance().getMainFrame().addScreen(Routes.ADMIN, adminPanel);
             Router.getInstance().navigateTo(Routes.ADMIN);
-
         } else {
-            // 일반 사용자 화면을 '지금' 생성
-            view.user.UserSidePanel userPanel = new view.user.UserSidePanel();
-            Router.getInstance().getMainFrame().addScreen(Routes.USER, userPanel);
             Router.getInstance().navigateTo(Routes.USER);
         }
 
     } catch (Exception ex) {
         errorLabel.setText(ex.getMessage());
     }
+
+    
 }
+
+
 
     private void openSignupDialog() {
         Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
@@ -176,4 +164,6 @@ UI는 SessionManager만 보고 로그인 상태를 다룸
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
+
+    
 }

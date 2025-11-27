@@ -81,7 +81,7 @@ public class AuthService {
 
         String inputHash = PasswordUtil.hashPasswordWithIdSalt(id, rawPassword);
 
-        if (!inputHash.equals(user.getPassword())) {
+        if (!inputHash.equals(user.getPasswordHash())) {
             throw new IllegalArgumentException("ID 또는 비밀번호가 올바르지 않습니다.");
         }
 

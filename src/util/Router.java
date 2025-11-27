@@ -30,7 +30,7 @@ public class Router {
         return this.mainFrame;
     }
 
-    // ================== 로그인 후 User/Admin 패널 등록 ==================
+    // ================== 화면 패널 저장 ==================
     public void setUserSidePanel(UserSidePanel panel) {
         this.userSidePanel = panel;
     }
@@ -41,12 +41,18 @@ public class Router {
 
     // ================== 전체 화면 전환 ==================
     public void navigateTo(String screen) {
-        if (mainFrame != null) {
-            mainFrame.switchTo(screen);
-        }
+        if (mainFrame == null) return;
+
+    if (route.equals(Routes.ADMIN)) {
+        mainFrame.showAdminView();
+    } else if (route.equals(Routes.USER)) {
+        mainFrame.showUserView();
+    } else {
+        mainFrame.switchTo(route);  
+    }
     }
 
-    // ================== 유저 네비게이션 ==================
+    // ================== 유저 화면 내부 전환 ==================
     public void navigateUser(String screen) {
         if (userSidePanel != null) {
             userSidePanel.switchTo(screen);
@@ -55,7 +61,7 @@ public class Router {
         }
     }
 
-    // ================== 관리자 네비게이션 ==================
+    // ================== 관리자 화면 내부 전환 ==================
     public void navigateAdmin(String screen) {
         if (adminSidePanel != null) {
             adminSidePanel.switchTo(screen);
