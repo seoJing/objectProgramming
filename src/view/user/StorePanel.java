@@ -1,5 +1,6 @@
 package view.user;
 
+import model.UserList;
 import model.SubscriptionService;
 import model.User;
 import util.SessionManager;
@@ -465,34 +466,45 @@ private void parseProducts(BufferedReader br) throws IOException {
     refreshSubscriptionList();
 
     // 현재 로그인한 유저의 Ledger에도 추가
-    User currentUser = SessionManager.getInstance().getCurrentUser();
-    if (currentUser != null) {
-        String paymentDate = LocalDate.now().toString();
+SessionManager sm = SessionManager.getInstance();
+User sessionUser = (sm != null) ? sm.getCurrentUser() : null;
 
-        SubscriptionService service = new SubscriptionService(
-                name,
-                price,
-                paymentDate,
-                currentUser.getId(),
-                12,      // 결제 주기
-                1        // 그룹핑이 아닌 기본 추가는 1명
-        );
+if (sessionUser != null) {
+    String paymentDate = LocalDate.now().toString();
 
-        System.out.println("=======================================");
-        System.out.println("[구독 추가 시작] " + name);
+    SubscriptionService service = new SubscriptionService(
+            name,
+            price,
+            paymentDate,
+            sessionUser.getId(), // 일단 세션에 있는 아이디 사용
+            12,
+            1
+    );
 
-        int beforeCount = currentUser.getLedger().getSubscriptionList().size();
+    System.out.println("=======================================");
+    System.out.println("[구독 추가 시작] " + name);
+
+    // ⭐ UserList에서 아이디로 다시 사용자 찾기 (요구사항 핵심)
+    UserList userList = UserList.getInstance();
+    User targetUser = userList.findById(sessionUser.getId());
+
+    if (targetUser != null) {
+        int beforeCount = targetUser.getLedger().getSubscriptionList().size();
         System.out.println("추가 전 구독 개수: " + beforeCount);
 
         System.out.println("추가되는 구독 데이터: " + service);
 
-        // 실제 Ledger에 저장
-        currentUser.getLedger().addSubscription(service);
+        // 실제 Ledger에 저장 (findById로 얻은 객체에 추가)
+        targetUser.getLedger().addSubscription(service);
 
-        int afterCount = currentUser.getLedger().getSubscriptionList().size();
+        int afterCount = targetUser.getLedger().getSubscriptionList().size();
         System.out.println("추가 후 구독 개수: " + afterCount);
-        System.out.println("=======================================");
+    } else {
+        System.out.println("[구독 추가 실패] UserList에서 id=" + sessionUser.getId() + " 사용자 찾기 실패");
     }
+    System.out.println("=======================================");
+}
+
 }
 
 
