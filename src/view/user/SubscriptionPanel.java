@@ -78,7 +78,7 @@ public class SubscriptionPanel extends UserLayout {
         if (subscriptions.isEmpty()) {
             JLabel emptyLabel = new JLabel("구독 중인 서비스가 없습니다.");
             emptyLabel.setFont(UIConstants.NORMAL_FONT);
-            emptyLabel.setForeground(new Color(150, 150, 150));
+            emptyLabel.setForeground(UIConstants.MUTED_GRAY_150);
             listPanel.add(emptyLabel);
         } else {
             for (SubscriptionService subscription : subscriptions) {
@@ -116,9 +116,9 @@ public class SubscriptionPanel extends UserLayout {
             }
         };
 
-        itemPanel.setBackground(new Color(240, 245, 250));
+        itemPanel.setBackground(UIConstants.LIGHT_BG);
         itemPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-        itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
+        itemPanel.setMaximumSize(UIConstants.ITEM_WIDTH_MAX);
         itemPanel.setOpaque(false);
         itemPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -132,12 +132,12 @@ public class SubscriptionPanel extends UserLayout {
 
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                itemPanel.setBackground(new Color(230, 240, 245));
+                itemPanel.setBackground(UIConstants.LIGHT_BG_HOVER);
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                itemPanel.setBackground(new Color(240, 245, 250));
+                itemPanel.setBackground(UIConstants.LIGHT_BG);
             }
         });
 
@@ -147,15 +147,15 @@ public class SubscriptionPanel extends UserLayout {
         leftPanel.setOpaque(false);
 
         JLabel serviceNameLabel = new JLabel(subscription.getServiceName());
-        serviceNameLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 14));
-        serviceNameLabel.setForeground(new Color(33, 33, 33));
+        serviceNameLabel.setFont(UIConstants.NORMAL_FONT_BOLD);
+        serviceNameLabel.setForeground(UIConstants.TEXT_PRIMARY);
         leftPanel.add(serviceNameLabel);
 
         String paymentInfo = String.format("결제일: %s | 금액: %,d원", subscription.getPaymentDate(), subscription.getAmount());
 
         JLabel paymentInfoLabel = new JLabel(paymentInfo);
-        paymentInfoLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 11));
-        paymentInfoLabel.setForeground(new Color(120, 120, 120));
+        paymentInfoLabel.setFont(UIConstants.SMALL_FONT_11);
+        paymentInfoLabel.setForeground(UIConstants.TEXT_SECONDARY);
         leftPanel.add(paymentInfoLabel);
 
         itemPanel.add(leftPanel, BorderLayout.WEST);
@@ -163,8 +163,8 @@ public class SubscriptionPanel extends UserLayout {
         // 우측: 금액 (공유 계정이면 실제 구독료, 아니면 전체 금액)
         int displayAmount = SubscriptionSavingsUtil.calculateActualPrice(subscription);
         JLabel amountLabel = new JLabel(String.format("%,d원", displayAmount));
-        amountLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 16));
-        amountLabel.setForeground(new Color(11, 218, 81));
+        amountLabel.setFont(UIConstants.MEDIUM_FONT_16);
+        amountLabel.setForeground(UIConstants.POS_GREEN);
         itemPanel.add(amountLabel, BorderLayout.EAST);
 
         return itemPanel;
@@ -182,9 +182,9 @@ public class SubscriptionPanel extends UserLayout {
             }
         };
 
-        expensePanel.setBackground(new Color(245, 248, 250));
+        expensePanel.setBackground(UIConstants.VERY_LIGHT_BG);
         expensePanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-        expensePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
+        expensePanel.setMaximumSize(UIConstants.HEADER_SIZE_MAX);
         expensePanel.setOpaque(false);
 
         // 좌측: 라벨
@@ -203,8 +203,8 @@ public class SubscriptionPanel extends UserLayout {
             .mapToInt(SubscriptionSavingsUtil::calculateActualPrice)
             .sum();
         JLabel totalLabel = new JLabel(String.format("%,d원", totalAmount));
-        totalLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 18));
-        totalLabel.setForeground(new Color(11, 218, 81));
+        totalLabel.setFont(UIConstants.LARGE_FONT_18);
+        totalLabel.setForeground(UIConstants.POS_GREEN);
 
         expensePanel.add(totalLabel, BorderLayout.EAST);
 
@@ -215,7 +215,7 @@ public class SubscriptionPanel extends UserLayout {
         JPanel suggestionPanel = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 40));
         suggestionPanel.setBackground(Color.WHITE);
         suggestionPanel.setBorder(BorderFactory.createEmptyBorder(20, 16, 40, 16));
-        suggestionPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, 120));
+        suggestionPanel.setPreferredSize(UIConstants.ITEM_WIDTH_MAX_120);
 
         JButton suggestionBtn = new JButton("이런 구독은 어때요?") {
             @Override
@@ -224,9 +224,9 @@ public class SubscriptionPanel extends UserLayout {
             }
         };
 
-        suggestionBtn.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 14));
-        suggestionBtn.setForeground(new Color(11, 218, 81));
-        suggestionBtn.setBackground(new Color(255, 255, 255, 0));
+        suggestionBtn.setFont(UIConstants.NORMAL_FONT);
+        suggestionBtn.setForeground(UIConstants.POS_GREEN);
+        suggestionBtn.setBackground(UIConstants.TRANSPARENT);
         suggestionBtn.setFocusPainted(false);
         suggestionBtn.setBorderPainted(false);
         suggestionBtn.setContentAreaFilled(false);

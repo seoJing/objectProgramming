@@ -3,8 +3,6 @@ package view.admin;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
@@ -63,16 +61,16 @@ public class AdminDashboardPanel extends AdminLayout {
         card.setLayout(new BorderLayout());
         card.setBackground(UIConstants.CARD_BG);
         card.setBorder(UIConstants.CARD_BORDER);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
-        card.setPreferredSize(new Dimension(Integer.MAX_VALUE, 100));
+        card.setMaximumSize(UIConstants.ITEM_WIDTH_MAX_100);
+        card.setPreferredSize(UIConstants.ITEM_WIDTH_MAX_100);
 
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 16));
+        titleLabel.setFont(UIConstants.MEDIUM_FONT_16);
         titleLabel.setForeground(UIConstants.TEXT_PRIMARY_COLOR);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 0));
 
         JLabel valueLabel = new JLabel(value);
-        valueLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 24));
+        valueLabel.setFont(UIConstants.DISPLAY_FONT_24);
         valueLabel.setForeground(UIConstants.ACCENT_COLOR);
         valueLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 0));
 
@@ -86,7 +84,7 @@ public class AdminDashboardPanel extends AdminLayout {
 
         JPanel box = new JPanel();
         box.setLayout(new GridLayout(1, 3, 15, 0));
-        box.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
+        box.setMaximumSize(UIConstants.HEADER_SIZE_MAX);
         box.setBackground(Color.WHITE);
 
         JButton subscriptionBtn = createButton("구독 관리");
@@ -117,7 +115,7 @@ public class AdminDashboardPanel extends AdminLayout {
         btn.setBackground(UIConstants.BACKGROUND_BUTTON);
         btn.setForeground(UIConstants.TEXT_PRIMARY_COLOR);
 
-        btn.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 14));
+        btn.setFont(UIConstants.NORMAL_FONT_BOLD);
         return btn;
     }
 }

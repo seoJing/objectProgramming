@@ -63,8 +63,8 @@ public class MainPanel extends UserLayout {
         calCard.setOpaque(true);
         calCard.setBackground(UIConstants.CARD_BG);
         calCard.setBorder(UIConstants.CARD_BORDER);
-        calCard.setPreferredSize(new Dimension(520, 360));
-        calCard.setMaximumSize(new Dimension(520, 360));
+        calCard.setPreferredSize(UIConstants.CALENDAR_SIZE);
+        calCard.setMaximumSize(UIConstants.CALENDAR_SIZE);
         calCard.add(cal, BorderLayout.CENTER);
         panel.add(calCard);
         panel.add(Box.createVerticalStrut(12));
@@ -79,7 +79,7 @@ public class MainPanel extends UserLayout {
     private JPanel createAlertNotification() {
         JPanel wrapperPanel = new JPanel(new BorderLayout());
         wrapperPanel.setOpaque(false);
-        wrapperPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+        wrapperPanel.setMaximumSize(UIConstants.ITEM_WIDTH_MAX_100);
         wrapperPanel.setBackground(Color.WHITE);
 
         String alertMessage = generateAlertMessage();
@@ -150,7 +150,7 @@ public class MainPanel extends UserLayout {
 
     private JPanel createSubscriptionScrollList() {
         JPanel containerPanel = new JPanel(new BorderLayout());
-        containerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+        containerPanel.setMaximumSize(UIConstants.ITEM_WIDTH_MAX_120);
         containerPanel.setBackground(Color.WHITE);
         containerPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
@@ -215,12 +215,12 @@ public class MainPanel extends UserLayout {
             btn.setText("<html><center>" + subscription.getServiceName() + "</center></html>");
         }
 
-        btn.setPreferredSize(new Dimension(80, 80));
-        btn.setMaximumSize(new Dimension(80, 80));
-        btn.setMinimumSize(new Dimension(80, 80));
+        btn.setPreferredSize(UIConstants.BUTTON_80x80);
+        btn.setMaximumSize(UIConstants.BUTTON_80x80);
+        btn.setMinimumSize(UIConstants.BUTTON_80x80);
         btn.setBackground(UIConstants.BACKGROUND_BUTTON);
         btn.setForeground(UIConstants.USER_HEADER_COLOR);
-        btn.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 12));
+        btn.setFont(UIConstants.SMALL_FONT);
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
         btn.setContentAreaFilled(true);

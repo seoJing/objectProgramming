@@ -15,9 +15,9 @@ public class AlertItemPanel extends JPanel {
 
     public AlertItemPanel(String title) {
         setLayout(new BorderLayout());
-        setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
-        setPreferredSize(new Dimension(0, 100));
-        setBackground(new Color(248, 250, 252));
+        setMaximumSize(UIConstants.ITEM_WIDTH_MAX_100);
+        setPreferredSize(new Dimension(0, UIConstants.PANEL_HEIGHT_100));
+        setBackground(UIConstants.ITEM_BG_LIGHT);
         setBorder(null);
         setOpaque(false);
 
@@ -44,8 +44,8 @@ public class AlertItemPanel extends JPanel {
 
         // 좌측 - 제목 (텍스트 자동 개행)
         JLabel titleLabel = new JLabel("<html><body style='width:250px'>" + title + "</body></html>");
-        titleLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 13));
-        titleLabel.setForeground(new Color(33, 33, 33));
+        titleLabel.setFont(UIConstants.SMALL_FONT_13);
+        titleLabel.setForeground(UIConstants.TEXT_PRIMARY);
         add(titleLabel, BorderLayout.CENTER);
 
         JButton deleteBtn = new JButton("삭제") {
@@ -54,22 +54,22 @@ public class AlertItemPanel extends JPanel {
                 java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
                 g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
                 if (getModel().isArmed()) {
-                    g2d.setColor(new Color(240, 240, 240));
+                    g2d.setColor(UIConstants.LIGHT_BG_HOVER);
                 } else {
-                    g2d.setColor(new Color(250, 250, 250));
+                    g2d.setColor(UIConstants.VERY_LIGHT_BG);
                 }
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
                 super.paintComponent(g);
             }
         };
-        deleteBtn.setFont(new Font("Arial", Font.BOLD, 14));
-        deleteBtn.setPreferredSize(new Dimension(32, 32));
-        deleteBtn.setMaximumSize(new Dimension(32, 32));
+        deleteBtn.setFont(UIConstants.NORMAL_FONT_BOLD);
+        deleteBtn.setPreferredSize(UIConstants.ICON_32x32);
+        deleteBtn.setMaximumSize(UIConstants.ICON_32x32);
         deleteBtn.setFocusPainted(false);
         deleteBtn.setBorderPainted(false);
         deleteBtn.setContentAreaFilled(false);
         deleteBtn.setOpaque(false);
-        deleteBtn.setForeground(new Color(170, 170, 170));
+        deleteBtn.setForeground(UIConstants.DARK_GRAY_170);
         deleteBtn.addActionListener(e -> {
             java.awt.Container parent = AlertItemPanel.this.getParent();
             if (parent != null) {

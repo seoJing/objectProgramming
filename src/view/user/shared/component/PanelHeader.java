@@ -18,13 +18,13 @@ public class PanelHeader extends JPanel {
 
     public PanelHeader(String title) {
         super(new BorderLayout());
-        setPreferredSize(new Dimension(Integer.MAX_VALUE, 60));
+        setPreferredSize(UIConstants.HEADER_SIZE_MAX);
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 20));
-        titleLabel.setForeground(new Color(33, 33, 33));
+        titleLabel.setFont(UIConstants.LABEL_FONT_20);
+        titleLabel.setForeground(UIConstants.TEXT_PRIMARY);
 
         add(titleLabel, BorderLayout.WEST);
     }
