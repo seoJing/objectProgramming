@@ -1,14 +1,26 @@
 package view.admin;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
 import model.SubscriptionService;
 import service.AdminSubscriptionService;
 import util.UIConstants;
 import view.layout.AdminLayout;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.util.List;
 
 public class AdminSubscriptionManagePanel extends AdminLayout {
 
@@ -34,9 +46,6 @@ public class AdminSubscriptionManagePanel extends AdminLayout {
         refresh();
     }
 
-    // ================================
-    // UI 생성
-    // ================================
     private JPanel createContent() {
 
         JPanel panel = new JPanel();
@@ -73,9 +82,6 @@ public class AdminSubscriptionManagePanel extends AdminLayout {
         return panel;
     }
 
-    // ================================
-    // 우측 정보 / 수정 패널
-    // ================================
     private JPanel createInfoPanel() {
 
         JPanel box = new JPanel();
@@ -130,9 +136,6 @@ public class AdminSubscriptionManagePanel extends AdminLayout {
         return lbl;
     }
 
-    // ================================
-    // 데이터 새로고침
-    // ================================
     private void refresh() {
         model.setRowCount(0);
 
@@ -178,9 +181,6 @@ public class AdminSubscriptionManagePanel extends AdminLayout {
         lblPersonalCost.setText("1/N 비용 : " + s.getPersonalCost() + "원");
     }
 
-    // ================================
-    // 기능 1: 결제 처리
-    // ================================
     private void processPayment() {
         SubscriptionService s = getSelected();
         if (s == null) {
@@ -193,9 +193,6 @@ public class AdminSubscriptionManagePanel extends AdminLayout {
         refresh();
     }
 
-    // ================================
-    // 기능 2: 요금 수정
-    // ================================
     private void editAmount() {
         SubscriptionService s = getSelected();
         if (s == null) return;
@@ -212,9 +209,6 @@ public class AdminSubscriptionManagePanel extends AdminLayout {
         }
     }
 
-    // ================================
-    // 기능 3: 공유 인원 수정
-    // ================================
     private void editUserCount() {
         SubscriptionService s = getSelected();
         if (s == null) return;
@@ -235,9 +229,6 @@ public class AdminSubscriptionManagePanel extends AdminLayout {
         }
     }
 
-    // ================================
-    // 기능 4: 결제 주기 수정
-    // ================================
     private void editPeriod() {
         SubscriptionService s = getSelected();
         if (s == null) return;

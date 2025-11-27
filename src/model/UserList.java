@@ -19,8 +19,6 @@ public class UserList {
         return instance;
     }
 
-    // ===================== CRUD =====================
-
     public void add(User user) {
         if (user != null) {
             users.add(user);
@@ -60,5 +58,5 @@ public class UserList {
         users.clear();
     }
 
-    
+
 }

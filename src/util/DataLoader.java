@@ -1,6 +1,5 @@
 package util;
 
-import model.*;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -8,14 +7,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import model.Account;
+import model.SubscriptionService;
+import model.Transaction;
+import model.TransactionType;
+import model.User;
+import model.UserList;
+
 public class DataLoader {
 
     private static final String DATA_PATH = "src/resources/data/";
-
-    // 상품 정보를 임시로 저장할 맵 (ID -> ProductInfo)
     private static final Map<String, ProductInfo> productMap = new HashMap<>();
 
-    // 내부적으로만 사용할 상품 정보 클래스
     public static class ProductInfo {
         public String category;
         public String name;
@@ -28,7 +31,6 @@ public class DataLoader {
         }
     }
 
-    // 상품 정보 맵 접근 메서드
     public static Map<String, ProductInfo> getProductMap() {
         return productMap;
     }
@@ -149,7 +151,7 @@ public class DataLoader {
 
                 User u = UserList.getInstance().findById(userId);
                 if (u != null) {
-                    u.addAccount(new Account(accNum, bank, balance, userId));
+                    u.addAccount(new Account(accNum, bank, balance));
                 }
             }
         } catch (Exception e) { e.printStackTrace(); }

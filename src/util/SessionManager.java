@@ -1,10 +1,11 @@
 package util;
 
+import java.time.LocalDate;
+
 import model.Account;
 import model.SubscriptionService;
-import model.User;
 import model.Transaction;
-import java.time.LocalDate;
+import model.User;
 
 public class SessionManager {
 
@@ -27,8 +28,6 @@ public class SessionManager {
         return instance;
     }
 
-    // ================== 로그인 / 로그아웃 ==================
-
     public void login(User user) {
         this.currentUser = user;
         this.selectedSubscription = null;
@@ -50,8 +49,6 @@ public class SessionManager {
     public boolean isAdmin() {
         return currentUser != null && currentUser.isAdmin();
     }
-
-    // ================== Getter ==================
 
     public User getCurrentUser() {
         return currentUser;

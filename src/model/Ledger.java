@@ -5,20 +5,13 @@ import java.util.List;
 
 public class Ledger {
 
-    // 구독 서비스 리스트
     private List<SubscriptionService> subscriptionList;
-
-    // 가계부 일반 항목 리스트
     private List<Transaction> transactionList;
 
     public Ledger() {
         this.subscriptionList = new ArrayList<>();
         this.transactionList = new ArrayList<>();
     }
-
-    // ==============================
-    // 구독 서비스 관련 메서드
-    // ==============================
 
     public List<SubscriptionService> getSubscriptionList() {
         return subscriptionList;
@@ -41,10 +34,6 @@ public class Ledger {
         return total;
     }
 
-    // ==============================
-    // 가계부 일반 항목(Transaction) 관련 메서드
-    // ==============================
-
     public List<Transaction> getTransactionList() {
         return transactionList;
     }
@@ -66,10 +55,7 @@ public class Ledger {
         return total;
     }
 
-    // ==============================
     // 전체 월 지출 합산
-    // ==============================
-
     public int getMonthlyExpense() {
         return calculateSubscriptionExpense() + calculateTransactionExpense();
     }

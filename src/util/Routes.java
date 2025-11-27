@@ -1,13 +1,8 @@
 package util;
 
-/**
- * Screen route constants for navigation.
- * Use these constants instead of hardcoded strings to prevent typos and maintain consistency.
- */
 public final class Routes {
 
     private Routes() {
-        // Prevent instantiation
     }
 
     // Main screens
@@ -32,9 +27,8 @@ public final class Routes {
     public static final String STORE_DETAIL = "STORE_DETAIL";
 
     // Admin screens
-    public static final String ADMIN_MAIN = "ADMIN_MAIN";
     public static final String ADMIN_DASHBOARD = "ADMIN_DASHBOARD";
-    public static final String ADMIN_SUBSCRIPTION_MANAGE = "ADMIN_SUBSCRIPTION_MANAGE"; // ✔ 유지됨
+    public static final String ADMIN_SUBSCRIPTION_MANAGE = "ADMIN_SUBSCRIPTION_MANAGE";
     public static final String ADMIN_STATISTICS = "ADMIN_STATISTICS";
     public static final String ADMIN_TRANSACTION_MANAGE = "ADMIN_TRANSACTION_MANAGE";
 }

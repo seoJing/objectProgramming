@@ -48,7 +48,7 @@ public class TransactionPanel extends UserLayout {
     private JComboBox<Account> accountCombo;
     private JLabel balanceLabel;
 
-    private JPanel listPanel;           // 리스트 컨테이너 (Y축)
+    private JPanel listPanel;
     private JScrollPane scroll;
 
     private Account initialSelection;
@@ -68,10 +68,9 @@ public class TransactionPanel extends UserLayout {
         setContent(createContent());
         loadAccountsAndData();
 
-        // CardLayout으로 재표시될 때마다 선택 계좌를 번호로 강제 적용
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override public void componentShown(java.awt.event.ComponentEvent e) {
-                syncSelectionFromSession();   // 아래 메서드
+                syncSelectionFromSession();
             }
         });
     }
@@ -80,8 +79,8 @@ public class TransactionPanel extends UserLayout {
     private void syncSelectionFromSession() {
         Account s = SessionManager.getInstance().getSelectedAccount();
         if (s == null) return;
-        selectByAccountNumber(s.getAccountNumber());            // 번호로만 매칭
-        rebuildList((Account) accountCombo.getSelectedItem());  // 화면 갱신
+        selectByAccountNumber(s.getAccountNumber());
+        rebuildList((Account) accountCombo.getSelectedItem());
     }
 
     // 계좌번호로만 콤보에서 선택
@@ -91,7 +90,7 @@ public class TransactionPanel extends UserLayout {
             Account a = accountCombo.getItemAt(i);
             if (accNo.equals(a.getAccountNumber())) {
                 accountCombo.setSelectedIndex(i);
-                SessionManager.getInstance().setSelectedAccount(a); // 세션도 맞춤
+                SessionManager.getInstance().setSelectedAccount(a);
                 return;
             }
         }
@@ -140,7 +139,7 @@ public class TransactionPanel extends UserLayout {
 
         scroll = new JScrollPane(listPanel);
         scroll.setBorder(null);
-        scroll.getVerticalScrollBar().setUnitIncrement(16); // 스크롤 속도
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
         root.add(scroll, BorderLayout.CENTER);
 
         return root;
@@ -156,7 +155,6 @@ public class TransactionPanel extends UserLayout {
         accountCombo.removeAllItems();
         for (Account a : accounts) accountCombo.addItem(a);
 
-        // 1순위: 생성자 전달값 → 2순위: 세션값 → 3순위: 첫 계좌
         Account selected = (initialSelection != null)
                 ? initialSelection
                 : SessionManager.getInstance().getSelectedAccount();
@@ -166,7 +164,7 @@ public class TransactionPanel extends UserLayout {
         }
 
         if (selected != null) {
-            accountCombo.setSelectedItem(selected); // equals로 매칭
+            accountCombo.setSelectedItem(selected);
         }
 
         rebuildList((Account) accountCombo.getSelectedItem());
@@ -246,7 +244,6 @@ public class TransactionPanel extends UserLayout {
         JLabel netLabel = new JLabel(sign + UIConstants.money(abs) + "원");
         netLabel.setFont(UIConstants.NORMAL_FONT);
         netLabel.setForeground(net > 0 ? UIConstants.POS_GREEN : Color.BLACK);
-        // 참고용 툴팁(원하면 유지/삭제)
         netLabel.setToolTipText("입금 +" + UIConstants.money(sumIn) + "원 / 출금 -" + UIConstants.money(sumOut) + "원");
 
         g.gridx = 1; g.weightx = 0; g.anchor = GridBagConstraints.EAST;
@@ -262,15 +259,11 @@ public class TransactionPanel extends UserLayout {
         row.setOpaque(true);
         row.setBackground(UIConstants.TX_ROW_BG);
         row.setBorder(UIConstants.TX_ROW_BORDER);
-
-        // 클릭
         row.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // 이 행이 어떤 거래인지 바인딩
         row.putClientProperty("account", account);
         row.putClientProperty("tx", t);
 
-        // 클릭 시 상세로 이동
         row.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override public void mouseClicked(java.awt.event.MouseEvent e) {
                 Account a = (Account)((JComponent)e.getSource()).getClientProperty("account");
@@ -302,7 +295,7 @@ public class TransactionPanel extends UserLayout {
 
         left.add(Box.createHorizontalStrut(6));
         left.add(icon);
-        left.setBorder(UIConstants.ICON_LEFT_PADDING); // 아이콘
+        left.setBorder(UIConstants.ICON_LEFT_PADDING);
 
         gc.gridx = 0;
         gc.weightx = 0;
@@ -329,7 +322,7 @@ public class TransactionPanel extends UserLayout {
 
         center.add(title);
         center.add(Box.createVerticalStrut(2));
-        center.add(time);           // ← 시간은 날짜 아래 줄로
+        center.add(time);
         center.add(Box.createVerticalStrut(4));
         center.add(subLabel);
 
@@ -348,36 +341,34 @@ public class TransactionPanel extends UserLayout {
 
         JPanel right = new JPanel(new BorderLayout());
         right.setOpaque(false);
-        right.add(amount, BorderLayout.EAST);   // 우측 끝에 딱 붙이기
+        right.add(amount, BorderLayout.EAST);
 
         gc.gridx   = 2;
         gc.weightx = 0;
         gc.anchor  = GridBagConstraints.EAST;
-        gc.insets  = UIConstants.RIGHT_GAP_M;   // 가운데와의 간격
+        gc.insets  = UIConstants.RIGHT_GAP_M;
         row.add(right, gc);
 
         return row;
     }
+
     // 날짜/시간 추출 유틸
     private LocalDate extractDate(Transaction t) {
         return extractDateTime(t).toLocalDate();
     }
 
     private LocalDateTime extractDateTime(Transaction t) {
-        // 1) getDateTime(): LocalDateTime 우선
         try {
             var m = t.getClass().getMethod("getDateTime");
             Object v = m.invoke(t);
             if (v instanceof LocalDateTime dt) return dt;
         } catch (Exception ignored) {}
 
-        // 2) getDate(): String → 가능한 형식 파싱
         try {
             var m = t.getClass().getMethod("getDate");
             Object v = m.invoke(t);
             if (v != null) {
                 String s = v.toString().trim();
-                // 가벼운 포맷 후보들
                 DateTimeFormatter[] fs = {
                         DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"),
                         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),
@@ -386,7 +377,6 @@ public class TransactionPanel extends UserLayout {
                 for (DateTimeFormatter f : fs) {
                     try { return LocalDateTime.parse(s, f); } catch (Exception ignore) {}
                 }
-                // 시간 없으면 자정으로
                 try {
                     var d = LocalDate.parse(s, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
                     return d.atStartOfDay();
@@ -399,7 +389,6 @@ public class TransactionPanel extends UserLayout {
 
     private static String safe(String s) { return (s == null) ? "" : s; }
 
-    // 간단 아이콘 로더(없으면 투명)
     private static Icon loadIcon(String path, int w, int h) {
         try {
             var url = Objects.requireNonNull(TransactionPanel.class.getResource(path));

@@ -5,7 +5,6 @@ import java.util.List;
 
 public class User {
 
-    // ================= Fields =================
     private String id;
     private String password;      // 해시된 비밀번호 저장
     private String name;
@@ -19,10 +18,9 @@ public class User {
     private final List<Account> accountList;
     private final Ledger ledger;
 
-    // ================= Constructor =================
     public User(
             String id,
-            String password,     // 해시된 비밀번호
+            String password,
             String name,
             String gender,
             int age,
@@ -45,10 +43,8 @@ public class User {
         this.ledger = new Ledger();
     }
 
-    // ================= Getter =================
-
     public String getId() { return id; }
-    public String getPasswordHash() { return password; }   
+    public String getPasswordHash() { return password; }
     public String getName() { return name; }
     public String getGender() { return gender; }
     public int getAge() { return age; }
@@ -59,16 +55,12 @@ public class User {
     public List<Account> getAccountList() { return accountList; }
     public Ledger getLedger() { return ledger; }
 
-    // ================= Setter =================
-
     public void setName(String name) { this.name = name; }
     public void setGender(String gender) { this.gender = gender; }
     public void setAge(int age) { this.age = age; }
     public void setOccupation(String occupation) { this.occupation = occupation; }
     public void setResidence(String residence) { this.residence = residence; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-
-    // ================= Account 관리 기능 =================
 
     public void addAccount(Account account) {
         accountList.add(account);
@@ -86,8 +78,6 @@ public class User {
         }
         return null;
     }
-
-    // ================= toString =================
 
     @Override
     public String toString() {

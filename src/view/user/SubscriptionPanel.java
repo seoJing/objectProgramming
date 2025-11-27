@@ -37,7 +37,6 @@ public class SubscriptionPanel extends UserLayout {
     public void setVisible(boolean visible) {
         super.setVisible(visible);
         if (visible) {
-            // 화면이 보일 때마다 새로 콘텐츠 생성 (구독 해지 후 반영)
             JPanel content = createContent();
             setContent(content);
         }
@@ -70,7 +69,6 @@ public class SubscriptionPanel extends UserLayout {
         listPanel.setBackground(Color.WHITE);
         listPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        // 현재 사용자의 실제 구독 서비스 데이터 조회
         User user = SessionManager.getInstance().getCurrentUser();
         List<SubscriptionService> subscriptions = new ArrayList<>();
         if (user != null && user.getLedger() != null) {
@@ -221,21 +219,19 @@ public class SubscriptionPanel extends UserLayout {
         JButton suggestionBtn = new JButton("이런 구독은 어때요?") {
             @Override
             protected void paintComponent(java.awt.Graphics g) {
-                // 배경을 투명하게 처리하므로 paint 호출 안 함
                 super.paintComponent(g);
             }
         };
 
         suggestionBtn.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 14));
         suggestionBtn.setForeground(new Color(11, 218, 81));
-        suggestionBtn.setBackground(new Color(255, 255, 255, 0)); // 투명
+        suggestionBtn.setBackground(new Color(255, 255, 255, 0));
         suggestionBtn.setFocusPainted(false);
         suggestionBtn.setBorderPainted(false);
         suggestionBtn.setContentAreaFilled(false);
         suggestionBtn.setOpaque(false);
         suggestionBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // 언더라인 효과를 위한 HTML 사용
         suggestionBtn.setText("<html><u>이런 구독은 어때요?</u></html>");
 
         suggestionBtn.addActionListener(e -> {

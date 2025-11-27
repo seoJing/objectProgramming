@@ -1,13 +1,32 @@
 package view.admin;
 
-import model.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import model.Account;
+import model.Transaction;
+import model.TransactionType;
+import model.User;
+import model.UserList;
 import util.UIConstants;
 import view.layout.AdminLayout;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
-import java.util.List;
 
 public class AdminStatisticsPanel extends AdminLayout {
 
@@ -17,7 +36,6 @@ public class AdminStatisticsPanel extends AdminLayout {
     public AdminStatisticsPanel() {
         super();
         setContent(createContent());
-        // 초기값: 지출 카테고리별 통계 로드
         updateChart("지출 카테고리별");
     }
 
@@ -55,16 +73,13 @@ public class AdminStatisticsPanel extends AdminLayout {
     }
 
     private void updateChart(String filterType) {
-        // 1. 전체 회원 가져오기
         List<User> allUsers = UserList.getInstance().getAll();
         Map<String, Integer> dataMap = new HashMap<>();
 
         for (User u : allUsers) {
-            // 🔽 [수정] AccountService 없이 유저에게 직접 계좌 리스트 요청
             List<Account> accounts = u.getAccountList();
 
             for (Account acc : accounts) {
-                // 🔽 [수정] AccountService 없이 계좌에게 직접 거래내역 요청
                 List<Transaction> transactions = acc.getTransactionList();
 
                 for (Transaction tx : transactions) {
@@ -149,10 +164,8 @@ public class AdminStatisticsPanel extends AdminLayout {
             // 2. 상위 7개 + 기타로 재구성
             List<Map.Entry<String, Integer>> displayList = new ArrayList<>();
             if (list.size() > 8) {
-                // 상위 7개 추가
                 displayList.addAll(list.subList(0, 7));
 
-                // 나머지 합쳐서 '기타'로 추가
                 int otherTotal = 0;
                 for (int i = 7; i < list.size(); i++) otherTotal += list.get(i).getValue();
                 if (otherTotal > 0) {
@@ -175,24 +188,19 @@ public class AdminStatisticsPanel extends AdminLayout {
                 Map.Entry<String, Integer> entry = displayList.get(i);
                 int value = entry.getValue();
 
-                // ★ [수정] 각도 계산: 비율대로 정확하게 계산
                 int angle = (int) Math.round((double) value / total * 360);
 
-                // 마지막 조각에서만 360도 보정 (1~2도 오차 해결용)
                 if (i == displayList.size() - 1) {
                     angle = 360 - currentAngleSum;
                 }
 
-                // 파이 그리기
                 g2d.setColor(colors[i % colors.length]);
                 g2d.fillArc(chartX, chartY, diameter, diameter, startAngle, angle);
 
-                // 범례 그리기
                 if (legendY + 25 < getHeight()) {
                     g2d.fillRect(legendX, legendY, 15, 15);
                     g2d.setColor(Color.BLACK);
                     double percent = (double) value / total * 100;
-                    // 텍스트 포맷: 항목명 (금액, %)
                     String label = String.format("%s : %,d원 (%.1f%%)",
                             entry.getKey(), value, percent);
                     g2d.drawString(label, legendX + 25, legendY + 12);

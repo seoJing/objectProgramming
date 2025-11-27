@@ -1,21 +1,30 @@
 package view.user.shared.component;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import model.Account;
 import model.Transaction;
 import model.TransactionType;
 import util.SessionManager;
 import util.UIConstants;
 
-import javax.swing.*;
-import java.awt.*;
-
 /**
  * 거래 항목을 표시하는 패널 컴포넌트
  * (거래 상세 / 구독 상세 둘 다에서 사용)
  */
-public class TransactionItemPanel extends JPanel {
+public class TransactionItem extends JPanel {
 
-    public TransactionItemPanel(Transaction transaction) {
+    public TransactionItem(Transaction transaction) {
         super(new BorderLayout());
 
         // 카드 스타일

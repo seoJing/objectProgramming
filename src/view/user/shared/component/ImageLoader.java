@@ -105,8 +105,6 @@ public class ImageLoader {
                 return "disney+";
             case "라프텔":
                 return "laftel";
-            case "왓챠":
-                return "watcha";
 
             // 음악
             case "벅스":

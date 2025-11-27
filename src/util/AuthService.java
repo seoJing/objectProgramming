@@ -11,8 +11,6 @@ public class AuthService {
         this.userList = UserList.getInstance();
     }
 
-    // ===================== 회원가입 =====================
-
     public User register(
             String id,
             String rawPassword,
@@ -34,9 +32,9 @@ public class AuthService {
         }
 
         // 비밀번호 검증 (6자 이상 + 대문자 + 소문자 + 숫자 + 특수문자)
-        String passwordPattern = 
+        String passwordPattern =
             "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-={}|\\[\\]:;\"'<>,.?/]).{6,}$";
-    
+
         if (rawPassword == null || !rawPassword.matches(passwordPattern)) {
             throw new IllegalArgumentException(
                 "비밀번호는 6자 이상이며, 대문자/소문자/숫자/특수문자를 모두 포함해야 합니다."
@@ -49,7 +47,6 @@ public class AuthService {
         // 비밀번호 해시 생성
         String passwordHash = PasswordUtil.hashPasswordWithIdSalt(id, rawPassword);
 
-        // 해시된 비밀번호 저장
         User newUser = new User(
                 id,
                 passwordHash,
@@ -66,8 +63,6 @@ public class AuthService {
 
         return newUser;
     }
-
-    // ===================== 로그인 =====================
 
     public User login(String id, String rawPassword) {
         if (id == null || rawPassword == null) {
@@ -87,8 +82,6 @@ public class AuthService {
 
         return user;
     }
-
-    // ===================== 관리자용 메서드 =====================
 
     public void printAllUsers() {
         for (User user : userList.getAll()) {

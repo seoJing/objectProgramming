@@ -25,9 +25,6 @@ import util.Router;
 import util.Routes;
 import view.layout.UserLayout;
 
-/**
- * 두 번째 페이지 : 그룹핑 리스트
- */
 public class GroupListPanel extends UserLayout {
 
     public GroupListPanel() {
@@ -82,7 +79,6 @@ public class GroupListPanel extends UserLayout {
         priceListPanel.setLayout(new BoxLayout(priceListPanel, BoxLayout.Y_AXIS));
         priceListPanel.setBorder(BorderFactory.createEmptyBorder(0, 16, 16, 16));
 
-        // 예시 4개 (여기서 선택된 serviceName은 영어 키로만 사용)
         priceListPanel.add(createPriceRow(
                 "YouTube 그룹핑 예시 (정가는 products.txt 기준)",
                 "YouTube"
@@ -112,9 +108,7 @@ public class GroupListPanel extends UserLayout {
         center.add(Box.createVerticalStrut(16));
         center.add(Box.createVerticalGlue());
 
-        // 이벤트
         basketBtn.addActionListener(e -> Router.getInstance().navigateUser(Routes.STORE));
-        // groupBtn은 현재 페이지라 동작 없음
 
         root.add(center, BorderLayout.CENTER);
         return root;

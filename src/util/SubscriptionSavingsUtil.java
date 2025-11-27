@@ -4,9 +4,6 @@ import java.util.Map;
 
 import model.SubscriptionService;
 
-/**
- * 구독 서비스의 절약액 계산 관련 유틸리티
- */
 public class SubscriptionSavingsUtil {
 
     /**
@@ -37,7 +34,7 @@ public class SubscriptionSavingsUtil {
 
     /**
      * 같은 서비스의 가장 저렴한 등급 옵션 조회
-     * 반환값: [등급명, 가격] 또는 null
+     * @return [등급명, 가격] 또는 null
      */
     public static Object[] getCheapestTierOption(SubscriptionService subscription) {
         String serviceName = extractServiceName(subscription.getServiceName());
@@ -78,7 +75,7 @@ public class SubscriptionSavingsUtil {
 
     /**
      * 절약액 계산
-     * 반환값: [절약액, 메시지] 또는 null
+     * @return [절약액, 메시지] 또는 null
      */
     public static Object[] calculateSavings(SubscriptionService subscription) {
         // 공유 중이면 절약액 표시 안 함

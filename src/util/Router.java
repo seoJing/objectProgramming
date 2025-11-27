@@ -21,7 +21,6 @@ public class Router {
         return instance;
     }
 
-    // ================== 메인 프레임 등록 ==================
     public void setMainFrame(MainFrame frame) {
         this.mainFrame = frame;
     }
@@ -30,7 +29,6 @@ public class Router {
         return this.mainFrame;
     }
 
-    // ================== 화면 패널 저장 ==================
     public void setUserSidePanel(UserSidePanel panel) {
         this.userSidePanel = panel;
     }
@@ -39,7 +37,6 @@ public class Router {
         this.adminSidePanel = panel;
     }
 
-    // ================== 전체 화면 전환 ==================
     public void navigateTo(String screen) {
         if (mainFrame == null) return;
 
@@ -52,7 +49,6 @@ public class Router {
         }
     }
 
-    // ================== 유저 화면 내부 전환 ==================
     public void navigateUser(String screen) {
         if (userSidePanel != null) {
             userSidePanel.switchTo(screen);
@@ -61,7 +57,6 @@ public class Router {
         }
     }
 
-    // ================== 관리자 화면 내부 전환 ==================
     public void navigateAdmin(String screen) {
         if (adminSidePanel != null) {
             adminSidePanel.switchTo(screen);

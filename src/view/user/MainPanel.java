@@ -36,15 +36,14 @@ public class MainPanel extends UserLayout {
     }
 
     Calendar cal = new Calendar(LocalDate.now(), picked -> {
-        SessionManager.getInstance().setSelectedDate(picked);          // 날짜 저장(옵션)
-        Router.getInstance().navigateUser(Routes.ALL_TRANSACTIONS);    // 전체 거래 화면으로 이동
+        SessionManager.getInstance().setSelectedDate(picked);
+        Router.getInstance().navigateUser(Routes.ALL_TRANSACTIONS);
     });
 
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
         if (visible) {
-            // 화면이 보일 때마다 새로 콘텐츠 생성 (구독 해지 후 반영)
             JPanel content = createContent();
             setContent(content);
         }
@@ -63,7 +62,7 @@ public class MainPanel extends UserLayout {
         calCard.setOpaque(true);
         calCard.setBackground(UIConstants.CARD_BG);
         calCard.setBorder(UIConstants.CARD_BORDER);
-        calCard.setPreferredSize(new Dimension(520, 360));     // 고정 너비/높이
+        calCard.setPreferredSize(new Dimension(520, 360));
         calCard.setMaximumSize(new Dimension(520, 360));
         calCard.add(cal, BorderLayout.CENTER);
         panel.add(calCard);
@@ -77,16 +76,13 @@ public class MainPanel extends UserLayout {
     }
 
     private JPanel createAlertNotification() {
-        // AlertItemPanel을 래퍼 패널로 감싸서 클릭 시 alertPanel로 이동
         JPanel wrapperPanel = new JPanel(new BorderLayout());
         wrapperPanel.setOpaque(false);
         wrapperPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
         wrapperPanel.setBackground(Color.WHITE);
 
-        // 동적으로 생성된 알람 데이터 - 다음 결제일이 임박한 구독부터 우선 표시
         String alertMessage = generateAlertMessage();
 
-        // 알람이 있으면 표시, 없으면 빈 패널 반환
         if (alertMessage == null || alertMessage.isEmpty()) {
             return wrapperPanel;
         }
@@ -94,11 +90,9 @@ public class MainPanel extends UserLayout {
         AlertItemPanel alertItem = new AlertItemPanel(alertMessage);
         alertItem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        // 알람 클릭 시 alertPanel로 이동
         alertItem.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                // 삭제 버튼이 아닌 영역 클릭 시
                 if (e.getX() < alertItem.getWidth() - 50) {
                     Router.getInstance().navigateUser(Routes.ALERT);
                 }
@@ -125,7 +119,6 @@ public class MainPanel extends UserLayout {
             return "";
         }
 
-        // 다음 결제일 기준으로 정렬 (가장 임박한 순서)
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         SubscriptionService nextSubscription = subscriptions.stream()
             .min((s1, s2) -> {
@@ -139,12 +132,10 @@ public class MainPanel extends UserLayout {
             return "";
         }
 
-        // 오늘부터의 남은 일수 계산
         LocalDate nextPaymentDate = LocalDate.parse(nextSubscription.getNextPaymentDate(), formatter);
         LocalDate today = LocalDate.now();
         long daysUntilPayment = java.time.temporal.ChronoUnit.DAYS.between(today, nextPaymentDate);
 
-        // 일수에 따른 메시지 생성
         if (daysUntilPayment <= 1) {
             return "내일 " + nextSubscription.getServiceName() + " 결제가 예정됩니다. 계좌 잔액을 확인하세요.";
         } else if (daysUntilPayment <= 7) {
@@ -166,7 +157,6 @@ public class MainPanel extends UserLayout {
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.X_AXIS));
         listPanel.setBackground(Color.WHITE);
 
-        // 현재 사용자의 실제 구독 서비스 데이터 조회
         User user = SessionManager.getInstance().getCurrentUser();
         List<SubscriptionService> subscriptions = new ArrayList<>();
 
@@ -212,19 +202,15 @@ public class MainPanel extends UserLayout {
                 g2d.setColor(getBackground());
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
 
-                // 부모 클래스의 paintComponent 호출 (아이콘, 텍스트 등 렌더링)
                 super.paintComponent(g);
             }
         };
 
-        // 이미지 아이콘 설정 (서비스별로 다른 이미지 사용)
-        // ImageLoader가 .png 확장자를 자동으로 추가하므로 서비스명만 전달
         ImageIcon icon = ImageLoader.loadImage(subscription.getServiceName(), 60, 60);
 
         if (icon != null) {
             btn.setIcon(icon);
         } else {
-            // 이미지가 없으면 텍스트로 표시
             btn.setText("<html><center>" + subscription.getServiceName() + "</center></html>");
         }
 

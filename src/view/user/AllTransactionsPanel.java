@@ -1,5 +1,42 @@
 package view.user;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+
 import model.Account;
 import model.Transaction;
 import model.TransactionType;
@@ -11,33 +48,16 @@ import util.UIConstants;
 import view.layout.UserLayout;
 import view.user.shared.component.Calendar;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.List;
-
 public class AllTransactionsPanel extends UserLayout {
 
-    // ====== 리스트 / 스크롤 ======
     private JPanel listPanel;
     private JScrollPane scroll;
-
-    // 날짜 헤더 위치 저장용 (날짜순 정렬)
     private final NavigableMap<LocalDate, JComponent> dayHeaderMap = new TreeMap<>();
-
-    // ====== 캘린더 + 토글 ======
-    private JPanel calendarWrapper;                   // 캘린더를 감싸는 패널
-    private Calendar miniCalendar;                    // 커스텀 Calendar 컴포넌트
-    private boolean calendarVisible = true;           // 접힘/펼침 상태
-
-    // ====== 필터 상태 ======
-    // null 이면 "전체"
-    private TransactionType typeFilter = null;        // INCOME / EXPENSE / null
-    private String categoryFilter = null;             // "식비" 등 / null
+    private JPanel calendarWrapper;
+    private Calendar miniCalendar;
+    private boolean calendarVisible = true;
+    private TransactionType typeFilter = null;
+    private String categoryFilter = null;
 
     // 타입(전체/입금/출금) 순환 버튼
     private JButton typeCycleBtn;
@@ -62,14 +82,12 @@ public class AllTransactionsPanel extends UserLayout {
     private static final DateTimeFormatter HEADER_DOW =
             DateTimeFormatter.ofPattern("d일 E요일", Locale.KOREAN);
 
-    // ========================================================================
     public AllTransactionsPanel() {
         super();
         setContent(createContent());
-        loadAndRender();      // 최초 한 번만 전체 거래 렌더링
+        loadAndRender();
     }
 
-    // UI
     private JPanel createContent() {
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(UIConstants.PANEL_BG);
@@ -111,7 +129,6 @@ public class AllTransactionsPanel extends UserLayout {
         miniCalendar = new Calendar(
                 initialDate,
                 picked -> {
-                    // 날짜 선택 시: 세션에 저장 + 해당 날짜 위치로 스크롤로 이동
                     SessionManager.getInstance().setSelectedDate(picked);
                     scrollToDate(picked);
                 }
@@ -173,10 +190,9 @@ public class AllTransactionsPanel extends UserLayout {
         // ---------- 오른쪽: 카테고리 드롭다운 ----------
         categoryCombo = new JComboBox<>(CATEGORIES);
         categoryCombo.setFont(UIConstants.NORMAL_FONT);
-        categoryCombo.setSelectedIndex(0); // "전체 카테고리"
+        categoryCombo.setSelectedIndex(0);
         categoryCombo.setBorder(BorderFactory.createEmptyBorder());
 
-        // 렌더러 커스터마이징 (여백 + 정렬)
         categoryCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value,
@@ -190,13 +206,12 @@ public class AllTransactionsPanel extends UserLayout {
             }
         });
 
-        // 살짝 카드 느낌
         categoryCombo.setBackground(Color.WHITE);
 
         categoryCombo.addActionListener(e -> {
             int idx = categoryCombo.getSelectedIndex();
             if (idx <= 0) {
-                categoryFilter = null;  // "전체 카테고리"
+                categoryFilter = null;
             } else {
                 categoryFilter = CATEGORIES[idx];
             }
@@ -211,12 +226,10 @@ public class AllTransactionsPanel extends UserLayout {
         return root;
     }
 
-    // 타입 토글 버튼에 index 적용 + 색 변경
     private void applyTypeFromIndex() {
         typeCycleBtn.setText(TYPE_LABELS[typeIndex]);
         typeFilter = TYPE_VALUES[typeIndex];
 
-        // 상태별 색 살짝 바꿔주기
         switch (typeIndex) {
             case 0 -> { // 전체
                 typeCycleBtn.setBackground(UIConstants.TEXT_MUTED);
@@ -238,14 +251,12 @@ public class AllTransactionsPanel extends UserLayout {
             calendarWrapper.setVisible(calendarVisible);
         }
 
-        // 버튼 텍스트 갱신
         btn.setText(calendarVisible ? "캘린더 접기" : "캘린더 펼치기");
 
         revalidate();
         repaint();
     }
 
-    // 데이터 로딩, 렌더링 / 모든 계좌의 거래 내역 다시 그림
     private void loadAndRender() {
         listPanel.removeAll();
         dayHeaderMap.clear();
@@ -264,7 +275,6 @@ public class AllTransactionsPanel extends UserLayout {
         for (Account acc : accounts) {
             for (Transaction t : acc.getTransactionList()) {
 
-                // 필터에 안 맞으면 건너뜀
                 if (!passesFilter(t)) continue;
 
                 LocalDateTime dt = extractDateTime(t);
@@ -278,7 +288,6 @@ public class AllTransactionsPanel extends UserLayout {
             LocalDate day = e.getKey();
             List<Entry> items = e.getValue();
 
-            // 시간 내림차순
             items.sort(Comparator.comparing((Entry en) -> en.when).reversed());
 
             int sumIn = 0, sumOut = 0;
@@ -290,7 +299,7 @@ public class AllTransactionsPanel extends UserLayout {
 
             JComponent header = makeDayHeader(day, sumIn, sumOut);
             listPanel.add(header);
-            dayHeaderMap.put(day, header);    // 날짜 -> 헤더 컴포넌트 저장
+            dayHeaderMap.put(day, header);
 
             listPanel.add(Box.createVerticalStrut(8));
 
@@ -304,20 +313,16 @@ public class AllTransactionsPanel extends UserLayout {
         listPanel.add(Box.createVerticalGlue());
         revalidateRepaint();
 
-        // 프로그램 처음 열었을 때도 선택된 날짜가 있으면 거기로 한 번 이동
         LocalDate selected = SessionManager.getInstance().getSelectedDate();
         if (selected != null) {
             scrollToDate(selected);
         }
     }
 
-    // 실제 필터 조건 검사
     private boolean passesFilter(Transaction t) {
-        // 타입 필터
         if (typeFilter != null && t.getType() != typeFilter) {
             return false;
         }
-        // 카테고리 필터
         if (categoryFilter != null && !categoryFilter.isBlank()) {
             String cat = t.getCategory();
             if (cat == null || !cat.equals(categoryFilter)) {
@@ -332,19 +337,16 @@ public class AllTransactionsPanel extends UserLayout {
         listPanel.repaint();
     }
 
-    // 클릭한 날짜로 스크롤 이동
     private void scrollToDate(LocalDate day) {
         if (day == null || dayHeaderMap.isEmpty()) return;
 
         LocalDate target = day;
 
-        // 정확히 해당 날짜가 없으면 그보다 이전 날짜 중 제일 가까운 걸로
         if (!dayHeaderMap.containsKey(day)) {
             var floor = dayHeaderMap.floorEntry(day);
             if (floor != null) {
                 target = floor.getKey();
             } else {
-                // 전부 미래면 제일 위 날짜로
                 target = dayHeaderMap.firstKey();
             }
         }
@@ -360,7 +362,6 @@ public class AllTransactionsPanel extends UserLayout {
         });
     }
 
-    // 헬퍼들
     private static class Entry {
         final Account acc;
         final Transaction tx;

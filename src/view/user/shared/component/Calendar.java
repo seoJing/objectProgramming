@@ -1,21 +1,28 @@
 package view.user.shared.component;
 
-import util.UIConstants;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.function.Consumer;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import util.UIConstants;
 
 public class Calendar extends JPanel {
     private YearMonth ym;
     private final Consumer<LocalDate> onPick;
     private int cellSize;
     private int gridGap;
-    private Insets padding;
     private final JLabel title = new JLabel("", SwingConstants.CENTER);
     private final JPanel grid;
 
@@ -27,7 +34,6 @@ public class Calendar extends JPanel {
         this.onPick = onPick;
         this.cellSize = cellSize;
         this.gridGap = gridGap;
-        this.padding = padding;
 
         setOpaque(false);
         setLayout(new BorderLayout(8, 8));
@@ -99,7 +105,7 @@ public class Calendar extends JPanel {
             JButton b = makeDayButton(d, date);
             b.setFocusPainted(false);
             b.setFont(UIConstants.NORMAL_FONT);
-            b.addActionListener(e -> onPick.accept(date));  // 날짜 선택 콜백
+            b.addActionListener(e -> onPick.accept(date));
             grid.add(b);
         }
 
@@ -111,7 +117,6 @@ public class Calendar extends JPanel {
         grid.revalidate(); grid.repaint();
     }
 
-    // 날짜 버튼 만들 때 크기 적용:
     private JButton makeDayButton(int day, LocalDate date) {
         JButton b = new JButton(String.valueOf(day));
         b.setFocusPainted(false);
@@ -122,7 +127,6 @@ public class Calendar extends JPanel {
         b.setMinimumSize(d);
         b.setMaximumSize(d);
         b.addActionListener(e -> onPick.accept(date));
-        // 현재 날짜 강조
         LocalDate today = LocalDate.now();
         if (date.equals(today)) {
             b.setForeground(UIConstants.USER_HEADER_COLOR);

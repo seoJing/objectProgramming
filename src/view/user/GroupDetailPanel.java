@@ -1,15 +1,27 @@
 package view.user;
 
-import static util.UIConstants.*;
+import static util.UIConstants.BACKGROUND_BUTTON;
+import static util.UIConstants.BACKGROUND_LIGHT;
+import static util.UIConstants.NORMAL_FONT;
+import static util.UIConstants.SMALL_FONT;
+import static util.UIConstants.TEXT_PRIMARY_COLOR;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import view.layout.UserLayout;
 
 public class GroupDetailPanel extends UserLayout {
 
-    // 선택된 서비스 이름 저장용 static 변수 (예: "YouTube", "Netflix"...)
     private static String selectedServiceName = "";
 
     public static void setSelectedServiceName(String name) {
@@ -81,7 +93,6 @@ public class GroupDetailPanel extends UserLayout {
         center.add(Box.createVerticalStrut(24));
 
         applyBtn.addActionListener(e -> {
-    // 1) 서비스 선택 확인
     if (selectedServiceName == null || selectedServiceName.isBlank()) {
         JOptionPane.showMessageDialog(
                 this,
@@ -92,7 +103,6 @@ public class GroupDetailPanel extends UserLayout {
         return;
     }
 
-    // 2) 몇 명이서 나눌지 입력 받기
     String input = JOptionPane.showInputDialog(
             this,
             "몇 명이서 나눠서 사용하나요?",
@@ -101,7 +111,6 @@ public class GroupDetailPanel extends UserLayout {
     );
 
     if (input == null) {
-        // 취소 누른 경우
         return;
     }
 
@@ -121,13 +130,11 @@ public class GroupDetailPanel extends UserLayout {
         return;
     }
 
-    // 3) StorePanel에 그룹핑 구독 추가 (1/n 반영)
     StorePanel store = StorePanel.getInstance();
     if (store != null) {
         store.addGroupedSubscription(selectedServiceName, people);
     }
 
-    // 4) 완료 메시지
     String msg = selectedServiceName + " " + people + "인 그룹핑 신청이 완료되었습니다.";
     JOptionPane.showMessageDialog(
             this,
@@ -136,7 +143,6 @@ public class GroupDetailPanel extends UserLayout {
             JOptionPane.INFORMATION_MESSAGE
     );
 
-    // 5) 장바구니(STORE)로 라우팅
     util.Router.getInstance().navigateUser(util.Routes.STORE);
 });
 

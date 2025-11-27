@@ -9,7 +9,6 @@ public class Account {
     private int initialBalance;
     private int currentBalance;
     private List<Transaction> transactionList;
-    private String userId;
 
     public Account(String accountNumber, String bank, int initialBalance) {
         this.accountNumber = accountNumber;
@@ -17,17 +16,6 @@ public class Account {
         this.initialBalance = initialBalance;
         this.currentBalance = initialBalance;
         this.transactionList = new ArrayList<>();
-        this.userId = userId;
-    }
-
-    // 2. [신규 추가] DataLoader용 (userId 포함 생성자)
-    public Account(String accountNumber, String bank, int initialBalance, String userId) {
-        this.accountNumber = accountNumber;
-        this.bank = bank;
-        this.initialBalance = initialBalance;
-        this.currentBalance = initialBalance;
-        this.transactionList = new ArrayList<>();
-        this.userId = userId;
     }
 
     public void addTransaction(Transaction tx) {

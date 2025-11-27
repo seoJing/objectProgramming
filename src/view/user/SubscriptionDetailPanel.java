@@ -44,13 +44,10 @@ public class SubscriptionDetailPanel extends UserLayout {
             return transactions;
         }
 
-        // 구독명의 기본 부분만 추출 (예: "넷플릭스_프리미엄" → "넷플릭스")
         String baseName = subscription.getServiceName().split("[_\\-]")[0];
 
-        // 모든 계좌에서 해당 구독의 거래 필터링
         for (Account account : user.getAccountList()) {
             for (Transaction transaction : account.getTransactionList()) {
-                // 거래 위치가 구독 서비스명 또는 기본명과 일치하는 경우
                 if (transaction.getLocation().equals(subscription.getServiceName()) ||
                     transaction.getLocation().equals(baseName)) {
                     transactions.add(transaction);
@@ -58,7 +55,6 @@ public class SubscriptionDetailPanel extends UserLayout {
             }
         }
 
-        // 날짜 순서로 정렬 (최신순)
         transactions.sort((t1, t2) -> t2.getDateTime().compareTo(t1.getDateTime()));
 
         return transactions;
@@ -72,7 +68,6 @@ public class SubscriptionDetailPanel extends UserLayout {
     public void setVisible(boolean visible) {
         super.setVisible(visible);
         if (visible) {
-            // 화면이 보일 때마다 새로 콘텐츠 생성
             JPanel content = createContent();
             setContent(content);
         }
@@ -82,9 +77,7 @@ public class SubscriptionDetailPanel extends UserLayout {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
-        // SessionManager에서 선택된 구독 정보 가져오기
         SubscriptionService subscription = SessionManager.getInstance().getSelectedSubscription();
-        // 실제 거래 내역 데이터 조회
         List<Transaction> transactions = getSubscriptionTransactions(subscription);
 
         if (subscription != null) {
@@ -126,7 +119,6 @@ public class SubscriptionDetailPanel extends UserLayout {
         User user = SessionManager.getInstance().getCurrentUser();
 
         RoundedButton editBtn = new RoundedButton("구독 해지", UIConstants.BUTTON_COLOR, e -> {
-            // 구독 해지 처리
             System.out.println("[구독 해지 시작] " + subscription.getServiceName());
             System.out.println("해지 전 구독 개수: " + user.getLedger().getSubscriptionList().size());
             System.out.println("대상 구독: " + subscription);
@@ -135,7 +127,6 @@ public class SubscriptionDetailPanel extends UserLayout {
             System.out.println("제거 결과: " + removed);
             System.out.println("해지 후 구독 개수: " + user.getLedger().getSubscriptionList().size());
 
-            // 구독 페이지로 이동
             Router.getInstance().navigateUser(Routes.SUBSCRIPTION);
         });
         RoundedButton cancelBtn = new RoundedButton("연결 계좌 변경", UIConstants.BUTTON_COLOR, e -> {
@@ -147,10 +138,6 @@ public class SubscriptionDetailPanel extends UserLayout {
 
         return buttonPanel;
     }
-
-    // ==============================
-    // 절약액 UI 생성 함수
-    // ==============================
 
     /**
      * 절약액 UI 패널 생성
@@ -172,11 +159,8 @@ public class SubscriptionDetailPanel extends UserLayout {
         savingsLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 12));
         savingsLabel.setForeground(new Color(51, 51, 51));
         savingsLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        // underline 보더 생성
         savingsLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(51, 51, 51)));
 
-        // 클릭 이벤트
         savingsLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
