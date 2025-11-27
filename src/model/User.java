@@ -48,7 +48,7 @@ public class User {
     // ================= Getter =================
 
     public String getId() { return id; }
-    public String getPassword() { return password; }   // 비밀번호 해시 반환
+    public String getPasswordHash() { return password; }   
     public String getName() { return name; }
     public String getGender() { return gender; }
     public int getAge() { return age; }

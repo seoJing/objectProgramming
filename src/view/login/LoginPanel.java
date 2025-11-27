@@ -11,6 +11,26 @@ import util.Router;
 import util.Routes;
 import util.UIConstants;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.Color;
+
+/**
+ * 로그인 화면
+ * - ID / 비밀번호 입력
+ * - 로그인 버튼: AuthService.login() 호출 (내부에서 해시 비교)
+ * - 회원가입 버튼: SignupDialog 띄우기
+ */
 public class LoginPanel extends JPanel {
 
     private final AuthService authService;
@@ -25,6 +45,7 @@ public class LoginPanel extends JPanel {
     }
 
     private void initUI() {
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(UIConstants.WHITE);
 
@@ -93,7 +114,6 @@ public class LoginPanel extends JPanel {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btn.setBackground(UIConstants.NAV_HOVER_COLOR);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 btn.setBackground(UIConstants.NAV_BACKGROUND_COLOR);
             }
@@ -103,36 +123,40 @@ public class LoginPanel extends JPanel {
         return btn;
     }
 
+    // ============================
+    //  화면 생성 책임 제거
+    // ============================
     private void onLogin() {
-        String id = idField.getText().trim();
-        String pw = new String(passwordField.getPassword());
+    String id = idField.getText().trim();
+    String pw = new String(passwordField.getPassword());
 
-/*
-로그인 성공 시 SessionManager에 사용자 정보 저장
+    try {
+        User user = authService.login(id, pw);
 
-로그인 여부/관리자 여부를 SessionManager가 판단
+        System.out.println("★ 로그인 성공: " + user.getId());
+        System.out.println("Router.getMainFrame() = " + Router.getInstance().getMainFrame());
 
-로그아웃하면 SessionManager가 모든 상태를 초기화
+        System.out.println(" ★ 로그인 성공: " + user.getId());
 
-UI는 SessionManager만 보고 로그인 상태를 다룸
-→ 로그인 로직이 한 곳에 모임 (Single Source of Truth)
-*/
-        try {
-            User user = authService.login(id, pw);
+        // 세션 저장
+        SessionManager.getInstance().login(user);
+        errorLabel.setText(" ");
 
-            SessionManager.getInstance().login(user);
-            errorLabel.setText(" ");
-
-            if (user.isAdmin()) {
-                Router.getInstance().navigateTo(Routes.ADMIN);
-            } else {
-                Router.getInstance().navigateTo(Routes.USER);
-            }
-
-        } catch (Exception ex) {
-            errorLabel.setText(ex.getMessage());
+        // ========= 여기서 Router만 호출 =========
+        if (user.isAdmin()) {
+            Router.getInstance().navigateTo(Routes.ADMIN);
+        } else {
+            Router.getInstance().navigateTo(Routes.USER);
         }
+
+    } catch (Exception ex) {
+        errorLabel.setText(ex.getMessage());
     }
+
+    
+}
+
+
 
     private void openSignupDialog() {
         Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
@@ -140,4 +164,6 @@ UI는 SessionManager만 보고 로그인 상태를 다룸
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
+
+    
 }

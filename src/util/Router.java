@@ -21,11 +21,16 @@ public class Router {
         return instance;
     }
 
-    // ================== 초기 설정 ==================
+    // ================== 메인 프레임 등록 ==================
     public void setMainFrame(MainFrame frame) {
         this.mainFrame = frame;
     }
 
+    public MainFrame getMainFrame() {
+        return this.mainFrame;
+    }
+
+    // ================== 화면 패널 저장 ==================
     public void setUserSidePanel(UserSidePanel panel) {
         this.userSidePanel = panel;
     }
@@ -34,26 +39,34 @@ public class Router {
         this.adminSidePanel = panel;
     }
 
-    // ================== 전체 화면 전환 (프레임 교체) ==================
+    // ================== 전체 화면 전환 ==================
     public void navigateTo(String screen) {
-        if (mainFrame != null) {
-            mainFrame.switchTo(screen);
-        }
+        if (mainFrame == null) return;
+
+    if (route.equals(Routes.ADMIN)) {
+        mainFrame.showAdminView();
+    } else if (route.equals(Routes.USER)) {
+        mainFrame.showUserView();
+    } else {
+        mainFrame.switchTo(route);  
+    }
     }
 
-    // ================== 유저 네비게이션 ==================
+    // ================== 유저 화면 내부 전환 ==================
     public void navigateUser(String screen) {
         if (userSidePanel != null) {
             userSidePanel.switchTo(screen);
+        } else {
+            System.err.println("[Router] UserSidePanel is null! (로그인 전 호출?)");
         }
     }
 
-    // ================== 관리자 네비게이션 ==================
+    // ================== 관리자 화면 내부 전환 ==================
     public void navigateAdmin(String screen) {
         if (adminSidePanel != null) {
             adminSidePanel.switchTo(screen);
+        } else {
+            System.err.println("[Router] AdminSidePanel is null! (로그인 전 호출?)");
         }
     }
-
-    
 }

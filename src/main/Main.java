@@ -27,6 +27,8 @@ public class Main {
             MainFrame frame = new MainFrame();
             Router.getInstance().setMainFrame(frame);
             frame.setVisible(true);
+
+            // seedDevLogin();    // 개발 편의를 위한 임시 로그인 세팅
         });
     }
 
@@ -40,4 +42,7 @@ public class Main {
             SessionManager.getInstance().login(user);
         }
     }
+    */
 }
+
+
