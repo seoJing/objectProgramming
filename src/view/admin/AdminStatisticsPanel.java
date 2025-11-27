@@ -142,7 +142,7 @@ public class AdminStatisticsPanel extends AdminLayout {
             super.paintComponent(g);
             if (data == null || data.isEmpty()) {
                 g.setColor(Color.GRAY);
-                g.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+                g.setFont(UIConstants.MEDIUM_FONT_16);
                 g.drawString("집계된 데이터가 없습니다.", getWidth()/2 - 60, getHeight()/2);
                 return;
             }
@@ -151,7 +151,7 @@ public class AdminStatisticsPanel extends AdminLayout {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             // 제목
-            g2d.setFont(new Font("맑은 고딕", Font.BOLD, 20));
+            g2d.setFont(UIConstants.LABEL_FONT_20);
             g2d.setColor(UIConstants.TEXT_PRIMARY_COLOR);
             g2d.drawString(title, 30, 40);
 
@@ -182,7 +182,7 @@ public class AdminStatisticsPanel extends AdminLayout {
             int legendX = chartX + diameter + 60, legendY = chartY;
             int currentAngleSum = 0;
 
-            g2d.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
+            g2d.setFont(UIConstants.SMALL_FONT_13);
 
             for (int i = 0; i < displayList.size(); i++) {
                 Map.Entry<String, Integer> entry = displayList.get(i);
@@ -218,7 +218,7 @@ public class AdminStatisticsPanel extends AdminLayout {
 
             // 총합 표시
             g2d.setColor(Color.BLACK);
-            g2d.setFont(new Font("맑은 고딕", Font.BOLD, 14));
+            g2d.setFont(UIConstants.NORMAL_FONT_BOLD);
             String totalStr = String.format("Total: %,d원", total);
             FontMetrics fm = g2d.getFontMetrics();
             int tx = chartX + hole/2 + (hole - fm.stringWidth(totalStr))/2;

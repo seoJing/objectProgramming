@@ -227,4 +227,25 @@ public class ImageLoader {
     public static boolean imageExists(String imageName) {
         return findImagePath(imageName) != null;
     }
+
+    /**
+     * 리소스 경로에서 이미지를 로드하고 지정된 크기로 스케일합니다.
+     *
+     * @param resourcePath 리소스 경로 (예: "/resources/images/bag.png")
+     * @param width 스케일할 너비
+     * @param height 스케일할 높이
+     * @return 로드된 ImageIcon, 실패 시 빈 ImageIcon 반환
+     */
+    public static ImageIcon loadFromResource(String resourcePath, int width, int height) {
+        try {
+            var url = ImageLoader.class.getResource(resourcePath);
+            if (url == null) {
+                return new ImageIcon(new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_ARGB));
+            }
+            Image img = new ImageIcon(url).getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            return new ImageIcon(img);
+        } catch (Exception e) {
+            return new ImageIcon(new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_ARGB));
+        }
+    }
 }

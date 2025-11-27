@@ -3,7 +3,6 @@ package view.admin;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.List;
 
@@ -21,6 +20,7 @@ import model.Account;
 import model.Transaction;
 import model.User;
 import model.UserList;
+import util.UIConstants;
 import view.layout.AdminLayout;
 
 public class AdminTransactionPanel extends AdminLayout {
@@ -47,7 +47,7 @@ public class AdminTransactionPanel extends AdminLayout {
 
         topPanel.add(new JLabel("회원 선택:"));
         userCombo = new JComboBox<>();
-        userCombo.setPreferredSize(new Dimension(150, 30));
+        userCombo.setPreferredSize(UIConstants.USER_COMBO_SIZE);
         userCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -63,7 +63,7 @@ public class AdminTransactionPanel extends AdminLayout {
 
         topPanel.add(new JLabel("계좌 선택:"));
         accountCombo = new JComboBox<>();
-        accountCombo.setPreferredSize(new Dimension(220, 30));
+        accountCombo.setPreferredSize(UIConstants.ACCOUNT_COMBO_SMALL_SIZE);
         accountCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {

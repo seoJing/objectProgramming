@@ -3,7 +3,6 @@ package view.admin;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -86,7 +85,7 @@ public class AdminSubscriptionManagePanel extends AdminLayout {
 
         JPanel box = new JPanel();
         box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
-        box.setPreferredSize(new Dimension(340, 0));
+        box.setPreferredSize(UIConstants.INFO_PANEL_SIZE);
         box.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         lblServiceName = createInfoLabel("서비스명 : -");

@@ -124,7 +124,7 @@ public class SubscriptionDetailPanel extends UserLayout {
         JPanel buttonPanel = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 8, 40));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 16, 20, 16));
-        buttonPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, 180));
+        buttonPanel.setPreferredSize(UIConstants.ITEM_WIDTH_MAX_180);
 
         User user = SessionManager.getInstance().getCurrentUser();
 
@@ -167,10 +167,10 @@ public class SubscriptionDetailPanel extends UserLayout {
 
         // underline 처리된 텍스트 라벨
         JLabel savingsLabel = new JLabel(message);
-        savingsLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 12));
-        savingsLabel.setForeground(new Color(51, 51, 51));
+        savingsLabel.setFont(UIConstants.SMALL_FONT);
+        savingsLabel.setForeground(UIConstants.DARK_GRAY_51);
         savingsLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        savingsLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(51, 51, 51)));
+        savingsLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIConstants.DARK_GRAY_51));
 
         savingsLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -195,14 +195,14 @@ public class SubscriptionDetailPanel extends UserLayout {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setBackground(java.awt.Color.WHITE);
             setBorder(javax.swing.BorderFactory.createEmptyBorder(30, 16, 20, 16));
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, 160));
-            setPreferredSize(new Dimension(Integer.MAX_VALUE, 160));
+            setMaximumSize(UIConstants.ITEM_WIDTH_MAX_160);
+            setPreferredSize(UIConstants.ITEM_WIDTH_MAX_160);
 
             // 서비스명과 이미지를 담을 패널
             JPanel serviceNamePanel = new JPanel();
             serviceNamePanel.setLayout(new BoxLayout(serviceNamePanel, BoxLayout.X_AXIS));
             serviceNamePanel.setOpaque(false);
-            serviceNamePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+            serviceNamePanel.setMaximumSize(UIConstants.ITEM_WIDTH_MAX_40);
             serviceNamePanel.setAlignmentX(0.0f);
 
             // 이미지 추가
@@ -215,8 +215,8 @@ public class SubscriptionDetailPanel extends UserLayout {
 
             // 서비스명 라벨
             JLabel serviceNameLabel = new JLabel(subscription.getServiceName());
-            serviceNameLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 24));
-            serviceNameLabel.setForeground(new Color(51, 51, 51));
+            serviceNameLabel.setFont(UIConstants.TITLE_FONT);
+            serviceNameLabel.setForeground(UIConstants.DARK_GRAY_51);
             serviceNamePanel.add(serviceNameLabel);
 
             add(serviceNamePanel);
@@ -226,8 +226,8 @@ public class SubscriptionDetailPanel extends UserLayout {
                 // 공유 중인 경우: 개인 부담금을 메인으로 표시
                 int personalCost = subscription.getPersonalCost();
                 JLabel personalCostLabel = new JLabel(String.format("%,d원", personalCost));
-                personalCostLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 40));
-                personalCostLabel.setForeground(new Color(33, 33, 33));
+                personalCostLabel.setFont(UIConstants.TITLE_FONT_40);
+                personalCostLabel.setForeground(UIConstants.TEXT_PRIMARY);
                 personalCostLabel.setAlignmentX(0.0f);
                 add(personalCostLabel);
 
@@ -235,15 +235,15 @@ public class SubscriptionDetailPanel extends UserLayout {
 
                 // 공유 인원 라벨
                 JLabel sharingLabel = new JLabel(subscription.getNumberOfUsers() + "명이 공유 중 (총 " + String.format("%,d원", subscription.getAmount()) + ")");
-                sharingLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 12));
-                sharingLabel.setForeground(new Color(100, 100, 100));
+                sharingLabel.setFont(UIConstants.SMALL_FONT);
+                sharingLabel.setForeground(UIConstants.TEXT_SECONDARY);
                 sharingLabel.setAlignmentX(0.0f);
                 add(sharingLabel);
             } else {
                 // 혼자 사용하는 경우: 월 요금을 메인으로 표시
                 JLabel amountLabel = new JLabel(String.format("%,d원", subscription.getAmount()));
-                amountLabel.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 40));
-                amountLabel.setForeground(new Color(33, 33, 33));
+                amountLabel.setFont(UIConstants.TITLE_FONT_40);
+                amountLabel.setForeground(UIConstants.TEXT_PRIMARY);
                 amountLabel.setAlignmentX(0.0f);
                 add(amountLabel);
             }
@@ -266,8 +266,8 @@ public class SubscriptionDetailPanel extends UserLayout {
                 listPanel.add(Box.createVerticalGlue());
 
                 JLabel placeholderLabel = new JLabel("거래내역이 없습니다");
-                placeholderLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
-                placeholderLabel.setForeground(new Color(150, 150, 150));
+                placeholderLabel.setFont(UIConstants.SMALL_FONT_13);
+                placeholderLabel.setForeground(UIConstants.MUTED_GRAY_150);
                 placeholderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 listPanel.add(placeholderLabel);
 
@@ -285,8 +285,8 @@ public class SubscriptionDetailPanel extends UserLayout {
             setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
             setBorder(null);
             getVerticalScrollBar().setUnitIncrement(10);
-            setPreferredSize(new Dimension(getPreferredSize().width, 280));
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
+            setPreferredSize(new Dimension(getPreferredSize().width, UIConstants.PANEL_HEIGHT_280));
+            setMaximumSize(UIConstants.ITEM_WIDTH_MAX_180);
         }
     }
 
@@ -301,7 +301,7 @@ public class SubscriptionDetailPanel extends UserLayout {
             // 카드 스타일
             setBackground(UIConstants.CARD_BG);
             setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+            setMaximumSize(UIConstants.ITEM_WIDTH_MAX_80);
             setOpaque(false);
 
             // ===== 왼쪽: 날짜 / 계좌 / 카테고리 · 메모 =====
@@ -384,15 +384,15 @@ public class SubscriptionDetailPanel extends UserLayout {
         }
 
         private void initButton(Color bgColor) {
-            setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 14));
+            setFont(UIConstants.NORMAL_FONT_BOLD);
             setForeground(Color.WHITE);
             setBackground(bgColor);
             setFocusPainted(false);
             setBorderPainted(false);
             setOpaque(false);
             setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
-            setPreferredSize(new Dimension(150, 44));
+            setMaximumSize(UIConstants.ITEM_WIDTH_MAX_44);
+            setPreferredSize(UIConstants.BUTTON_150x44);
         }
 
         @Override
