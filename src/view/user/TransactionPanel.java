@@ -270,7 +270,7 @@ public class TransactionPanel extends UserLayout {
                 Transaction tx = (Transaction)((JComponent)e.getSource()).getClientProperty("tx");
                 SessionManager.getInstance().setSelectedAccount(a);
                 SessionManager.getInstance().setSelectedTransaction(tx);
-                SessionManager.getInstance().setFromAllTransactions(false);
+                SessionManager.getInstance().setPreviousRoute(Routes.TRANSACTION);
                 Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL);
             }
             @Override public void mouseEntered(java.awt.event.MouseEvent e) {

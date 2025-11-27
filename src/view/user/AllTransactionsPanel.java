@@ -428,7 +428,7 @@ public class AllTransactionsPanel extends UserLayout {
                 Transaction tx = (Transaction) ((JComponent) e.getSource()).getClientProperty("tx");
                 SessionManager.getInstance().setSelectedAccount(a);
                 SessionManager.getInstance().setSelectedTransaction(tx);
-                SessionManager.getInstance().setFromAllTransactions(true);
+                SessionManager.getInstance().setPreviousRoute(Routes.ALL_TRANSACTIONS);
                 Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL);
             }
 

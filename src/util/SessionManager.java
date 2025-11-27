@@ -17,7 +17,7 @@ public class SessionManager {
     private Transaction selectedTransaction;
     private LocalDate selectedDate;
 
-    private boolean fromAllTransactions = false;
+    private String previousRoute = Routes.MAIN;
 
     private SessionManager() {}
 
@@ -32,14 +32,12 @@ public class SessionManager {
         this.currentUser = user;
         this.selectedSubscription = null;
         this.selectedAccount = null;
-        this.fromAllTransactions = false;
     }
 
     public void logout() {
         this.currentUser = null;
         this.selectedSubscription = null;
         this.selectedAccount = null;
-        this.fromAllTransactions = false;
     }
 
     public boolean isLoggedIn() {
@@ -82,10 +80,10 @@ public class SessionManager {
     public void setSelectedDate(LocalDate d) { this.selectedDate = d; }
     public LocalDate getSelectedDate() { return selectedDate; }
 
-    public boolean isFromAllTransactions() {
-        return fromAllTransactions;
+    public String getPreviousRoute() {
+        return previousRoute;
     }
-    public void setFromAllTransactions(boolean fromAllTransactions) {
-        this.fromAllTransactions = fromAllTransactions;
+    public void setPreviousRoute(String route) {
+        this.previousRoute = route;
     }
 }

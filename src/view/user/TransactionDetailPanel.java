@@ -59,8 +59,8 @@ public class TransactionDetailPanel extends UserLayout {
         JButton back = new JButton("x");
         back.addActionListener(e -> {
             SessionManager sm = SessionManager.getInstance();
-            if (sm.isFromAllTransactions()) {
-                sm.setFromAllTransactions(false);
+            String previousRoute = sm.getPreviousRoute();
+            if (previousRoute.equals(Routes.ALL_TRANSACTIONS)) {
                 Router.getInstance().navigateUser(Routes.ALL_TRANSACTIONS);
             } else {
                 Router.getInstance().navigateUser(Routes.TRANSACTION);

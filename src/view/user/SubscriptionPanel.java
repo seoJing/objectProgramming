@@ -126,6 +126,7 @@ public class SubscriptionPanel extends UserLayout {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 SessionManager.getInstance().setSelectedSubscription(subscription);
+                SessionManager.getInstance().setPreviousRoute(Routes.SUBSCRIPTION);
                 Router.getInstance().navigateUser(Routes.SUBSCRIPTION_DETAIL);
             }
 

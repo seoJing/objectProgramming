@@ -37,6 +37,7 @@ public class MainPanel extends UserLayout {
 
     Calendar cal = new Calendar(LocalDate.now(), picked -> {
         SessionManager.getInstance().setSelectedDate(picked);
+        SessionManager.getInstance().setPreviousRoute(Routes.MAIN);
         Router.getInstance().navigateUser(Routes.ALL_TRANSACTIONS);
     });
 
@@ -227,6 +228,7 @@ public class MainPanel extends UserLayout {
         btn.setBorder(BorderFactory.createEmptyBorder());
         btn.addActionListener(e -> {
             SessionManager.getInstance().setSelectedSubscription(subscription);
+            SessionManager.getInstance().setPreviousRoute(Routes.MAIN);
             Router.getInstance().navigateUser(Routes.SUBSCRIPTION_DETAIL);
         });
 
