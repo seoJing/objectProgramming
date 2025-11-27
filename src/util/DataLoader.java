@@ -8,12 +8,14 @@ import java.util.Map;
 import java.util.Scanner;
 
 import model.Account;
+import model.SubscriptionList;
 import model.SubscriptionService;
 import model.Transaction;
 import model.TransactionType;
 import model.User;
 import model.UserList;
 
+// DataLoader - 파일에서 데이터 로드 / (void → void)
 public class DataLoader {
 
     private static final String DATA_PATH = "src/resources/data/";
@@ -37,10 +39,15 @@ public class DataLoader {
 
     public static void loadAll() {
         loadUsers();
+        System.out.println("✓ users.txt 로드 완료");
         loadAccounts();
-        loadProducts();      // 1. 상품 정보 먼저 로딩
-        loadSubscriptions(); // 2. 구독 정보 로딩 (상품 ID 참조)
+        System.out.println("✓ accounts.txt 로드 완료");
+        loadProducts();
+        System.out.println("✓ products.txt 로드 완료");
+        loadSubscriptions();
+        System.out.println("✓ subscription.txt 로드 완료");
         loadTransactions();
+        System.out.println("✓ transactions.txt 로드 완료");
     }
 
     private static File getFile(String fileName) {
@@ -64,7 +71,19 @@ public class DataLoader {
                 String name = scan.next();
                 int price = scan.nextInt();
 
-                productMap.put(pid, new ProductInfo(category, name, price));
+                ProductInfo productInfo = new ProductInfo(category, name, price);
+                productMap.put(pid, productInfo);
+
+                // SubscriptionList에도 전체 상품 정보 로드
+                SubscriptionService product = new SubscriptionService(
+                        name,
+                        price,
+                        "0000-00-00",  // 기본값
+                        "PRODUCT",     // 상품 ID로 사용
+                        12,            // 기본 주기
+                        1              // 기본 인원
+                );
+                SubscriptionList.getInstance().add(product);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -193,7 +212,9 @@ public class DataLoader {
                 Transaction tx = new Transaction(type, amount, loc, cat, memo, dt, 0, targetAccount);
                 targetAccount.addTransaction(tx);
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static Account findAccountByNumber(String accNum) {

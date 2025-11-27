@@ -119,11 +119,6 @@ public class LoginPanel extends JPanel {
         try {
             User user = authService.login(id, pw);
 
-            System.out.println("★ 로그인 성공: " + user.getId());
-            System.out.println("Router.getMainFrame() = " + Router.getInstance().getMainFrame());
-
-            System.out.println(" ★ 로그인 성공: " + user.getId());
-
             SessionManager.getInstance().login(user);
             errorLabel.setText(" ");
 

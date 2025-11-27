@@ -52,8 +52,13 @@ public class User {
     public String getResidence() { return residence; }
     public String getPhoneNumber() { return phoneNumber; }
     public boolean isAdmin() { return admin; }
-    public List<Account> getAccountList() { return accountList; }
-    public Ledger getLedger() { return ledger; }
+    public List<Account> getAccountList() {
+        return accountList;
+    }
+
+    public Ledger getLedger() {
+        return ledger;
+    }
 
     public void setName(String name) { this.name = name; }
     public void setGender(String gender) { this.gender = gender; }
@@ -73,9 +78,11 @@ public class User {
     public Account getAccountByNumber(String accountNumber) {
         for (Account acc : accountList) {
             if (acc.getAccountNumber().equals(accountNumber)) {
+                System.out.println("[검색] 계좌 찾음: " + accountNumber + " (" + acc.getBank() + ")");
                 return acc;
             }
         }
+        System.out.println("[검색] 계좌 '" + accountNumber + "' - 찾을 수 없음");
         return null;
     }
 

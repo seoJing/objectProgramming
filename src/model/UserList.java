@@ -36,9 +36,11 @@ public class UserList {
 
         for (User user : users) {
             if (id.equals(user.getId())) {
+                System.out.println("[검색] 사용자 찾음: " + id + " (" + user.getName() + ")");
                 return user;
             }
         }
+        System.out.println("[검색] 사용자 '" + id + "' - 찾을 수 없음");
         return null;
     }
 
@@ -57,6 +59,4 @@ public class UserList {
     public void clear() {
         users.clear();
     }
-
-
 }

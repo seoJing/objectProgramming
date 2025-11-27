@@ -40,6 +40,7 @@ public class Router {
     public void navigateTo(String screen) {
         if (mainFrame == null) return;
 
+        System.out.println("→ " + screen + " 으로 이동");
         if (screen.equals(Routes.ADMIN)) {
             mainFrame.showAdminView();
         } else if (screen.equals(Routes.USER)) {
@@ -50,6 +51,7 @@ public class Router {
     }
 
     public void navigateUser(String screen) {
+        System.out.println("→ " + screen + " 으로 이동");
         if (userSidePanel != null) {
             userSidePanel.switchTo(screen);
         } else {
@@ -58,6 +60,7 @@ public class Router {
     }
 
     public void navigateAdmin(String screen) {
+        System.out.println("→ " + screen + " (관리자)로 이동");
         if (adminSidePanel != null) {
             adminSidePanel.switchTo(screen);
         } else {

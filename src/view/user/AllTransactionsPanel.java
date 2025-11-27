@@ -272,16 +272,19 @@ public class AllTransactionsPanel extends UserLayout {
 
         // 1) 계좌별 거래를 날짜(LocalDate)로 그룹 (내림차순 정렬)
         Map<LocalDate, List<Entry>> byDay = new TreeMap<>(Comparator.reverseOrder());
+        int filteredCount = 0;
         for (Account acc : accounts) {
             for (Transaction t : acc.getTransactionList()) {
 
                 if (!passesFilter(t)) continue;
 
+                filteredCount++;
                 LocalDateTime dt = extractDateTime(t);
                 byDay.computeIfAbsent(dt.toLocalDate(), k -> new ArrayList<>())
                         .add(new Entry(acc, t, dt));
             }
         }
+        System.out.println("✓ 거래 필터링 완료: " + filteredCount + "개 항목");
 
         // 2) 날짜별로 헤더 + 행 렌더링
         for (Map.Entry<LocalDate, List<Entry>> e : byDay.entrySet()) {
@@ -428,7 +431,7 @@ public class AllTransactionsPanel extends UserLayout {
                 Transaction tx = (Transaction) ((JComponent) e.getSource()).getClientProperty("tx");
                 SessionManager.getInstance().setSelectedAccount(a);
                 SessionManager.getInstance().setSelectedTransaction(tx);
-                SessionManager.getInstance().setFromAllTransactions(true);
+                SessionManager.getInstance().setPreviousRoute(Routes.ALL_TRANSACTIONS);
                 Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL);
             }
 

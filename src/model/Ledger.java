@@ -25,7 +25,6 @@ public class Ledger {
         subscriptionList.remove(subscription);
     }
 
-    // 한 달 구독 서비스 total 비용
     private int calculateSubscriptionExpense() {
         int total = 0;
         for (SubscriptionService subscription : subscriptionList) {
@@ -46,7 +45,6 @@ public class Ledger {
         transactionList.remove(transaction);
     }
 
-    // 일반 항목 비용 총합
     private int calculateTransactionExpense() {
         int total = 0;
         for (Transaction t : transactionList) {
@@ -55,8 +53,23 @@ public class Ledger {
         return total;
     }
 
-    // 전체 월 지출 합산
     public int getMonthlyExpense() {
-        return calculateSubscriptionExpense() + calculateTransactionExpense();
+        int subscriptionExpense = calculateSubscriptionExpense();
+        int transactionExpense = calculateTransactionExpense();
+        int total = subscriptionExpense + transactionExpense;
+        System.out.println("[계산] 월 지출: 구독 ₩" + subscriptionExpense + " + 거래 ₩" + transactionExpense + " = 총 ₩" + total);
+        return total;
+    }
+
+    // 특정 서비스를 이미 구독 중인지 확인
+    public boolean isSubscribed(String serviceName) {
+        for (SubscriptionService subscription : subscriptionList) {
+            if (subscription.getServiceName().equals(serviceName)) {
+                System.out.println("[확인] '" + serviceName + "' - 구독 중: true");
+                return true;
+            }
+        }
+        System.out.println("[확인] '" + serviceName + "' - 구독 중: false");
+        return false;
     }
 }

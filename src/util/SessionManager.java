@@ -7,6 +7,7 @@ import model.SubscriptionService;
 import model.Transaction;
 import model.User;
 
+// SessionManager - 현재 로그인 유저 및 선택된 항목 관리 / (void → void)
 public class SessionManager {
 
     private static SessionManager instance;
@@ -17,7 +18,7 @@ public class SessionManager {
     private Transaction selectedTransaction;
     private LocalDate selectedDate;
 
-    private boolean fromAllTransactions = false;
+    private String previousRoute = Routes.MAIN;
 
     private SessionManager() {}
 
@@ -32,14 +33,15 @@ public class SessionManager {
         this.currentUser = user;
         this.selectedSubscription = null;
         this.selectedAccount = null;
-        this.fromAllTransactions = false;
     }
 
     public void logout() {
+        if (currentUser != null) {
+            System.out.println("✓ [로그아웃] " + currentUser.getId());
+        }
         this.currentUser = null;
         this.selectedSubscription = null;
         this.selectedAccount = null;
-        this.fromAllTransactions = false;
     }
 
     public boolean isLoggedIn() {
@@ -82,10 +84,10 @@ public class SessionManager {
     public void setSelectedDate(LocalDate d) { this.selectedDate = d; }
     public LocalDate getSelectedDate() { return selectedDate; }
 
-    public boolean isFromAllTransactions() {
-        return fromAllTransactions;
+    public String getPreviousRoute() {
+        return previousRoute;
     }
-    public void setFromAllTransactions(boolean fromAllTransactions) {
-        this.fromAllTransactions = fromAllTransactions;
+    public void setPreviousRoute(String route) {
+        this.previousRoute = route;
     }
 }

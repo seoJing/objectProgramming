@@ -15,9 +15,7 @@ public class SubscriptionService {
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public SubscriptionService(String serviceName, int amount,
-                               String paymentDate, String userId,
-                               int subscriptionPeriod, int numberOfUsers) {
+    public SubscriptionService(String serviceName, int amount, String paymentDate, String userId, int subscriptionPeriod, int numberOfUsers) {
         this.serviceName = serviceName;
         this.amount = amount;
         this.paymentDate = paymentDate;

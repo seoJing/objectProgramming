@@ -21,10 +21,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
+import model.User;
 import util.Router;
 import util.Routes;
+import util.SessionManager;
 import view.layout.UserLayout;
 
+// GroupListPanel - 구독 그룹핑 화면 / (void → void)
 public class GroupListPanel extends UserLayout {
 
     public GroupListPanel() {
@@ -132,10 +135,19 @@ public class GroupListPanel extends UserLayout {
         styleFlatButton(applyBtn);
         applyBtn.setPreferredSize(new Dimension(90, 30));
 
-        applyBtn.addActionListener(e -> {
-            GroupDetailPanel.setSelectedServiceName(serviceName);
-            Router.getInstance().navigateUser(Routes.GROUP_DETAIL);
-        });
+        // 현재 로그인 유저 확인
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        boolean isSubscribed = (currentUser != null) && currentUser.getLedger().isSubscribed(serviceName);
+
+        if (isSubscribed) {
+            applyBtn.setText("구독중");
+            applyBtn.setEnabled(false);
+        } else {
+            applyBtn.addActionListener(e -> {
+                GroupDetailPanel.setSelectedServiceName(serviceName);
+                Router.getInstance().navigateUser(Routes.GROUP_DETAIL);
+            });
+        }
 
         row.add(textArea, BorderLayout.CENTER);
         row.add(applyBtn, BorderLayout.EAST);
