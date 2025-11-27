@@ -7,6 +7,7 @@ import model.SubscriptionService;
 import model.Transaction;
 import model.User;
 
+// SessionManager - 현재 로그인 유저 및 선택된 항목 관리 / (void → void)
 public class SessionManager {
 
     private static SessionManager instance;
@@ -35,6 +36,9 @@ public class SessionManager {
     }
 
     public void logout() {
+        if (currentUser != null) {
+            System.out.println("✓ [로그아웃] " + currentUser.getId());
+        }
         this.currentUser = null;
         this.selectedSubscription = null;
         this.selectedAccount = null;

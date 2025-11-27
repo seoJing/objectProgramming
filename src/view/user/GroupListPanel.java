@@ -27,6 +27,7 @@ import util.Routes;
 import util.SessionManager;
 import view.layout.UserLayout;
 
+// GroupListPanel - 구독 그룹핑 화면 / (void → void)
 public class GroupListPanel extends UserLayout {
 
     public GroupListPanel() {

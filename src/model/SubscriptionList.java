@@ -46,6 +46,10 @@ public class SubscriptionList {
     public List<SubscriptionService> getSortedByName() {
         List<SubscriptionService> sorted = new ArrayList<>(subscriptions);
         sorted.sort((s1, s2) -> s1.getServiceName().compareTo(s2.getServiceName()));
+        System.out.println("[조회] 이름순 정렬 상품: " + sorted.size() + "개");
+        for (SubscriptionService sub : sorted) {
+            System.out.println("  - " + sub.getServiceName() + " (₩" + sub.getAmount() + ")");
+        }
         return sorted;
     }
 
@@ -55,6 +59,10 @@ public class SubscriptionList {
     public List<SubscriptionService> getSortedByAmount() {
         List<SubscriptionService> sorted = new ArrayList<>(subscriptions);
         sorted.sort((s1, s2) -> Integer.compare(s2.getAmount(), s1.getAmount()));
+        System.out.println("[조회] 금액순 정렬 상품: " + sorted.size() + "개");
+        for (SubscriptionService sub : sorted) {
+            System.out.println("  - " + sub.getServiceName() + " (₩" + sub.getAmount() + ")");
+        }
         return sorted;
     }
 
@@ -64,9 +72,11 @@ public class SubscriptionList {
     public SubscriptionService findByName(String serviceName) {
         for (SubscriptionService sub : subscriptions) {
             if (sub.getServiceName().equals(serviceName)) {
+                System.out.println("[검색] '" + serviceName + "' 찾음: ₩" + sub.getAmount());
                 return sub;
             }
         }
+        System.out.println("[검색] '" + serviceName + "' - 찾을 수 없음");
         return null;
     }
 

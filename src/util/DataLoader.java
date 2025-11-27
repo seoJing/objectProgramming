@@ -15,6 +15,7 @@ import model.TransactionType;
 import model.User;
 import model.UserList;
 
+// DataLoader - 파일에서 데이터 로드 / (void → void)
 public class DataLoader {
 
     private static final String DATA_PATH = "src/resources/data/";
@@ -38,10 +39,15 @@ public class DataLoader {
 
     public static void loadAll() {
         loadUsers();
+        System.out.println("✓ users.txt 로드 완료");
         loadAccounts();
-        loadProducts();      // 1. 상품 정보 먼저 로딩
-        loadSubscriptions(); // 2. 구독 정보 로딩 (상품 ID 참조)
+        System.out.println("✓ accounts.txt 로드 완료");
+        loadProducts();
+        System.out.println("✓ products.txt 로드 완료");
+        loadSubscriptions();
+        System.out.println("✓ subscription.txt 로드 완료");
         loadTransactions();
+        System.out.println("✓ transactions.txt 로드 완료");
     }
 
     private static File getFile(String fileName) {
@@ -206,7 +212,9 @@ public class DataLoader {
                 Transaction tx = new Transaction(type, amount, loc, cat, memo, dt, 0, targetAccount);
                 targetAccount.addTransaction(tx);
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static Account findAccountByNumber(String accNum) {

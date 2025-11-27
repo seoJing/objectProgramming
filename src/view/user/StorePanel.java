@@ -46,6 +46,7 @@ import util.Routes;
 import util.SessionManager;
 import view.layout.UserLayout;
 
+// StorePanel - 구독 장바구니 관리 화면 / (void → void)
 /**
  * 내 구독 - 장바구니 / 카테고리별 구독 리스트 / 총액 화면
  */
@@ -537,7 +538,4 @@ public class StorePanel extends UserLayout {
         updateSummaryLabel();
         refreshSubscriptionList();
     }
-
 }
-
-
