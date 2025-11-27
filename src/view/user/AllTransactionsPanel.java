@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -47,6 +46,7 @@ import util.SessionManager;
 import util.UIConstants;
 import view.layout.UserLayout;
 import view.user.shared.component.Calendar;
+import view.user.shared.component.TransactionItemRow;
 
 public class AllTransactionsPanel extends UserLayout {
 
@@ -77,8 +77,6 @@ public class AllTransactionsPanel extends UserLayout {
     };
 
     // ====== 포맷터 ======
-    private static final DateTimeFormatter HHMM =
-            DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter HEADER_DOW =
             DateTimeFormatter.ofPattern("d일 E요일", Locale.KOREAN);
 
@@ -307,7 +305,15 @@ public class AllTransactionsPanel extends UserLayout {
             listPanel.add(Box.createVerticalStrut(8));
 
             for (Entry en : items) {
-                listPanel.add(makeRow(en.acc, en.tx, en.when));
+                TransactionItemRow rowComponent = new TransactionItemRow(en.acc, en.tx, en.when);
+                listPanel.add(rowComponent.createRow(() -> {
+                    Account a = en.acc;
+                    Transaction tx = en.tx;
+                    SessionManager.getInstance().setSelectedAccount(a);
+                    SessionManager.getInstance().setSelectedTransaction(tx);
+                    SessionManager.getInstance().setPreviousRoute(Routes.ALL_TRANSACTIONS);
+                    Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL);
+                }));
                 listPanel.add(Box.createVerticalStrut(6));
             }
             listPanel.add(Box.createVerticalStrut(10));
@@ -414,100 +420,6 @@ public class AllTransactionsPanel extends UserLayout {
         return header;
     }
 
-    private JComponent makeRow(Account account, Transaction t, LocalDateTime dt) {
-        JPanel row = new JPanel(new GridBagLayout());
-        row.setOpaque(true);
-        row.setBackground(UIConstants.TX_ROW_BG);
-        row.setBorder(UIConstants.TX_ROW_BORDER);
-        row.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        row.putClientProperty("account", account);
-        row.putClientProperty("tx", t);
-
-        row.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                Account a = (Account) ((JComponent) e.getSource()).getClientProperty("account");
-                Transaction tx = (Transaction) ((JComponent) e.getSource()).getClientProperty("tx");
-                SessionManager.getInstance().setSelectedAccount(a);
-                SessionManager.getInstance().setSelectedTransaction(tx);
-                SessionManager.getInstance().setPreviousRoute(Routes.ALL_TRANSACTIONS);
-                Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL);
-            }
-
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                row.setBackground(row.getBackground().darker());
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                row.setBackground(UIConstants.TX_ROW_BG);
-            }
-        });
-
-        GridBagConstraints gc = new GridBagConstraints();
-        gc.gridy = 0;
-        gc.insets = UIConstants.ZERO_INSETS;
-
-        JPanel left = new JPanel();
-        left.setOpaque(false);
-        left.setLayout(new BoxLayout(left, BoxLayout.X_AXIS));
-        left.add(Box.createHorizontalStrut(6));
-        left.setBorder(UIConstants.ICON_LEFT_PADDING);
-
-        gc.gridx = 0;
-        gc.weightx = 0;
-        gc.anchor = GridBagConstraints.WEST;
-        row.add(left, gc);
-
-        JPanel center = new JPanel();
-        center.setOpaque(false);
-        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
-
-        JLabel title = new JLabel(safe(t.getLocation()));
-        title.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
-
-        JLabel time = new JLabel(HHMM.format(dt));
-        time.setFont(UIConstants.SMALL_FONT);
-        time.setForeground(UIConstants.TEXT_MUTED);
-
-        String sub = safe(t.getCategory()) + "  |  " +
-                account.getBank() + " / " + account.getAccountNumber();
-        JLabel subLabel = new JLabel(sub);
-        subLabel.setFont(UIConstants.SMALL_FONT);
-        subLabel.setForeground(UIConstants.TEXT_MUTED);
-
-        center.add(title);
-        center.add(Box.createVerticalStrut(2));
-        center.add(time);
-        center.add(Box.createVerticalStrut(4));
-        center.add(subLabel);
-
-        gc.gridx = 1;
-        gc.weightx = 1;
-        gc.fill = GridBagConstraints.HORIZONTAL;
-        gc.anchor = GridBagConstraints.WEST;
-        row.add(center, gc);
-
-        boolean deposit = (t.getType() == TransactionType.INCOME);
-        String sign = deposit ? "+" : "-";
-        JLabel amount = new JLabel(sign + UIConstants.money(t.getAmount()) + "원");
-        amount.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
-        amount.setForeground(deposit ? UIConstants.POS_GREEN : UIConstants.TEXT_DEFAULT);
-
-        JPanel right = new JPanel(new BorderLayout());
-        right.setOpaque(false);
-        right.add(amount, BorderLayout.EAST);
-
-        gc.gridx = 2;
-        gc.weightx = 0;
-        gc.anchor = GridBagConstraints.EAST;
-        gc.insets = UIConstants.RIGHT_GAP_M;
-        row.add(right, gc);
-
-        return row;
-    }
 
     private static LocalDateTime extractDateTime(Transaction t) {
         try {
@@ -538,7 +450,4 @@ public class AllTransactionsPanel extends UserLayout {
         return LocalDateTime.now();
     }
 
-    private static String safe(String s) {
-        return (s == null) ? "" : s;
-    }
 }

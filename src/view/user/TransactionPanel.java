@@ -3,13 +3,10 @@ package view.user;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,14 +15,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -42,6 +36,7 @@ import util.Routes;
 import util.SessionManager;
 import util.UIConstants;
 import view.layout.UserLayout;
+import view.user.shared.component.TransactionItemRow;
 
 public class TransactionPanel extends UserLayout {
 
@@ -53,7 +48,6 @@ public class TransactionPanel extends UserLayout {
 
     private Account initialSelection;
 
-    private static final DateTimeFormatter HHMM= DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter HEADER_DOW =
             DateTimeFormatter.ofPattern("d일 E요일", Locale.KOREAN);
 
@@ -208,7 +202,13 @@ public class TransactionPanel extends UserLayout {
             listPanel.add(Box.createVerticalStrut(8));
 
             for (Transaction t : items) {
-                listPanel.add(makeItemRow(account, t));
+                TransactionItemRow rowComponent = new TransactionItemRow(account, t, extractDateTime(t));
+                listPanel.add(rowComponent.createRow(() -> {
+                    SessionManager.getInstance().setSelectedAccount(account);
+                    SessionManager.getInstance().setSelectedTransaction(t);
+                    SessionManager.getInstance().setPreviousRoute(Routes.TRANSACTION);
+                    Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL);
+                }));
                 listPanel.add(Box.createVerticalStrut(6));
             }
             listPanel.add(Box.createVerticalStrut(10));
@@ -253,104 +253,6 @@ public class TransactionPanel extends UserLayout {
     }
 
 
-    /** 거래 내역 */
-    private JComponent makeItemRow(Account account, Transaction t) {
-        JPanel row = new JPanel(new GridBagLayout());
-        row.setOpaque(true);
-        row.setBackground(UIConstants.TX_ROW_BG);
-        row.setBorder(UIConstants.TX_ROW_BORDER);
-        row.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        row.putClientProperty("account", account);
-        row.putClientProperty("tx", t);
-
-        row.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override public void mouseClicked(java.awt.event.MouseEvent e) {
-                Account a = (Account)((JComponent)e.getSource()).getClientProperty("account");
-                Transaction tx = (Transaction)((JComponent)e.getSource()).getClientProperty("tx");
-                SessionManager.getInstance().setSelectedAccount(a);
-                SessionManager.getInstance().setSelectedTransaction(tx);
-                SessionManager.getInstance().setPreviousRoute(Routes.TRANSACTION);
-                Router.getInstance().navigateUser(Routes.TRANSACTION_DETAIL);
-            }
-            @Override public void mouseEntered(java.awt.event.MouseEvent e) {
-                row.setBackground(row.getBackground().darker());
-            }
-            @Override public void mouseExited(java.awt.event.MouseEvent e) {
-                row.setBackground(UIConstants.TX_ROW_BG);
-            }
-        });
-
-        GridBagConstraints gc = new GridBagConstraints();
-        gc.gridy = 0;
-        gc.insets = UIConstants.ZERO_INSETS;
-
-        // 아이콘
-        JPanel left = new JPanel();
-        left.setOpaque(false);
-        left.setLayout(new BoxLayout(left, BoxLayout.X_AXIS));
-
-
-        JLabel icon = new JLabel(loadIcon("/resources/images/bag.png", 22, 22));
-
-        left.add(Box.createHorizontalStrut(6));
-        left.add(icon);
-        left.setBorder(UIConstants.ICON_LEFT_PADDING);
-
-        gc.gridx = 0;
-        gc.weightx = 0;
-        gc.anchor  = GridBagConstraints.WEST;
-        row.add(left, gc);
-
-        // 날짜, 시간
-        JPanel center = new JPanel();
-        center.setOpaque(false);
-        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
-
-        JLabel title = new JLabel(safe(t.getLocation()));
-        title.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
-
-        String hhmm = HHMM.format(extractDateTime(t));
-        JLabel time = new JLabel(hhmm);
-        time.setFont(UIConstants.SMALL_FONT);
-        time.setForeground(UIConstants.TEXT_MUTED);
-
-        String sub = safe(t.getCategory()) + "  |  " + account.getBank();
-        JLabel subLabel = new JLabel(sub);
-        subLabel.setFont(UIConstants.SMALL_FONT);
-        subLabel.setForeground(UIConstants.TEXT_MUTED);
-
-        center.add(title);
-        center.add(Box.createVerticalStrut(2));
-        center.add(time);
-        center.add(Box.createVerticalStrut(4));
-        center.add(subLabel);
-
-        gc.gridx   = 1;
-        gc.weightx = 1;
-        gc.fill    = GridBagConstraints.HORIZONTAL;
-        gc.anchor  = GridBagConstraints.WEST;
-        row.add(center, gc);
-
-        // 금액 (+초록 / −검정), 우측 끝 정렬
-        boolean deposit = (t.getType() == TransactionType.INCOME);
-        String sign = deposit ? "+" : "-";
-        JLabel amount = new JLabel(sign + UIConstants.money(t.getAmount()) + "원");
-        amount.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
-        amount.setForeground(deposit ? UIConstants.POS_GREEN : Color.BLACK);
-
-        JPanel right = new JPanel(new BorderLayout());
-        right.setOpaque(false);
-        right.add(amount, BorderLayout.EAST);
-
-        gc.gridx   = 2;
-        gc.weightx = 0;
-        gc.anchor  = GridBagConstraints.EAST;
-        gc.insets  = UIConstants.RIGHT_GAP_M;
-        row.add(right, gc);
-
-        return row;
-    }
 
     // 날짜/시간 추출 유틸
     private LocalDate extractDate(Transaction t) {
@@ -387,16 +289,4 @@ public class TransactionPanel extends UserLayout {
         return LocalDateTime.now();
     }
 
-    private static String safe(String s) { return (s == null) ? "" : s; }
-
-    private static Icon loadIcon(String path, int w, int h) {
-        try {
-            var url = Objects.requireNonNull(TransactionPanel.class.getResource(path));
-            Image img = new ImageIcon(url).getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
-            return new ImageIcon(img);
-        } catch (Exception e) {
-            Image empty = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_INT_ARGB);
-            return new ImageIcon(empty);
-        }
-    }
 }
