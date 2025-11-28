@@ -56,10 +56,18 @@ public class Calendar extends JPanel {
         prev.addActionListener(e -> {
             ym = ym.minusMonths(1);
             rebuild();
+            if (onPick != null) {
+                int d = Math.min(31, ym.lengthOfMonth());
+                onPick.accept(ym.atDay(d));
+            }
         });
         next.addActionListener(e -> {
             ym = ym.plusMonths(1);
             rebuild();
+            if (onPick != null) {
+                int d = Math.min(31, ym.lengthOfMonth());
+                onPick.accept(ym.atDay(d));
+            }
         });
 
         title.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
