@@ -38,12 +38,6 @@ public class MainFrame extends JFrame {
         cardLayout.show(container, Routes.LOGIN);
     }
 
-    /**
-     * 로그인 후 동적으로 화면을 교체하기 위한 메서드
-     */
-    public void addScreen(String route, JPanel panel) {
-        container.add(panel, route);
-    }
 
     public void switchTo(String screen) {
         cardLayout.show(container, screen);
