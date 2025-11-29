@@ -127,7 +127,22 @@ public class AllTransactionsPanel extends UserLayout {
         miniCalendar = new Calendar(
                 initialDate,
                 picked -> {
-                    SessionManager.getInstance().setSelectedDate(picked);
+                    SessionManager sm = SessionManager.getInstance();
+                    LocalDate old = sm.getSelectedDate();
+
+                    // 월 바뀌는지 체크
+                    boolean monthChanged = false;
+                    if (old == null) {
+                        monthChanged = true;
+                    } else {
+                        monthChanged = old.getYear() != picked.getYear() || old.getMonthValue() != picked.getMonthValue();
+                    }
+                    sm.setSelectedDate(picked);
+
+                    // 캘린더 달 이동 버튼 클릭해서 바뀌면 다시 그림
+                    if (monthChanged) {
+                        loadAndRender();
+                    }
                     scrollToDate(picked);
                 }
         );
@@ -266,6 +281,14 @@ public class AllTransactionsPanel extends UserLayout {
             return;
         }
 
+        LocalDate base = SessionManager.getInstance().getSelectedDate();
+        if (base == null) {
+            base = LocalDate.now();
+            SessionManager.getInstance().setSelectedDate(base);
+        }
+        int targetYear  = base.getYear();
+        int targetMonth = base.getMonthValue();
+
         List<Account> accounts = user.getAccountList();
 
         // 1) 계좌별 거래를 날짜(LocalDate)로 그룹 (내림차순 정렬)
@@ -278,6 +301,10 @@ public class AllTransactionsPanel extends UserLayout {
 
                 filteredCount++;
                 LocalDateTime dt = extractDateTime(t);
+                LocalDate date   = dt.toLocalDate();
+                if (date.getYear() != targetYear || date.getMonthValue() != targetMonth) {
+                    continue;
+                }
                 byDay.computeIfAbsent(dt.toLocalDate(), k -> new ArrayList<>())
                         .add(new Entry(acc, t, dt));
             }
