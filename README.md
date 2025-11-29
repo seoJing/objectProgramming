@@ -35,10 +35,10 @@
 objectProgramming/
 ├── src/
 │   ├── main/
-│   │   └── Main.java                             # 애플리케이션 진입점 
+│   │   └── Main.java                             # 애플리케이션 진입점
 │   ├── model/                                    # 데이터 모델 계층
 │   │   ├── User.java                             # 사용자 모델
-│   │   ├── UserList.java                         # 사용자 컬렉션 관리
+│   │   ├── UserList.java                         # 사용자 컬렉션 관리 (Singleton)
 │   │   ├── Account.java                          # 계좌 모델
 │   │   ├── Transaction.java                      # 거래 내역 모델
 │   │   ├── TransactionType.java                  # 거래 타입 enum
@@ -47,38 +47,38 @@ objectProgramming/
 │   ├── view/                                     # UI 계층
 │   │   ├── MainFrame.java                        # 메인 프레임
 │   │   ├── layout/                               # 레이아웃 템플릿
-│   │   │   ├── BaseLayout.java                   # 기본 레이아웃
+│   │   │   ├── BaseLayout.java                   # 기본 레이아웃 (Template Method Pattern)
 │   │   │   ├── UserLayout.java                   # 사용자 레이아웃
 │   │   │   └── AdminLayout.java                  # 관리자 레이아웃
 │   │   ├── user/                                 # 사용자 화면
-│   │   │   ├── UserSidePanel.java
-│   │   │   ├── MainPanel.java                    # Navigate to Alert, Transaction
-│   │   │   ├── AccountPanel.java
-│   │   │   ├── SubscriptionPanel.java
-│   │   │   ├── SubscriptionDetailPanel.java
-│   │   │   ├── TransactionPanel.java              # Navigate to TransactionDetail
-│   │   │   ├── TransactionDetailPanel.java
-│   │   │   ├── MyPagePanel.java
-│   │   │   ├── alertPanel.java                   
-│   │   │   ├── settingPanel.java
-│   │   │   ├── storePanel.java                    # Navigate to Group
-│   │   │   ├── storeDetailPanel.java
-│   │   │   └── groupPanel.java                    # Navigate to StoreDetail
+│   │   │   ├── UserSidePanel.java                # 사용자 사이드 네비게이션
+│   │   │   ├── MainPanel.java                    # 메인 대시보드
+│   │   │   ├── AccountPanel.java                 # 계좌 관리
+│   │   │   ├── SubscriptionPanel.java            # 구독 목록
+│   │   │   ├── SubscriptionDetailPanel.java      # 구독 상세
+│   │   │   ├── TransactionPanel.java             # 거래 내역
+│   │   │   ├── TransactionDetailPanel.java       # 거래 상세
+│   │   │   ├── MyPagePanel.java                  # 마이페이지
+│   │   │   ├── AlertPanel.java                   # 알림 관리
+│   │   │   ├── SettingPanel.java                 # 설정
+│   │   │   ├── StorePanel.java                   # 스토어/구독 시장
+│   │   │   ├── StoreDetailPanel.java             # 스토어 상세
+│   │   │   └── GroupPanel.java                   # 그룹
 │   │   ├── admin/
-│   │   │   ├── AdminSidePanel.java
-│   │   │   ├── AdminMainPanel.java
-│   │   │   ├── AdminStatisticsPanel.java
-│   │   │   ├── AdminSubscriptionMachinePanel.java
-│   │   │   └── AdminSubscriptionManagePanel.java
+│   │   │   ├── AdminSidePanel.java               # 관리자 사이드 네비게이션
+│   │   │   ├── AdminMainPanel.java               # 관리자 메인
+│   │   │   ├── AdminStatisticsPanel.java         # 통계 분석
+│   │   │   ├── AdminSubscriptionMachinePanel.java# 구독 기계 관리
+│   │   │   └── AdminSubscriptionManagePanel.java # 구독 서비스 관리
 │   │   └── login/
-│   │       └── LoginPanel.java                    # Navigate to Admin, User
-│   └── util/                                      # 유틸리티 계층
-│       ├── Router.java                            # 화면 네비게이션 관리
-│       ├── Routes.java                            # 화면 경로 상수
-│       ├── SessionManager.java                    # 세션 상태 관리
-│       └── UIConstants.java                       # UI 상수 (색상, 폰트 등)
-├── .editorconfig                                  # 코드 포맷팅 설정
-├── .gitignore 
+│   │       └── LoginPanel.java                   # 로그인 화면
+│   └── util/                                     # 유틸리티 계층
+│       ├── Router.java                           # 화면 네비게이션 관리 (Singleton)
+│       ├── Routes.java                           # 화면 경로 상수
+│       ├── SessionManager.java                   # 세션 상태 관리 (Singleton)
+│       └── UIConstants.java                      # UI 상수 (색상, 폰트 등)
+├── .editorconfig                                 # 코드 포맷팅 설정
+├── .gitignore
 └── README.md
 ```
 
@@ -242,6 +242,16 @@ List<User> users = UserList.getInstance().getAll();
 - `SessionManager`는 세션 상태만 관리합니다. 비즈니스 로직은 Model 클래스에 작성하세요.
 - 모든 화면 이름은 `Routes` 클래스의 상수를 사용하세요.
 - UI 스타일은 `UIConstants`의 상수를 사용하세요.
+
+## 주요 업데이트
+
+### v1.0.0
+- 기본 프로젝트 구조 및 아키텍처 설계
+- 사용자 로그인 및 인증 기능
+- 구독 서비스 관리 기능
+- 계좌 및 거래 내역 관리
+- 사용자/관리자 모드 분리
+- 통계 분석 기능
 
 ## 라이선스
 
