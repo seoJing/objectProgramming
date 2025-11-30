@@ -83,25 +83,25 @@ public class GroupListPanel extends UserLayout {
         priceListPanel.setBorder(BorderFactory.createEmptyBorder(0, 16, 16, 16));
 
         priceListPanel.add(createPriceRow(
-                "YouTube 그룹핑 예시 (정가는 products.txt 기준)",
+                "YouTube 그룹핑",
                 "YouTube"
         ));
         priceListPanel.add(Box.createVerticalStrut(6));
 
         priceListPanel.add(createPriceRow(
-                "Netflix 그룹핑 예시 (정가는 products.txt 기준)",
+                "Netflix 그룹핑",
                 "Netflix"
         ));
         priceListPanel.add(Box.createVerticalStrut(6));
 
         priceListPanel.add(createPriceRow(
-                "Spotify 그룹핑 예시 (정가는 products.txt 기준)",
+                "Spotify 그룹핑",
                 "Spotify"
         ));
         priceListPanel.add(Box.createVerticalStrut(6));
 
         priceListPanel.add(createPriceRow(
-                "Disney+ 그룹핑 예시 (정가는 products.txt 기준)",
+                "Disney+ 그룹핑",
                 "Disney+"
         ));
 
